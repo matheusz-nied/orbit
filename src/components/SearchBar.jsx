@@ -59,7 +59,7 @@ export default function SearchBar() {
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder="Pesquisar ou filtrar sites..."
-          className="w-full pl-12 pr-12 py-4 bg-card border border-border rounded-xl text-text placeholder-muted text-lg focus:border-accent transition-colors"
+          className="w-full pl-12 pr-12 py-[0.625rem] bg-card border border-border rounded-xl text-text placeholder-muted text-lg focus:border-accent transition-colors"
         />
         
         <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />

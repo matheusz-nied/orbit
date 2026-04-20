@@ -62,14 +62,14 @@ export default function SiteGrid() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 mb-36">
+    <div className="w-full max-w-6xl mx-auto px-4 mb-12">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={filteredSites.map(s => s.id)} strategy={rectSortingStrategy}>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-4 justify-items-center">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-x-4 gap-y-6 justify-items-center">
             {filteredSites.map(site => (
               <SiteCard key={site.id} site={site} />
             ))}

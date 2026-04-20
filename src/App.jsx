@@ -22,7 +22,7 @@ export default function App() {
     <div className="min-h-screen relative">
       {/* Star canvas for space theme */}
       <StarCanvas />
-      
+
       {/* Main content */}
       <div className="relative z-10">
         {/* Settings button */}
@@ -33,22 +33,28 @@ export default function App() {
         >
           <Settings size={20} />
         </button>
-        
+
         {/* Main layout */}
-        <div className="container mx-auto px-4 py-8">
-          <Clock />
-          <SearchBar />
-          <CategoryFilter />
-          <SiteGrid />
+        <div className="container mx-auto px-4 flex flex-col min-h-[85vh]">
+          <div className="flex-1 flex flex-col pt-8">
+            <Clock />
+            <SearchBar />
+            <CategoryFilter />
+            <SiteGrid />
+          </div>
+        </div>
+
+        {/* News Section (peeking from bottom) */}
+        <div className="container mx-auto px-4 pb-16 pt-8 border-t border-border">
           <NewsFeed />
         </div>
-        
+
         {/* Footer */}
         <footer className="text-center py-6 text-muted text-sm">
           <p>Nebula Start · Sua página inicial personalizada</p>
         </footer>
       </div>
-      
+
       {/* Modals */}
       <SettingsModal />
       <AddSiteModal />
