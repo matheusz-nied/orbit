@@ -14,6 +14,10 @@ export default function SearchBar() {
     setLocalQuery(searchQuery)
   }, [searchQuery])
 
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
   const handleChange = (e) => {
     const value = e.target.value
     setLocalQuery(value)
