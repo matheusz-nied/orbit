@@ -23,7 +23,7 @@ export default function Clock() {
 
   return (
     <div className="text-center py-8 animate-fadeIn">
-      <div className="text-6xl md:text-8xl font-light tracking-tight text-text mb-2">
+      <div className="text-6xl md:text-8xl font-light tracking-tight text-text mb-2 tabular-nums">
         {hours}<span className="opacity-50">:</span>{minutes}
         <span className="text-3xl md:text-5xl opacity-40 ml-1">{seconds}</span>
       </div>
