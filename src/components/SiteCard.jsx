@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, Pencil, Trash2, ExternalLink } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
-import { getFaviconUrl, getDomain } from '../utils/favicon'
+import { getFaviconUrl } from '../utils/favicon'
 
 export default function SiteCard({ site }) {
   const { removeSite, openAddSite, setEditingSite } = useStore()
@@ -22,6 +22,7 @@ export default function SiteCard({ site }) {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1 : 0,
   }
 
   const handleEdit = (e) => {
@@ -46,22 +47,15 @@ export default function SiteCard({ site }) {
       className="relative group"
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
+      {...attributes}
+      {...listeners}
     >
       <div
         onClick={handleClick}
-        className="bg-card border border-border rounded-xl p-4 cursor-pointer card-hover flex items-center gap-4"
+        className="bg-card border border-border rounded-xl p-3 cursor-pointer card-hover flex flex-col items-center justify-center w-28 h-28"
       >
-        {/* Drag Handle */}
-        <button
-          {...attributes}
-          {...listeners}
-          className="opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing text-muted hover:text-text"
-        >
-          <GripVertical size={18} />
-        </button>
-        
         {/* Favicon */}
-        <div className="w-12 h-12 rounded-lg bg-bg flex items-center justify-center overflow-hidden flex-shrink-0">
+        <div className="w-12 h-12 rounded-lg bg-bg flex items-center justify-center overflow-hidden flex-shrink-0 mb-2">
           <img 
             src={getFaviconUrl(site.url)} 
             alt={site.name}
@@ -76,30 +70,26 @@ export default function SiteCard({ site }) {
           </span>
         </div>
         
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-text truncate">{site.name}</h3>
-          <p className="text-sm text-muted truncate">{getDomain(site.url)}</p>
-        </div>
-        
-        {/* External Link Icon */}
-        <ExternalLink size={16} className="text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* Name */}
+        <h3 className="text-xs font-medium text-text text-center line-clamp-2 leading-tight w-full px-1">
+          {site.name}
+        </h3>
       </div>
       
       {/* Action Buttons */}
       {showActions && (
-        <div className="absolute -top-2 -right-2 flex gap-1 animate-slideIn">
+        <div className="absolute -top-1 -right-1 flex gap-0.5 animate-slideIn">
           <button
             onClick={handleEdit}
-            className="p-1.5 bg-card border border-border rounded-lg text-muted hover:text-accent hover:border-accent transition-colors"
+            className="p-1 bg-card border border-border rounded-md text-muted hover:text-accent hover:border-accent transition-colors"
           >
-            <Pencil size={14} />
+            <Pencil size={12} />
           </button>
           <button
             onClick={handleDelete}
-            className="p-1.5 bg-card border border-border rounded-lg text-muted hover:text-red-500 hover:border-red-500 transition-colors"
+            className="p-1 bg-card border border-border rounded-md text-muted hover:text-red-500 hover:border-red-500 transition-colors"
           >
-            <Trash2 size={14} />
+            <Trash2 size={12} />
           </button>
         </div>
       )}
