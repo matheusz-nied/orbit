@@ -138,8 +138,10 @@ MIT - Use livremente para qualquer propósito.
 
 <div align="center">
 
-**Feito com cuidado por [Seu Nome]**
+**Feito com cuidado por Theus Dev**
 
-[Twitter] · [LinkedIn] · [Portfolio]
+[Twitter](https://x.com/theusdev_) · 
+[LinkedIn](https://www.linkedin.com/in/matheusz-nied/) · 
+[Portfolio](https://theusdev.vercel.app/minimal)
 
 </div>
