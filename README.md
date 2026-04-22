@@ -140,6 +140,7 @@ MIT - Use livremente para qualquer propósito.
 
 **Feito com cuidado por Theus Dev**
 
+
 [Twitter](https://x.com/theusdev_) · 
 [LinkedIn](https://www.linkedin.com/in/matheusz-nied/) · 
 [Portfolio](https://theusdev.vercel.app/minimal)
