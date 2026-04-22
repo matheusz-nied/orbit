@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 import { Settings } from 'lucide-react'
-import useStore from './store/useStore'
+import useStore, { searchProviders } from './store/useStore'
 import { applyTheme } from './themes/themes'
+import { trackOrbitUsage } from './utils/analytics'
 import Clock from './components/Clock'
 import SearchBar from './components/SearchBar'
 import CategoryFilter from './components/CategoryFilter'
@@ -14,11 +15,18 @@ import AIChatModal from './components/AIChatModal'
 import StarCanvas from './components/StarCanvas'
 
 export default function App() {
-  const { theme, openSettings } = useStore()
+  const { theme, searchProvider, openSettings } = useStore()
 
   useEffect(() => {
     applyTheme(theme)
   }, [theme])
+
+  useEffect(() => {
+    trackOrbitUsage({
+      theme,
+      searchProvider: searchProviders[searchProvider]?.name,
+    })
+  }, [theme, searchProvider])
 
   return (
     <div className="min-h-screen relative">
