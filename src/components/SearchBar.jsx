@@ -84,8 +84,8 @@ export default function SearchBar() {
       </div>
 
       <p className="text-center text-muted text-sm mt-2">
-        <kbd className="px-1.5 py-0.5 bg-border rounded text-xs">Tab</kbd> ou clique no provedor para trocar ·
-        <kbd className="px-1.5 py-0.5 bg-border rounded text-xs ml-1">Enter</kbd> {provider.type === 'ai' ? 'para abrir o chat' : 'para pesquisar'}
+        <kbd className="px-1.5 py-0.5 bg-border rounded text-xs" style={{ color: 'var(--text)' }} >Tab</kbd> ou clique no provedor para trocar ·
+        <kbd className="px-1.5 py-0.5 bg-border rounded text-xs ml-1" style={{ color: 'var(--text)' }} >Enter</kbd> {provider.type === 'ai' ? 'para abrir o chat' : 'para pesquisar'}
       </p>
     </div>
   )
