@@ -30,9 +30,10 @@ export default function CategoryFilter() {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
                   isActive
-                    ? 'bg-accent text-[#1a1a1a]'
-                    : 'bg-card border border-border text-muted hover:text-text hover:border-accent'
+                    ? 'bg-accent'
+                    : 'bg-card border border-border hover:border-accent'
                 }`}
+                style={{ color: isActive ? '#1a1a1a' : 'var(--text)' }}
               >
                 {label}
               </button>
