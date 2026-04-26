@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -75,6 +75,33 @@ body {
 
 .animate-slideIn {
   animation: slideIn 0.2s ease-out forwards;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes orbit-glow {
+  0%, 100% { box-shadow: 0 0 12px var(--accent), 0 0 24px var(--accent); }
+  50% { box-shadow: 0 0 20px var(--accent), 0 0 40px var(--accent); }
+}
+
+.animate-orbit-glow {
+  animation: orbit-glow 3s ease-in-out infinite;
 }
 
 /* Card hover effects */

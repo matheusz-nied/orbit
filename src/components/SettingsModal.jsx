@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { 
   X, Palette, Search, Newspaper, FolderOpen, Database, 
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
-  LayoutGrid, Rows, GalleryVerticalEnd
+  LayoutGrid, Rows, GalleryVerticalEnd, Camera, Terminal, Sparkles
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
@@ -156,11 +156,14 @@ export default function SettingsModal() {
               {/* Card Layout Picker */}
               <div>
                 <h3 className="text-sm font-medium text-muted mb-3">Layout dos Cards</h3>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {[
                     { id: 'classic',  label: 'Clássico', Icon: LayoutGrid,         desc: 'Ícones em grade' },
                     { id: 'bento',    label: 'Bento',    Icon: Rows,               desc: 'Lista horizontal' },
                     { id: 'magazine', label: 'Magazine', Icon: GalleryVerticalEnd, desc: 'Capas verticais' },
+                    { id: 'polaroid', label: 'Polaroid', Icon: Camera,             desc: 'Fotos com inclinação' },
+                    { id: 'terminal', label: 'Terminal', Icon: Terminal,           desc: 'Lista estilo código' },
+                    { id: 'orbital',  label: 'Orbital',  Icon: Sparkles,           desc: 'Planetas flutuantes' },
                   ].map(({ id, label, Icon, desc }) => (
                     <button
                       key={id}
