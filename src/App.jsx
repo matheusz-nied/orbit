@@ -13,6 +13,7 @@ import AddSiteModal from './components/AddSiteModal'
 import ConfirmModal from './components/ConfirmModal'
 import AIChatModal from './components/AIChatModal'
 import StarCanvas from './components/StarCanvas'
+import Toast from './components/Toast'
 
 export default function App() {
   const { theme, searchProvider, openSettings } = useStore()
@@ -70,6 +71,7 @@ export default function App() {
       <AddSiteModal />
       <ConfirmModal />
       <AIChatModal />
+      <Toast />
     </div>
   )
 }

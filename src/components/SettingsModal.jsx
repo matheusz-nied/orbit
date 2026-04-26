@@ -7,12 +7,12 @@ import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
 
 const tabs = [
-  { id: 'appearance', label: 'Theme', icon: Palette },
-  { id: 'search', label: 'Search', icon: Search },
-  { id: 'ai', label: 'AI Chat', icon: MessageSquare },
-  { id: 'news', label: 'News', icon: Newspaper },
-  { id: 'categories', label: 'Categories', icon: FolderOpen },
-  { id: 'data', label: 'Data', icon: Database },
+  { id: 'appearance', label: 'Tema', icon: Palette },
+  { id: 'search', label: 'Busca', icon: Search },
+  { id: 'ai', label: 'Chat IA', icon: MessageSquare },
+  { id: 'news', label: 'Notícias', icon: Newspaper },
+  { id: 'categories', label: 'Categorias', icon: FolderOpen },
+  { id: 'data', label: 'Dados', icon: Database },
 ]
 
 const newsProviders = [
@@ -82,12 +82,8 @@ export default function SettingsModal() {
     reader.readAsText(file)
   }
 
-  const toggleTopic = (topicId) => {
-    if (newsTopics.includes(topicId)) {
-      setNewsTopics(newsTopics.filter(t => t !== topicId))
-    } else {
-      setNewsTopics([...newsTopics, topicId])
-    }
+  const selectTopic = (topicId) => {
+    setNewsTopics([topicId])
   }
 
   if (!settingsOpen) return null
@@ -296,11 +292,14 @@ export default function SettingsModal() {
               
               <div>
                 <h3 className="text-sm font-medium text-muted mb-3">Tópicos de Interesse</h3>
+                <p className="text-xs text-muted mb-3">
+                  Escolha um tópico principal para o feed. O Orbit usa um tópico por vez para manter os resultados consistentes.
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {availableTopics.map(topic => (
                     <button
                       key={topic.id}
-                      onClick={() => toggleTopic(topic.id)}
+                      onClick={() => selectTopic(topic.id)}
                       className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                         newsTopics.includes(topic.id)
                           ? 'bg-accent text-bg'

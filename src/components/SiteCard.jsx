@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Pencil, Trash2 } from 'lucide-react'
+import { GripVertical, Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
 import { openUrl } from '../utils/navigation'
@@ -77,6 +77,10 @@ export default function SiteCard({ site }) {
         onClick={handleClick}
         className="group/card relative cursor-pointer w-16 h-16 sm:w-20 sm:h-20 mb-3 mx-auto"
       >
+        <div className="absolute -top-2 -left-2 z-10 px-1.5 py-1 rounded-lg bg-card/90 border border-border text-muted opacity-100 sm:opacity-0 sm:group-hover/card:opacity-100 transition-opacity">
+          <GripVertical size={12} />
+        </div>
+
         {/* Glow effect */}
         <div className="absolute inset-0 bg-accent/20 rounded-2xl blur-xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
         
@@ -103,22 +107,22 @@ export default function SiteCard({ site }) {
       </h3>
       
       {/* Action Buttons */}
-      {showActions && (
-        <div className="absolute -top-2 -right-2 flex flex-col gap-1.5 animate-slideIn z-20">
+      <div className={`absolute -top-2 -right-2 flex flex-col gap-1.5 z-20 transition-opacity ${showActions ? 'opacity-100' : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100'}`}>
           <button
             onClick={handleEdit}
             className="p-2 bg-card/90 backdrop-blur-sm border border-border rounded-xl text-muted hover:text-accent hover:border-accent transition-all hover:scale-110 shadow-lg"
+            aria-label={`Editar ${site.name}`}
           >
             <Pencil size={14} />
           </button>
           <button
             onClick={handleDelete}
             className="p-2 bg-card/90 backdrop-blur-sm border border-border rounded-xl text-muted hover:text-red-500 hover:border-red-500 transition-all hover:scale-110 shadow-lg"
+            aria-label={`Excluir ${site.name}`}
           >
             <Trash2 size={14} />
           </button>
         </div>
-      )}
     </div>
   )
 }

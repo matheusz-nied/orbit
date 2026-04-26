@@ -12,11 +12,12 @@ import {
   sortableKeyboardCoordinates,
   rectSortingStrategy,
 } from '@dnd-kit/sortable'
+import { Plus, RotateCcw } from 'lucide-react'
 import useStore from '../store/useStore'
 import SiteCard from './SiteCard'
 
 export default function SiteGrid() {
-  const { sites, activeCategory, searchQuery, reorderSites } = useStore()
+  const { sites, activeCategory, searchQuery, reorderSites, setActiveCategory, setSearchQuery, openAddSite } = useStore()
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -80,8 +81,42 @@ export default function SiteGrid() {
       </DndContext>
       
       {filteredSites.length === 0 && (
-        <div className="text-center py-12 text-muted">
-          <p>Nenhum site encontrado</p>
+        <div className="text-center py-12 px-6 bg-card/60 border border-border rounded-2xl text-muted max-w-xl mx-auto">
+          <p className="text-base text-text font-medium mb-2">Nenhum site encontrado</p>
+          <p className="text-sm mb-5">
+            {searchQuery.trim()
+              ? 'Tente limpar o filtro atual ou adicione um novo atalho para essa busca.'
+              : 'Essa categoria ainda não tem sites. Você pode adicionar um agora.'}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {searchQuery.trim() && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-bg border border-border rounded-lg text-text hover:border-accent transition-colors"
+              >
+                <RotateCcw size={16} />
+                Limpar filtro
+              </button>
+            )}
+
+            {activeCategory !== 'all' && (
+              <button
+                onClick={() => setActiveCategory('all')}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-bg border border-border rounded-lg text-text hover:border-accent transition-colors"
+              >
+                <RotateCcw size={16} />
+                Ver todas as categorias
+              </button>
+            )}
+
+            <button
+              onClick={openAddSite}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-accent rounded-lg text-bg font-medium hover:opacity-90 transition-opacity"
+            >
+              <Plus size={16} />
+              Adicionar site
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -47,6 +47,7 @@ const useStore = create((set, get) => ({
   addSiteOpen: false,
   editingSite: null,
   deleteConfirmId: null,
+  toast: null,
 
   // Actions
   setSites: (sites) => {
@@ -63,19 +64,19 @@ const useStore = create((set, get) => ({
     }
     const updatedSites = [...sites, newSite]
     storage.set('sites', updatedSites)
-    set({ sites: updatedSites })
+    set({ sites: updatedSites, toast: { message: 'Site adicionado com sucesso.', type: 'success' } })
   },
   
   updateSite: (id, updates) => {
     const sites = get().sites.map(s => s.id === id ? { ...s, ...updates } : s)
     storage.set('sites', sites)
-    set({ sites })
+    set({ sites, toast: { message: 'Site atualizado com sucesso.', type: 'success' } })
   },
   
   removeSite: (id) => {
     const sites = get().sites.filter(s => s.id !== id)
     storage.set('sites', sites)
-    set({ sites })
+    set({ sites, toast: { message: 'Site removido.', type: 'success' } })
   },
   
   reorderSites: (newOrder) => {
@@ -105,7 +106,7 @@ const useStore = create((set, get) => ({
     }))
 
     storage.set('sites', sites)
-    set({ sites })
+    set({ sites, toast: { message: 'Ordem dos sites atualizada.', type: 'success' } })
   },
   
   setCategories: (categories) => {
@@ -118,7 +119,7 @@ const useStore = create((set, get) => ({
     if (!categories.includes(category)) {
       const updated = [...categories, category]
       storage.set('categories', updated)
-      set({ categories: updated })
+      set({ categories: updated, toast: { message: 'Categoria adicionada.', type: 'success' } })
     }
   },
   
@@ -132,7 +133,7 @@ const useStore = create((set, get) => ({
       s.category === category ? { ...s, category: 'all' } : s
     )
     storage.set('sites', sites)
-    set({ sites })
+    set({ sites, toast: { message: 'Categoria removida.', type: 'success' } })
   },
   
   setActiveCategory: (category) => {
@@ -157,7 +158,15 @@ const useStore = create((set, get) => ({
 
   setOpenInNewTab: (openInNewTab) => {
     storage.set('open_in_new_tab', openInNewTab)
-    set({ openInNewTab })
+    set({
+      openInNewTab,
+      toast: {
+        message: openInNewTab
+          ? 'Links serão abertos em nova aba.'
+          : 'Links serão abertos na aba atual.',
+        type: 'success',
+      },
+    })
   },
   
   cycleSearchProvider: () => {
@@ -195,6 +204,14 @@ const useStore = create((set, get) => ({
   setDeepseekApiKey: (key) => {
     storage.set('deepseek_apikey', key)
     set({ deepseekApiKey: key })
+  },
+
+  showToast: (message, type = 'success') => {
+    set({ toast: { message, type } })
+  },
+
+  clearToast: () => {
+    set({ toast: null })
   },
   
   openChat: () => set({ chatOpen: true }),
@@ -252,8 +269,11 @@ const useStore = create((set, get) => ({
         newsTopics: storage.get('news_topics') || defaultNewsTopics,
         activeCategory: storage.get('active_category') || 'all',
         deepseekApiKey: storage.get('deepseek_apikey') || '',
+        toast: { message: 'Configuração importada com sucesso.', type: 'success' },
       })
       applyTheme(get().theme)
+    } else {
+      set({ toast: { message: 'Não foi possível importar a configuração.', type: 'error' } })
     }
     return success
   },
