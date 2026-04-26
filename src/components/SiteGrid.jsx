@@ -16,7 +16,7 @@ import useStore from '../store/useStore'
 import SiteCard from './SiteCard'
 
 export default function SiteGrid() {
-  const { sites, activeCategory, searchQuery, reorderSites } = useStore()
+  const { sites, activeCategory, searchQuery, reorderSites, cardLayout } = useStore()
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -71,7 +71,13 @@ export default function SiteGrid() {
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={filteredSites.map(s => s.id)} strategy={rectSortingStrategy}>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(70px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-x-2 gap-y-6 sm:gap-x-4 sm:gap-y-8 justify-items-center">
+          <div className={
+            cardLayout === 'magazine'
+              ? 'grid grid-cols-[repeat(auto-fill,minmax(75px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(90px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(105px,1fr))] gap-3 sm:gap-4'
+              : cardLayout === 'bento'
+              ? 'grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 sm:gap-4'
+              : 'grid grid-cols-[repeat(auto-fill,minmax(70px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-x-2 gap-y-6 sm:gap-x-4 sm:gap-y-8 justify-items-center'
+          }>
             {filteredSites.map(site => (
               <SiteCard key={site.id} site={site} />
             ))}

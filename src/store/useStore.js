@@ -22,6 +22,9 @@ const useStore = create((set, get) => ({
   
   // Theme
   theme: storage.get('theme') || 'minimal-dark',
+
+  // Card Layout
+  cardLayout: storage.get('card_layout') || 'classic',
   
   // Search
   searchProvider: Math.min(storage.get('search_provider') || 0, searchProviders.length - 1),
@@ -143,6 +146,11 @@ const useStore = create((set, get) => ({
     storage.set('theme', theme)
     applyTheme(theme)
     set({ theme })
+  },
+
+  setCardLayout: (layout) => {
+    storage.set('card_layout', layout)
+    set({ cardLayout: layout })
   },
   
   setSearchProvider: (provider) => {

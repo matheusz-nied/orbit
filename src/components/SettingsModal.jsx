@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react'
 import { 
   X, Palette, Search, Newspaper, FolderOpen, Database, 
-  Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare
+  Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
+  LayoutGrid, Rows, GalleryVerticalEnd
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
@@ -33,6 +34,7 @@ export default function SettingsModal() {
   const { 
     settingsOpen, closeSettings, 
     theme, setTheme,
+    cardLayout, setCardLayout,
     searchProvider, setSearchProvider,
     deepseekApiKey, setDeepseekApiKey,
     newsProvider, setNewsProvider, newsApiKey, setNewsApiKey, newsTopics, setNewsTopics,
@@ -146,6 +148,32 @@ export default function SettingsModal() {
                       }`}
                     >
                       <span className="text-sm font-medium text-text">{t.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card Layout Picker */}
+              <div>
+                <h3 className="text-sm font-medium text-muted mb-3">Layout dos Cards</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { id: 'classic',  label: 'Clássico', Icon: LayoutGrid,         desc: 'Ícones em grade' },
+                    { id: 'bento',    label: 'Bento',    Icon: Rows,               desc: 'Lista horizontal' },
+                    { id: 'magazine', label: 'Magazine', Icon: GalleryVerticalEnd, desc: 'Capas verticais' },
+                  ].map(({ id, label, Icon, desc }) => (
+                    <button
+                      key={id}
+                      onClick={() => setCardLayout(id)}
+                      className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-2 ${
+                        cardLayout === id
+                          ? 'border-accent bg-accent/10'
+                          : 'border-border hover:border-accent/50'
+                      }`}
+                    >
+                      <Icon size={22} className={cardLayout === id ? 'text-accent' : 'text-muted'} />
+                      <span className="text-sm font-medium text-text">{label}</span>
+                      <span className="text-[10px] text-muted">{desc}</span>
                     </button>
                   ))}
                 </div>
