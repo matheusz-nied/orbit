@@ -33,7 +33,7 @@ export default function SettingsModal() {
   const { 
     settingsOpen, closeSettings, 
     theme, setTheme,
-    searchProvider, setSearchProvider,
+    searchProvider, setSearchProvider, openInNewTab, setOpenInNewTab,
     deepseekApiKey, setDeepseekApiKey,
     newsProvider, setNewsProvider, newsApiKey, setNewsApiKey, newsTopics, setNewsTopics,
     categories, addCategory, removeCategory,
@@ -181,6 +181,35 @@ export default function SettingsModal() {
                       </button>
                     )
                   })}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-muted mb-3">Abrir links e pesquisas</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setOpenInNewTab(true)}
+                    className={`p-3 rounded-xl border transition-all text-left ${
+                      openInNewTab
+                        ? 'border-accent bg-accent/10'
+                        : 'border-border hover:border-accent/50'
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-text">Nova aba</span>
+                    <p className="text-xs text-muted mt-1">Pesquisa e clique em site abrem em outra aba.</p>
+                  </button>
+
+                  <button
+                    onClick={() => setOpenInNewTab(false)}
+                    className={`p-3 rounded-xl border transition-all text-left ${
+                      !openInNewTab
+                        ? 'border-accent bg-accent/10'
+                        : 'border-border hover:border-accent/50'
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-text">Mesma aba atual</span>
+                    <p className="text-xs text-muted mt-1">Pesquisa e clique em site substituem a página atual.</p>
+                  </button>
                 </div>
               </div>
             </div>

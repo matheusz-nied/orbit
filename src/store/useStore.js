@@ -26,6 +26,7 @@ const useStore = create((set, get) => ({
   // Search
   searchProvider: Math.min(storage.get('search_provider') || 0, searchProviders.length - 1),
   searchQuery: '',
+  openInNewTab: storage.get('open_in_new_tab') ?? true,
   
   // News
   newsProvider: storage.get('news_provider') || 'rss',
@@ -153,6 +154,11 @@ const useStore = create((set, get) => ({
   setSearchQuery: (query) => {
     set({ searchQuery: query })
   },
+
+  setOpenInNewTab: (openInNewTab) => {
+    storage.set('open_in_new_tab', openInNewTab)
+    set({ openInNewTab })
+  },
   
   cycleSearchProvider: () => {
     const current = get().searchProvider
@@ -240,6 +246,7 @@ const useStore = create((set, get) => ({
         categories: storage.get('categories') || defaultCategories,
         theme: storage.get('theme') || 'minimal-dark',
         searchProvider: storage.get('search_provider') || 0,
+        openInNewTab: storage.get('open_in_new_tab') ?? true,
         newsProvider: storage.get('news_provider') || 'rss',
         newsApiKey: storage.get('news_apikey') || '',
         newsTopics: storage.get('news_topics') || defaultNewsTopics,

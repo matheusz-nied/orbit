@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
+import { openUrl } from '../utils/navigation'
 
 const getAvatarColor = (name) => {
   const colors = [
@@ -28,7 +29,7 @@ const getAvatarColor = (name) => {
 }
 
 export default function SiteCard({ site }) {
-  const { confirmDeleteSite, openAddSite, setEditingSite } = useStore()
+  const { confirmDeleteSite, openAddSite, setEditingSite, openInNewTab } = useStore()
   const [showActions, setShowActions] = useState(false)
   
   const {
@@ -59,7 +60,7 @@ export default function SiteCard({ site }) {
   }
 
   const handleClick = () => {
-    window.open(site.url, '_blank')
+    openUrl(site.url, openInNewTab)
   }
 
   return (
