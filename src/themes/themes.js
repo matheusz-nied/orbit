@@ -21,6 +21,17 @@ export const themes = {
     '--font': "'Inter', system-ui, sans-serif",
     '--star': '0',
   },
+  'premium-dark': {
+    name: 'Premium Dark',
+    '--bg': '#000000',
+    '--card': '#0a0a0a',
+    '--text': '#ffffff',
+    '--accent': '#ffffff',
+    '--muted': '#888888',
+    '--border': '#222222',
+    '--font': "'Inter', system-ui, sans-serif",
+    '--star': '0',
+  },
   'space': {
     name: 'Space',
     '--bg': '#050510',

@@ -335,3 +335,38 @@ input:focus, button:focus, select:focus {
   animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
 }
 
+/* Premium Dark Theme Specific Styles */
+[data-theme="premium-dark"] body {
+  background: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000000 60%);
+  background-attachment: fixed;
+}
+
+[data-theme="premium-dark"] .bg-card, [data-theme="premium-dark"] .group\/card .bg-card\/80 {
+  background: rgba(10, 10, 10, 0.4) !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.03) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="premium-dark"] .group\/card:hover .bg-card\/80 {
+  background: rgba(20, 20, 20, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 20px 50px -10px rgba(0,0,0,1), 0 0 20px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.1) !important;
+  transform: translateY(-4px) scale(1.02) !important;
+}
+
+[data-theme="premium-dark"] input {
+  background: rgba(15, 15, 15, 0.6) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05) !important;
+}
+
+[data-theme="premium-dark"] .text-muted {
+  color: #888888 !important;
+}
+
+[data-theme="premium-dark"] .border-border {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
