@@ -3,7 +3,6 @@ import useStore from '../store/useStore'
 import SiteCardClassic from './SiteCardClassic'
 import SiteCardBento from './SiteCardBento'
 import SiteCardMagazine from './SiteCardMagazine'
-import SiteCardPolaroid from './SiteCardPolaroid'
 import SiteCardTerminal from './SiteCardTerminal'
 import SiteCardOrbital from './SiteCardOrbital'
 
@@ -12,7 +11,6 @@ export default function SiteCard({ site, index }) {
 
   if (cardLayout === 'bento') return <SiteCardBento site={site} />
   if (cardLayout === 'magazine') return <SiteCardMagazine site={site} />
-  if (cardLayout === 'polaroid') return <SiteCardPolaroid site={site} />
   if (cardLayout === 'terminal') return <SiteCardTerminal site={site} index={index} />
   if (cardLayout === 'orbital') return <SiteCardOrbital site={site} />
   return <SiteCardClassic site={site} />

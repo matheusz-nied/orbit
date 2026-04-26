@@ -76,8 +76,6 @@ export default function SiteGrid() {
               ? 'grid grid-cols-[repeat(auto-fill,minmax(75px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(90px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(105px,1fr))] gap-3 sm:gap-4'
               : cardLayout === 'bento'
               ? 'grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 sm:gap-4'
-              : cardLayout === 'polaroid'
-              ? 'grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-5 sm:gap-6 justify-items-center py-4'
               : cardLayout === 'terminal'
               ? 'flex flex-col max-w-4xl mx-auto w-full border border-border/30 rounded-lg overflow-hidden bg-card/20'
               : cardLayout === 'orbital'
