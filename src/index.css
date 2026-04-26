@@ -198,3 +198,140 @@ input:focus, button:focus, select:focus {
   font-weight: 600;
 }
 
+/* macOS Theme Specific Styles */
+[data-theme="macos"] body {
+  background-image: url('https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?auto=format&fit=crop&w=2560&q=80'); /* Monterey Abstract */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+[data-theme="macos"] .group\/card .bg-card\/80 {
+  background: rgba(30, 30, 30, 0.4) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+[data-theme="macos"] .group\/card:hover .bg-card\/80 {
+  transform: scale(1.2) translateY(-10px) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  z-index: 50;
+}
+
+[data-theme="macos"] .bg-card {
+  background: rgba(30, 30, 30, 0.6) !important;
+  backdrop-filter: blur(30px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="macos"] .text-muted {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-weight: 500;
+}
+
+[data-theme="macos"] .text-text, [data-theme="macos"] body {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="macos"] h3 {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="macos"] .modal-backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="macos"] input, [data-theme="macos"] button {
+  border-radius: 8px;
+}
+
+/* Windows 95 Theme Specific Styles */
+[data-theme="win95"] body {
+  background-color: var(--bg);
+  background-image: none;
+}
+
+[data-theme="win95"] .bg-card, [data-theme="win95"] .group\/card .bg-card\/80, [data-theme="win95"] .modal-backdrop > div {
+  background: var(--card) !important;
+  border-radius: 0 !important;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+[data-theme="win95"] button, [data-theme="win95"] input {
+  border-radius: 0 !important;
+}
+
+[data-theme="win95"] button {
+  background: #c0c0c0 !important;
+  border: 2px solid;
+  border-color: #ffffff #808080 #808080 #ffffff !important;
+  color: #000 !important;
+}
+
+[data-theme="win95"] button:active {
+  border-color: #808080 #ffffff #ffffff #808080 !important;
+}
+
+[data-theme="win95"] input {
+  background: #ffffff !important;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080 !important;
+  color: #000 !important;
+}
+
+/* CRT / VHS Retro Theme */
+[data-theme="crt"] body {
+  background-color: var(--bg);
+  background-image: none;
+  text-shadow: 2px 0px 1px rgba(255,0,0,0.5), -2px 0px 1px rgba(0,255,0,0.5);
+}
+
+[data-theme="crt"]::after {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 9999;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+[data-theme="crt"] .bg-card, [data-theme="crt"] .group\/card .bg-card\/80 {
+  background: var(--card) !important;
+  border: 1px solid var(--accent) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 10px var(--accent), inset 0 0 10px var(--accent) !important;
+  backdrop-filter: none !important;
+}
+
+/* Easter Egg Animations */
+@keyframes barrel-roll {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-barrel-roll {
+  animation: barrel-roll 1.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.animate-shake {
+  animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+}
+

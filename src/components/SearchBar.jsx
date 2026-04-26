@@ -3,7 +3,7 @@ import { Search } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 
 export default function SearchBar() {
-  const { searchProvider, searchQuery, setSearchQuery, cycleSearchProvider, openChat, setInitialChatMessage } = useStore()
+  const { searchProvider, searchQuery, setSearchQuery, cycleSearchProvider, openChat, setInitialChatMessage, setTheme } = useStore()
   const [localQuery, setLocalQuery] = useState('')
   const inputRef = useRef(null)
   const debounceRef = useRef(null)
@@ -33,6 +33,27 @@ export default function SearchBar() {
       e.preventDefault()
       cycleSearchProvider()
     } else if (e.key === 'Enter' && localQuery.trim()) {
+      const q = localQuery.trim().toLowerCase()
+      
+      // Easter Eggs
+      if (q === 'do a barrel roll') {
+        document.body.classList.add('animate-barrel-roll')
+        setTimeout(() => document.body.classList.remove('animate-barrel-roll'), 2000)
+        setLocalQuery('')
+        setSearchQuery('')
+        return
+      }
+      
+      if (q === 'sudo rm -rf /') {
+        setTheme('hacking')
+        document.body.classList.add('animate-shake')
+        setTimeout(() => document.body.classList.remove('animate-shake'), 1000)
+        setLocalQuery('')
+        setSearchQuery('')
+        return
+      }
+
+      // Normal Search Behavior
       if (provider.type === 'ai') {
         setInitialChatMessage(localQuery.trim())
         setLocalQuery('')

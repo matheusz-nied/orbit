@@ -76,6 +76,39 @@ export const themes = {
     '--font': "'Inter', system-ui, sans-serif",
     '--star': '0',
   },
+  'macos': {
+    name: 'macOS',
+    '--bg': '#000000',
+    '--card': 'rgba(30, 30, 30, 0.65)',
+    '--text': '#f5f5f7',
+    '--accent': '#0a84ff',
+    '--muted': '#98989d',
+    '--border': 'rgba(255, 255, 255, 0.15)',
+    '--font': "'-apple-system', BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    '--star': '0',
+  },
+  'win95': {
+    name: 'Windows 95',
+    '--bg': '#008080',
+    '--card': '#c0c0c0',
+    '--text': '#000000',
+    '--accent': '#000080',
+    '--muted': '#808080',
+    '--border': '#ffffff',
+    '--font': "'Tahoma', 'MS Sans Serif', sans-serif",
+    '--star': '0',
+  },
+  'crt': {
+    name: 'Retro CRT',
+    '--bg': '#0a0a0a',
+    '--card': '#111111',
+    '--text': '#39ff14',
+    '--accent': '#ff00ff',
+    '--muted': '#008000',
+    '--border': '#333333',
+    '--font': "'JetBrains Mono', monospace",
+    '--star': '0',
+  },
 }
 
 export const applyTheme = (themeName) => {
@@ -88,6 +121,8 @@ export const applyTheme = (themeName) => {
       root.style.setProperty(key, value)
     }
   })
+  
+  root.setAttribute('data-theme', themeName)
 }
 
 export const themeList = Object.keys(themes).map(key => ({

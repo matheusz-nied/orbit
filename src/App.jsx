@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Settings } from 'lucide-react'
 import useStore, { searchProviders } from './store/useStore'
 import { applyTheme } from './themes/themes'
@@ -13,9 +13,26 @@ import AddSiteModal from './components/AddSiteModal'
 import ConfirmModal from './components/ConfirmModal'
 import AIChatModal from './components/AIChatModal'
 import StarCanvas from './components/StarCanvas'
+import { useEasterEggs } from './hooks/useEasterEggs'
 
 export default function App() {
   const { theme, searchProvider, openSettings } = useStore()
+  useEasterEggs()
+  
+  const [hintIndex, setHintIndex] = useState(0)
+  const hints = [
+    "Orbit · Sua página inicial personalizada",
+    "💡 Dica: O que acontece se digitar 'do a barrel roll' na busca?",
+    "⚠️ Aviso: Jamais pesquise por comandos como 'sudo rm -rf /'",
+    "🕹️ Segredo: O clássico código (↑ ↑ ↓ ↓ ← → ← → B A) funciona aqui...",
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHintIndex(prev => (prev + 1) % hints.length)
+    }, 15000) // Troca a cada 15 segundos
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     applyTheme(theme)
@@ -60,8 +77,13 @@ export default function App() {
         </div>
 
         {/* Footer */}
-        <footer className="text-center py-6 text-muted text-sm">
-          <p>Orbit · Sua página inicial personalizada</p>
+        <footer className="relative h-16 py-6 overflow-hidden">
+          <p 
+            key={hintIndex} 
+            className="absolute inset-0 flex items-center justify-center text-center text-muted text-sm animate-fadeIn"
+          >
+            {hints[hintIndex]}
+          </p>
         </footer>
       </div>
 
