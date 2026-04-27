@@ -10,7 +10,10 @@ const categoryLabels = {
 }
 
 export default function CategoryFilter() {
-  const { categories, activeCategory, setActiveCategory, openAddSite } = useStore()
+  const categories = useStore((state) => state.categories)
+  const activeCategory = useStore((state) => state.activeCategory)
+  const setActiveCategory = useStore((state) => state.setActiveCategory)
+  const openAddSite = useStore((state) => state.openAddSite)
 
   const allCategories = ['all', ...categories]
 

@@ -16,7 +16,15 @@ const isValidUrl = (value) => {
 }
 
 export default function AddSiteModal() {
-  const { addSiteOpen, closeAddSite, editingSite, updateSite, addSite, setEditingSite, categories, activeCategory } = useStore()
+  const addSiteOpen = useStore((state) => state.addSiteOpen)
+  const closeAddSite = useStore((state) => state.closeAddSite)
+  const editingSite = useStore((state) => state.editingSite)
+  const updateSite = useStore((state) => state.updateSite)
+  const addSite = useStore((state) => state.addSite)
+  const setEditingSite = useStore((state) => state.setEditingSite)
+  const categories = useStore((state) => state.categories)
+  const activeCategory = useStore((state) => state.activeCategory)
+
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [category, setCategory] = useState('')

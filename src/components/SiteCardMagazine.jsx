@@ -1,22 +1,23 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2, ExternalLink } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
 
+const palettes = [
+    ['#667eea', '#764ba2'],
+    ['#f093fb', '#f5576c'],
+    ['#4facfe', '#00f2fe'],
+    ['#43e97b', '#38f9d7'],
+    ['#fa709a', '#fee140'],
+    ['#a18cd1', '#fbc2eb'],
+    ['#fccb90', '#d57eeb'],
+    ['#a1c4fd', '#c2e9fb'],
+    ['#fd7043', '#ff8a65'],
+]
+
 const getGradientColors = (name) => {
-    const palettes = [
-        ['#667eea', '#764ba2'],
-        ['#f093fb', '#f5576c'],
-        ['#4facfe', '#00f2fe'],
-        ['#43e97b', '#38f9d7'],
-        ['#fa709a', '#fee140'],
-        ['#a18cd1', '#fbc2eb'],
-        ['#fccb90', '#d57eeb'],
-        ['#a1c4fd', '#c2e9fb'],
-        ['#fd7043', '#ff8a65'],
-    ]
     let hash = 0
     for (let i = 0; i < (name?.length || 0); i++) {
         hash = name.charCodeAt(i) + ((hash << 5) - hash)
@@ -24,8 +25,10 @@ const getGradientColors = (name) => {
     return palettes[Math.abs(hash) % palettes.length]
 }
 
-export default function SiteCardMagazine({ site }) {
-    const { confirmDeleteSite, openAddSite, setEditingSite } = useStore()
+function SiteCardMagazine({ site }) {
+    const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+    const openAddSite = useStore((state) => state.openAddSite)
+    const setEditingSite = useStore((state) => state.setEditingSite)
     const [showActions, setShowActions] = useState(false)
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -117,3 +120,5 @@ export default function SiteCardMagazine({ site }) {
         </div>
     )
 }
+
+export default memo(SiteCardMagazine)

@@ -39,16 +39,28 @@ const availableTopics = [
 ]
 
 export default function SettingsModal() {
-  const {
-    settingsOpen, closeSettings,
-    theme, setTheme,
-    cardLayout, setCardLayout,
-    searchProvider, setSearchProvider, openInNewTab, setOpenInNewTab,
-    deepseekApiKey, setDeepseekApiKey,
-    newsApiKey, setNewsApiKey, newsTopics, setNewsTopics,
-    categories, addCategory, removeCategory,
-    exportData, importData, addSites
-  } = useStore()
+  const settingsOpen = useStore((state) => state.settingsOpen)
+  const closeSettings = useStore((state) => state.closeSettings)
+  const theme = useStore((state) => state.theme)
+  const setTheme = useStore((state) => state.setTheme)
+  const cardLayout = useStore((state) => state.cardLayout)
+  const setCardLayout = useStore((state) => state.setCardLayout)
+  const searchProvider = useStore((state) => state.searchProvider)
+  const setSearchProvider = useStore((state) => state.setSearchProvider)
+  const openInNewTab = useStore((state) => state.openInNewTab)
+  const setOpenInNewTab = useStore((state) => state.setOpenInNewTab)
+  const deepseekApiKey = useStore((state) => state.deepseekApiKey)
+  const setDeepseekApiKey = useStore((state) => state.setDeepseekApiKey)
+  const newsApiKey = useStore((state) => state.newsApiKey)
+  const setNewsApiKey = useStore((state) => state.setNewsApiKey)
+  const newsTopics = useStore((state) => state.newsTopics)
+  const setNewsTopics = useStore((state) => state.setNewsTopics)
+  const categories = useStore((state) => state.categories)
+  const addCategory = useStore((state) => state.addCategory)
+  const removeCategory = useStore((state) => state.removeCategory)
+  const exportData = useStore((state) => state.exportData)
+  const importData = useStore((state) => state.importData)
+  const addSites = useStore((state) => state.addSites)
 
   const [activeTab, setActiveTab] = useState('appearance')
   const [newCategory, setNewCategory] = useState('')

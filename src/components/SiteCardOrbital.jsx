@@ -1,20 +1,23 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, memo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
 
+const orbitColors = [
+  '#6366f1', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6',
+  '#06b6d4', '#f97316', '#84cc16', '#ef4444', '#14b8a6',
+]
+
+const floatDelays = [0, 0.5, 1, 1.5, 2, 2.5]
+
 const getOrbitColor = (name) => {
-  const colors = [
-    '#6366f1', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6',
-    '#06b6d4', '#f97316', '#84cc16', '#ef4444', '#14b8a6',
-  ]
   let hash = 0
   for (let i = 0; i < (name?.length || 0); i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
   }
-  return colors[Math.abs(hash) % colors.length]
+  return orbitColors[Math.abs(hash) % orbitColors.length]
 }
 
 const getFloatDelay = (name) => {
@@ -22,12 +25,13 @@ const getFloatDelay = (name) => {
   for (let i = 0; i < (name?.length || 0); i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
   }
-  const delays = [0, 0.5, 1, 1.5, 2, 2.5]
-  return delays[Math.abs(hash) % delays.length]
+  return floatDelays[Math.abs(hash) % floatDelays.length]
 }
 
-export default function SiteCardOrbital({ site }) {
-  const { confirmDeleteSite, openAddSite, setEditingSite } = useStore()
+function SiteCardOrbital({ site }) {
+  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+  const openAddSite = useStore((state) => state.openAddSite)
+  const setEditingSite = useStore((state) => state.setEditingSite)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -144,3 +148,5 @@ export default function SiteCardOrbital({ site }) {
     </div>
   )
 }
+
+export default memo(SiteCardOrbital)

@@ -1,45 +1,54 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import useStore from '../store/useStore'
 
 export default function StarCanvas() {
   const canvasRef = useRef(null)
-  const { theme } = useStore()
+  const { theme } = useStore((state) => state.theme)
   const animationRef = useRef(null)
   const starsRef = useRef([])
+  const isRunningRef = useRef(false)
+
+  const initStars = useCallback((canvas) => {
+    starsRef.current = []
+    const numStars = Math.floor((canvas.width * canvas.height) / 8000)
+
+    for (let i = 0; i < numStars; i++) {
+      starsRef.current.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2 + 0.5,
+        speed: Math.random() * 0.5 + 0.1,
+        opacity: Math.random(),
+        twinkleSpeed: Math.random() * 0.02 + 0.005,
+      })
+    }
+  }, [])
 
   useEffect(() => {
+    // Only setup if space theme
+    if (theme !== 'space') {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
+      }
+      isRunningRef.current = false
+      return
+    }
+
     const canvas = canvasRef.current
     if (!canvas) return
 
     const ctx = canvas.getContext('2d')
-    
+
     const resize = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
-      initStars()
-    }
-
-    const initStars = () => {
-      starsRef.current = []
-      const numStars = Math.floor((canvas.width * canvas.height) / 8000)
-      
-      for (let i = 0; i < numStars; i++) {
-        starsRef.current.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          size: Math.random() * 2 + 0.5,
-          speed: Math.random() * 0.5 + 0.1,
-          opacity: Math.random(),
-          twinkleSpeed: Math.random() * 0.02 + 0.005,
-        })
-      }
+      initStars(canvas)
     }
 
     const animate = () => {
-      if (getComputedStyle(document.documentElement).getPropertyValue('--star').trim() !== '1') {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        return
-      }
+      if (!isRunningRef.current) return
+      if (theme !== 'space') return
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -66,13 +75,18 @@ export default function StarCanvas() {
 
     resize()
     window.addEventListener('resize', resize)
+    isRunningRef.current = true
     animate()
 
     return () => {
+      isRunningRef.current = false
       window.removeEventListener('resize', resize)
-      cancelAnimationFrame(animationRef.current)
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
+      }
     }
-  }, [theme])
+  }, [theme, initStars])
 
   // Only render if space theme
   if (theme !== 'space') return null

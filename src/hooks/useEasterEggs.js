@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import useStore from '../store/useStore'
 
 export function useEasterEggs() {
-  const { setTheme } = useStore()
+  const setTheme = useStore((state) => state.setTheme)
 
   useEffect(() => {
     // Konami Code: Cima Cima Baixo Baixo Esq Dir Esq Dir B A

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { Settings } from 'lucide-react'
 import useStore, { searchProviders } from './store/useStore'
 import { applyTheme } from './themes/themes'
@@ -8,16 +8,23 @@ import SearchBar from './components/SearchBar'
 import CategoryFilter from './components/CategoryFilter'
 import SiteGrid from './components/SiteGrid'
 import NewsFeed from './components/NewsFeed'
-import SettingsModal from './components/SettingsModal'
-import AddSiteModal from './components/AddSiteModal'
-import ConfirmModal from './components/ConfirmModal'
-import AIChatModal from './components/AIChatModal'
 import StarCanvas from './components/StarCanvas'
 import { useEasterEggs } from './hooks/useEasterEggs'
 import Toast from './components/Toast'
 
+const SettingsModal = lazy(() => import('./components/SettingsModal'))
+const AddSiteModal = lazy(() => import('./components/AddSiteModal'))
+const ConfirmModal = lazy(() => import('./components/ConfirmModal'))
+const AIChatModal = lazy(() => import('./components/AIChatModal'))
+
+function ModalFallback() {
+  return null
+}
+
 export default function App() {
-  const { theme, searchProvider, openSettings } = useStore()
+  const theme = useStore((state) => state.theme)
+  const searchProvider = useStore((state) => state.searchProvider)
+  const openSettings = useStore((state) => state.openSettings)
   useEasterEggs()
 
   const [hintIndex, setHintIndex] = useState(0)
@@ -89,10 +96,12 @@ export default function App() {
       </div>
 
       {/* Modals */}
-      <SettingsModal />
-      <AddSiteModal />
-      <ConfirmModal />
-      <AIChatModal />
+      <Suspense fallback={<ModalFallback />}>
+        <SettingsModal />
+        <AddSiteModal />
+        <ConfirmModal />
+        <AIChatModal />
+      </Suspense>
       <Toast />
     </div>
   )

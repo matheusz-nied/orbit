@@ -1,21 +1,24 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, memo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
 
+const floatDelays = [0, 0.5, 1, 1.5, 2, 2.5]
+
 const getFloatDelay = (name) => {
   let hash = 0
   for (let i = 0; i < (name?.length || 0); i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
   }
-  const delays = [0, 0.5, 1, 1.5, 2, 2.5]
-  return delays[Math.abs(hash) % delays.length]
+  return floatDelays[Math.abs(hash) % floatDelays.length]
 }
 
-export default function SiteCardOrbitalGlass({ site }) {
-  const { confirmDeleteSite, openAddSite, setEditingSite } = useStore()
+function SiteCardOrbitalGlass({ site }) {
+  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+  const openAddSite = useStore((state) => state.openAddSite)
+  const setEditingSite = useStore((state) => state.setEditingSite)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -141,3 +144,5 @@ export default function SiteCardOrbitalGlass({ site }) {
     </div>
   )
 }
+
+export default memo(SiteCardOrbitalGlass)

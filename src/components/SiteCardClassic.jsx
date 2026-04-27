@@ -1,31 +1,34 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
 
+const avatarColors = [
+    'from-red-400 to-red-600',
+    'from-blue-400 to-blue-600',
+    'from-green-400 to-green-600',
+    'from-yellow-400 to-yellow-600',
+    'from-purple-400 to-purple-600',
+    'from-pink-400 to-pink-600',
+    'from-indigo-400 to-indigo-600',
+    'from-teal-400 to-teal-600',
+    'from-orange-400 to-orange-600',
+]
+
 const getAvatarColor = (name) => {
-    const colors = [
-        'from-red-400 to-red-600',
-        'from-blue-400 to-blue-600',
-        'from-green-400 to-green-600',
-        'from-yellow-400 to-yellow-600',
-        'from-purple-400 to-purple-600',
-        'from-pink-400 to-pink-600',
-        'from-indigo-400 to-indigo-600',
-        'from-teal-400 to-teal-600',
-        'from-orange-400 to-orange-600',
-    ]
     let hash = 0
     for (let i = 0; i < (name?.length || 0); i++) {
         hash = name.charCodeAt(i) + ((hash << 5) - hash)
     }
-    return colors[Math.abs(hash) % colors.length]
+    return avatarColors[Math.abs(hash) % avatarColors.length]
 }
 
-export default function SiteCardClassic({ site }) {
-    const { confirmDeleteSite, openAddSite, setEditingSite } = useStore()
+function SiteCardClassic({ site }) {
+    const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+    const openAddSite = useStore((state) => state.openAddSite)
+    const setEditingSite = useStore((state) => state.setEditingSite)
     const [showActions, setShowActions] = useState(false)
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -86,3 +89,5 @@ export default function SiteCardClassic({ site }) {
         </div>
     )
 }
+
+export default memo(SiteCardClassic)

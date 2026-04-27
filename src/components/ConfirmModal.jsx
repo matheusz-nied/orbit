@@ -2,7 +2,9 @@ import { X, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 
 export default function ConfirmModal() {
-  const { deleteConfirmId, cancelDeleteSite, removeSite } = useStore()
+  const deleteConfirmId = useStore((state) => state.deleteConfirmId)
+  const cancelDeleteSite = useStore((state) => state.cancelDeleteSite)
+  const removeSite = useStore((state) => state.removeSite)
 
   if (!deleteConfirmId) return null
 

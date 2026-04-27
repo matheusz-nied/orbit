@@ -1,10 +1,20 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { Search, X } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { openUrl } from '../utils/navigation'
 
 export default function SearchBar() {
-  const { searchProvider, searchQuery, setSearchQuery, cycleSearchProvider, openChat, setInitialChatMessage, openInNewTab, setTheme, sites, activeCategory } = useStore()
+  const searchProvider = useStore((state) => state.searchProvider)
+  const searchQuery = useStore((state) => state.searchQuery)
+  const setSearchQuery = useStore((state) => state.setSearchQuery)
+  const cycleSearchProvider = useStore((state) => state.cycleSearchProvider)
+  const openChat = useStore((state) => state.openChat)
+  const setInitialChatMessage = useStore((state) => state.setInitialChatMessage)
+  const openInNewTab = useStore((state) => state.openInNewTab)
+  const setTheme = useStore((state) => state.setTheme)
+  const sites = useStore((state) => state.sites)
+  const activeCategory = useStore((state) => state.activeCategory)
+
   const [localQuery, setLocalQuery] = useState('')
   const inputRef = useRef(null)
   const debounceRef = useRef(null)
@@ -20,17 +30,20 @@ export default function SearchBar() {
   }, [])
 
   const normalizedQuery = localQuery.trim().toLowerCase()
-  const filteredCount = normalizedQuery
-    ? sites.filter(site => {
+
+  const filteredCount = useMemo(() => {
+    if (!normalizedQuery) {
+      return activeCategory === 'all'
+        ? sites.length
+        : sites.filter(site => site.category === activeCategory).length
+    }
+    return sites.filter(site => {
       if (activeCategory !== 'all' && site.category !== activeCategory) {
         return false
       }
-
       return site.name.toLowerCase().includes(normalizedQuery) || site.url.toLowerCase().includes(normalizedQuery)
     }).length
-    : (activeCategory === 'all'
-      ? sites.length
-      : sites.filter(site => site.category === activeCategory).length)
+  }, [normalizedQuery, sites, activeCategory])
 
   const handleChange = (e) => {
     const value = e.target.value

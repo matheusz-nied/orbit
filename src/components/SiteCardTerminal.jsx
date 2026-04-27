@@ -1,9 +1,14 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, memo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2, FileCode } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
+
+const syntaxColors = [
+  '#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa',
+  '#f472b6', '#22d3ee', '#fb923c', '#a3e635', '#e879f9',
+]
 
 const getFileExtension = (name) => {
   const ext = name.toLowerCase().replace(/[^a-z]/g, '').slice(0, 3)
@@ -11,19 +16,17 @@ const getFileExtension = (name) => {
 }
 
 const getSyntaxColor = (name) => {
-  const colors = [
-    '#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa',
-    '#f472b6', '#22d3ee', '#fb923c', '#a3e635', '#e879f9',
-  ]
   let hash = 0
   for (let i = 0; i < (name?.length || 0); i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
   }
-  return colors[Math.abs(hash) % colors.length]
+  return syntaxColors[Math.abs(hash) % syntaxColors.length]
 }
 
-export default function SiteCardTerminal({ site, index }) {
-  const { confirmDeleteSite, openAddSite, setEditingSite } = useStore()
+function SiteCardTerminal({ site, index }) {
+  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+  const openAddSite = useStore((state) => state.openAddSite)
+  const setEditingSite = useStore((state) => state.setEditingSite)
   const [showActions, setShowActions] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -129,3 +132,5 @@ export default function SiteCardTerminal({ site, index }) {
     </div>
   )
 }
+
+export default memo(SiteCardTerminal)

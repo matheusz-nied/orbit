@@ -1,20 +1,21 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, memo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
 
+const waveColors = [
+  '#00f5ff', '#7b2dff', '#ff006e', '#00d4aa', '#ffbe0b',
+  '#3a86ff', '#8338ec', '#06ffa5', '#ff4365', '#00bbf9',
+]
+
 const getWaveColor = (name) => {
-  const colors = [
-    '#00f5ff', '#7b2dff', '#ff006e', '#00d4aa', '#ffbe0b',
-    '#3a86ff', '#8338ec', '#06ffa5', '#ff4365', '#00bbf9',
-  ]
   let hash = 0
   for (let i = 0; i < (name?.length || 0); i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
   }
-  return colors[Math.abs(hash) % colors.length]
+  return waveColors[Math.abs(hash) % waveColors.length]
 }
 
 const getWavePhase = (name) => {
@@ -25,8 +26,10 @@ const getWavePhase = (name) => {
   return Math.abs(hash) % 360
 }
 
-export default function SiteCardWaveParticle({ site }) {
-  const { confirmDeleteSite, openAddSite, setEditingSite } = useStore()
+function SiteCardWaveParticle({ site }) {
+  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+  const openAddSite = useStore((state) => state.openAddSite)
+  const setEditingSite = useStore((state) => state.setEditingSite)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -170,3 +173,5 @@ export default function SiteCardWaveParticle({ site }) {
     </div>
   )
 }
+
+export default memo(SiteCardWaveParticle)

@@ -3,7 +3,8 @@ import { CheckCircle2, AlertCircle, X } from 'lucide-react'
 import useStore from '../store/useStore'
 
 export default function Toast() {
-  const { toast, clearToast } = useStore()
+  const toast = useStore((state) => state.toast)
+  const clearToast = useStore((state) => state.clearToast)
 
   useEffect(() => {
     if (!toast) return undefined

@@ -1,4 +1,5 @@
 // Componente SiteCard — delega para o layout correto via store
+import { memo } from 'react'
 import useStore from '../store/useStore'
 import SiteCardClassic from './SiteCardClassic'
 import SiteCardBento from './SiteCardBento'
@@ -10,8 +11,8 @@ import SiteCardSingularity from './SiteCardSingularity'
 import SiteCardWaveParticle from './SiteCardWaveParticle'
 import SiteCardQuantumSpin from './SiteCardQuantumSpin'
 
-export default function SiteCard({ site, index }) {
-  const { cardLayout } = useStore()
+function SiteCard({ site, index }) {
+  const cardLayout = useStore((state) => state.cardLayout)
 
   if (cardLayout === 'bento') return <SiteCardBento site={site} />
   if (cardLayout === 'magazine') return <SiteCardMagazine site={site} />
@@ -24,3 +25,5 @@ export default function SiteCard({ site, index }) {
 
   return <SiteCardClassic site={site} />
 }
+
+export default memo(SiteCard)

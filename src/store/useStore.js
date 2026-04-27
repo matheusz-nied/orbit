@@ -282,6 +282,11 @@ const useStore = create((set, get) => ({
   confirmDeleteSite: (id) => set({ deleteConfirmId: id }),
   cancelDeleteSite: () => set({ deleteConfirmId: null }),
 
+  // Toast
+  toast: null,
+  setToast: (toast) => set({ toast }),
+  clearToast: () => set({ toast: null }),
+
   // Actions — Data
   exportData: () => storage.exportAll(),
 

@@ -1,41 +1,42 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { X, Send, Trash2, AlertCircle, Loader2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import useStore from '../store/useStore'
 
 export default function AIChatModal() {
-  const { 
-    chatOpen, closeChat, 
-    deepseekApiKey, 
-    chatMessages, addChatMessage, 
-    chatLoading, setChatLoading,
-    clearChat,
-    initialChatMessage, clearInitialChatMessage
-  } = useStore()
-  
+  const chatOpen = useStore((state) => state.chatOpen)
+  const closeChat = useStore((state) => state.closeChat)
+  const deepseekApiKey = useStore((state) => state.deepseekApiKey)
+  const chatMessages = useStore((state) => state.chatMessages)
+  const addChatMessage = useStore((state) => state.addChatMessage)
+  const chatLoading = useStore((state) => state.chatLoading)
+  const setChatLoading = useStore((state) => state.setChatLoading)
+  const clearChat = useStore((state) => state.clearChat)
+  const initialChatMessage = useStore((state) => state.initialChatMessage)
+  const clearInitialChatMessage = useStore((state) => state.clearInitialChatMessage)
+
   const [input, setInput] = useState('')
   const [streamingMessage, setStreamingMessage] = useState('')
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
-  
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [chatMessages, streamingMessage])
-  
+
   useEffect(() => {
     if (chatOpen) {
       inputRef.current?.focus()
-      // Se há mensagem inicial, enviar automaticamente
       if (initialChatMessage) {
         sendInitialMessage(initialChatMessage)
         clearInitialChatMessage()
       }
     }
   }, [chatOpen, initialChatMessage])
-  
-  const sendInitialMessage = async (message) => {
+
+  const sendInitialMessage = useCallback(async (message) => {
     if (!message.trim() || chatLoading) return
-    
+
     if (!deepseekApiKey) {
       addChatMessage({
         role: 'assistant',
@@ -44,18 +45,18 @@ export default function AIChatModal() {
       })
       return
     }
-    
+
     const userMessage = { role: 'user', content: message.trim() }
     addChatMessage(userMessage)
     setChatLoading(true)
     setStreamingMessage('')
-    
+
     try {
       const messages = [userMessage].map(m => ({
         role: m.role,
         content: m.content
       }))
-      
+
       const response = await fetch('https://api.deepseek.com/chat/completions', {
         method: 'POST',
         headers: {
@@ -68,28 +69,28 @@ export default function AIChatModal() {
           stream: true
         })
       })
-      
+
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error.error?.message || 'Erro na API')
       }
-      
+
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let fullContent = ''
-      
+
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        
+
         const chunk = decoder.decode(value)
         const lines = chunk.split('\n')
-        
+
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = line.slice(6)
             if (data === '[DONE]') continue
-            
+
             try {
               const parsed = JSON.parse(data)
               const content = parsed.choices[0]?.delta?.content || ''
@@ -103,7 +104,7 @@ export default function AIChatModal() {
           }
         }
       }
-      
+
       if (fullContent) {
         addChatMessage({
           role: 'assistant',
@@ -120,11 +121,11 @@ export default function AIChatModal() {
       setChatLoading(false)
       setStreamingMessage('')
     }
-  }
-  
-  const sendMessage = async () => {
+  }, [chatLoading, deepseekApiKey, addChatMessage, setChatLoading])
+
+  const sendMessage = useCallback(async () => {
     if (!input.trim() || chatLoading) return
-    
+
     if (!deepseekApiKey) {
       addChatMessage({
         role: 'assistant',
@@ -133,19 +134,19 @@ export default function AIChatModal() {
       })
       return
     }
-    
+
     const userMessage = { role: 'user', content: input.trim() }
     addChatMessage(userMessage)
     setInput('')
     setChatLoading(true)
     setStreamingMessage('')
-    
+
     try {
       const messages = [...chatMessages, userMessage].map(m => ({
         role: m.role,
         content: m.content
       }))
-      
+
       const response = await fetch('https://api.deepseek.com/chat/completions', {
         method: 'POST',
         headers: {
@@ -158,28 +159,28 @@ export default function AIChatModal() {
           stream: true
         })
       })
-      
+
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error.error?.message || 'Erro na API')
       }
-      
+
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let fullContent = ''
-      
+
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        
+
         const chunk = decoder.decode(value)
         const lines = chunk.split('\n')
-        
+
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = line.slice(6)
             if (data === '[DONE]') continue
-            
+
             try {
               const parsed = JSON.parse(data)
               const content = parsed.choices[0]?.delta?.content || ''
@@ -193,7 +194,7 @@ export default function AIChatModal() {
           }
         }
       }
-      
+
       if (fullContent) {
         addChatMessage({
           role: 'assistant',
@@ -210,17 +211,17 @@ export default function AIChatModal() {
       setChatLoading(false)
       setStreamingMessage('')
     }
-  }
-  
+  }, [input, chatLoading, deepseekApiKey, chatMessages, addChatMessage, setChatLoading])
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
     }
   }
-  
+
   if (!chatOpen) return null
-  
+
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop"
