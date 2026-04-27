@@ -397,6 +397,393 @@ input:focus, button:focus, select:focus {
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+/* =========================================================
+   NOVOS TEMAS ASTROFÍSICA / QUÂNTICA — CSS + EASTER EGGS
+   ========================================================= */
+
+/* -------- EVENT HORIZON -------- */
+
+[data-theme="event-horizon"] body {
+  background: radial-gradient(ellipse at center, #1a0a00 0%, #000000 60%);
+  background-attachment: fixed;
+}
+
+/* Easter Egg: anel de horizonte de eventos no centro da tela */
+[data-theme="event-horizon"]::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, transparent 45%, rgba(255,102,0,0.06) 48%, rgba(255,153,51,0.12) 50%, rgba(255,102,0,0.06) 52%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+  animation: accretionPulse 8s ease-in-out infinite;
+}
+
+@keyframes accretionPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+}
+
+/* Easter Egg: spaghettification na seleção de texto */
+[data-theme="event-horizon"] ::selection {
+  background: rgba(255, 102, 0, 0.3);
+  color: #ffcc80;
+  text-shadow: 0 4px 0 rgba(255,102,0,0.5), 0 8px 0 rgba(255,102,0,0.3), 0 12px 0 rgba(255,102,0,0.1);
+}
+
+[data-theme="event-horizon"] .bg-card,
+[data-theme="event-horizon"] .group\/card .bg-card\/80 {
+  background: rgba(0, 0, 0, 0.95) !important;
+  border: 1px solid rgba(255, 102, 0, 0.15) !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="event-horizon"] .group\/card:hover .bg-card\/80 {
+  background: rgba(10, 5, 0, 0.98) !important;
+  border: 1px solid rgba(255, 153, 51, 0.6) !important;
+  box-shadow: 0 0 30px rgba(255, 102, 0, 0.25), 0 0 60px rgba(255, 102, 0, 0.08), inset 0 0 20px rgba(255, 102, 0, 0.05) !important;
+  transform: translateY(-4px) scale(1.03) !important;
+}
+
+[data-theme="event-horizon"] .text-muted {
+  color: #331100 !important;
+}
+
+[data-theme="event-horizon"] .group\/card:hover .text-muted {
+  color: #ff9933 !important;
+}
+
+/* -------- NEBULA -------- */
+
+[data-theme="nebula"] body {
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(120, 20, 180, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(255, 50, 150, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 200, 255, 0.08) 0%, transparent 60%),
+    #0a0014;
+  background-attachment: fixed;
+}
+
+/* Easter Egg: estrelas distantes piscando */
+[data-theme="nebula"]::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1.5px 1.5px at 80% 10%, rgba(0,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 40% 80%, rgba(255,0,255,0.6), transparent),
+    radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 30% 50%, rgba(0,255,255,0.5), transparent),
+    radial-gradient(2px 2px at 90% 90%, rgba(255,100,200,0.6), transparent);
+  background-size: 300px 300px;
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+  animation: nebulaStars 10s ease-in-out infinite alternate;
+}
+
+@keyframes nebulaStars {
+  0% { opacity: 0.4; transform: scale(1); }
+  100% { opacity: 0.9; transform: scale(1.02); }
+}
+
+[data-theme="nebula"] .bg-card,
+[data-theme="nebula"] .group\/card .bg-card\/80 {
+  background: rgba(20, 0, 40, 0.45) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  border: 1px solid rgba(0, 255, 255, 0.15) !important;
+  box-shadow: 0 8px 32px rgba(120, 0, 200, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  transition: all 0.4s ease !important;
+}
+
+[data-theme="nebula"] .group\/card:hover .bg-card\/80 {
+  background: rgba(30, 0, 60, 0.6) !important;
+  border: 1px solid rgba(0, 255, 255, 0.35) !important;
+  box-shadow: 0 12px 40px rgba(120, 0, 200, 0.25), 0 0 20px rgba(0, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-4px) scale(1.02) !important;
+}
+
+[data-theme="nebula"] .text-muted {
+  color: #664466 !important;
+}
+
+[data-theme="nebula"] ::selection {
+  background: rgba(0, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* -------- QUANTUM FOAM -------- */
+
+[data-theme="quantum-foam"] body {
+  background: #030308;
+}
+
+/* Easter Egg: partículas quânticas piscando no fundo */
+[data-theme="quantum-foam"]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 25%, rgba(255,0,255,0.5), transparent),
+    radial-gradient(1px 1px at 65% 15%, rgba(0,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 35% 75%, rgba(255,255,0,0.4), transparent),
+    radial-gradient(1px 1px at 85% 65%, rgba(0,255,0,0.4), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(255,0,0,0.3), transparent),
+    radial-gradient(1px 1px at 25% 85%, rgba(0,100,255,0.4), transparent),
+    radial-gradient(1px 1px at 75% 35%, rgba(255,100,0,0.4), transparent);
+  background-size: 250px 250px;
+  pointer-events: none;
+  z-index: 0;
+  animation: quantumFlicker 0.15s steps(2) infinite;
+}
+
+@keyframes quantumFlicker {
+  0% { opacity: 0.6; }
+  100% { opacity: 0.9; }
+}
+
+/* Easter Egg: chromatic aberration nos headings */
+[data-theme="quantum-foam"] h1,
+[data-theme="quantum-foam"] h2,
+[data-theme="quantum-foam"] h3 {
+  text-shadow: 1px 0 0 rgba(255,0,255,0.3), -1px 0 0 rgba(0,255,255,0.3);
+}
+
+[data-theme="quantum-foam"] .bg-card,
+[data-theme="quantum-foam"] .group\/card .bg-card\/80 {
+  background: rgba(255, 255, 255, 0.02) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: none !important;
+  transition: all 0.2s steps(3) !important;
+}
+
+[data-theme="quantum-foam"] .group\/card:hover .bg-card\/80 {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 0, 255, 0.4) !important;
+  box-shadow:
+    2px 0 0 rgba(255,0,255,0.2),
+    -2px 0 0 rgba(0,255,255,0.2),
+    0 0 20px rgba(255,0,255,0.1) !important;
+}
+
+[data-theme="quantum-foam"] ::selection {
+  background: rgba(255, 0, 255, 0.3);
+  color: #ffffff;
+}
+
+/* -------- DARK MATTER -------- */
+
+[data-theme="dark-matter"] body {
+  background: #020202;
+}
+
+/* Easter Egg: grid de curvatura do espaço-tempo */
+[data-theme="dark-matter"]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(107, 76, 154, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(107, 76, 154, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+}
+
+[data-theme="dark-matter"] .bg-card,
+[data-theme="dark-matter"] .group\/card .bg-card\/80 {
+  background: #020202 !important;
+  border: 1px solid rgba(107, 76, 154, 0.08) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  opacity: 0.3;
+}
+
+/* Easter Egg: lente gravitacional no hover — objeto aparece distorcido pela gravidade */
+[data-theme="dark-matter"] .group\/card:hover .bg-card\/80 {
+  background: rgba(5, 5, 15, 0.95) !important;
+  border: 1px solid rgba(107, 76, 154, 0.4) !important;
+  box-shadow:
+    0 0 40px rgba(107, 76, 154, 0.15),
+    0 0 80px rgba(107, 76, 154, 0.05),
+    inset 0 0 30px rgba(107, 76, 154, 0.05) !important;
+  opacity: 1 !important;
+  transform: translateY(-4px) scale(1.03) !important;
+}
+
+[data-theme="dark-matter"] .text-muted {
+  color: #0f0f1a !important;
+}
+
+[data-theme="dark-matter"] .group\/card:hover .text-muted {
+  color: #6b4c9a !important;
+}
+
+[data-theme="dark-matter"] ::selection {
+  background: rgba(107, 76, 154, 0.3);
+  color: #a080d0;
+}
+
+/* -------- SUPERNOVA -------- */
+
+[data-theme="supernova"] body {
+  background: radial-gradient(ellipse at 50% 30%, #3a1500 0%, #1a0500 40%, #0a0200 80%);
+  background-attachment: fixed;
+}
+
+/* Easter Egg: flash de supernova a cada ~25s */
+[data-theme="supernova"]::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 248, 231, 0.12) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+  animation: supernovaFlash 25s ease-out infinite;
+}
+
+@keyframes supernovaFlash {
+  0%, 92%, 100% { opacity: 0; transform: scale(0.8); }
+  94% { opacity: 1; transform: scale(1.5); }
+  96% { opacity: 0.3; transform: scale(1.2); }
+  98% { opacity: 0.8; transform: scale(1.3); }
+}
+
+[data-theme="supernova"] .bg-card,
+[data-theme="supernova"] .group\/card .bg-card\/80 {
+  background: rgba(255, 200, 100, 0.06) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  border: 1px solid rgba(255, 165, 0, 0.12) !important;
+  box-shadow: 0 8px 30px rgba(255, 140, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-theme="supernova"] .group\/card:hover .bg-card\/80 {
+  background: rgba(255, 220, 150, 0.12) !important;
+  border: 1px solid rgba(255, 215, 0, 0.4) !important;
+  box-shadow:
+    0 12px 40px rgba(255, 140, 0, 0.2),
+    0 0 30px rgba(255, 215, 0, 0.15),
+    0 0 60px rgba(255, 215, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  transform: translateY(-4px) scale(1.02) !important;
+}
+
+[data-theme="supernova"] .text-muted {
+  color: #664422 !important;
+}
+
+[data-theme="supernova"] ::selection {
+  background: rgba(255, 215, 0, 0.3);
+  color: #ffffff;
+}
+
+/* -------- WORMHOLE -------- */
+
+[data-theme="wormhole"] body {
+  background: #001a1a;
+}
+
+/* Easter Egg: túnel espacial rotativo */
+[data-theme="wormhole"]::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 150vmax;
+  height: 150vmax;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(
+    from 0deg,
+    rgba(0, 255, 200, 0.02) 0deg,
+    rgba(0, 200, 255, 0.03) 30deg,
+    rgba(0, 255, 170, 0.02) 60deg,
+    rgba(0, 255, 200, 0.03) 90deg,
+    rgba(0, 200, 255, 0.02) 120deg,
+    rgba(0, 255, 170, 0.03) 150deg,
+    rgba(0, 255, 200, 0.02) 180deg,
+    rgba(0, 200, 255, 0.03) 210deg,
+    rgba(0, 255, 170, 0.02) 240deg,
+    rgba(0, 255, 200, 0.03) 270deg,
+    rgba(0, 200, 255, 0.02) 300deg,
+    rgba(0, 255, 170, 0.03) 330deg,
+    rgba(0, 255, 200, 0.02) 360deg
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: wormholeSpin 60s linear infinite;
+}
+
+@keyframes wormholeSpin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Easter Egg: distorção do espaço-tempo — anéis concêntricos */
+[data-theme="wormhole"]::after {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 255, 200, 0.04);
+  pointer-events: none;
+  z-index: 0;
+  box-shadow:
+    0 0 0 60px rgba(0, 255, 200, 0.02),
+    0 0 0 120px rgba(0, 200, 255, 0.015),
+    0 0 0 180px rgba(0, 255, 170, 0.01);
+  animation: wormholePulse 6s ease-in-out infinite;
+}
+
+@keyframes wormholePulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  50% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
+}
+
+[data-theme="wormhole"] .bg-card,
+[data-theme="wormhole"] .group\/card .bg-card\/80 {
+  background: rgba(0, 40, 40, 0.3) !important;
+  backdrop-filter: blur(12px) saturate(140%) !important;
+  border: 1px solid rgba(0, 255, 200, 0.1) !important;
+  box-shadow: 0 8px 24px rgba(0, 100, 100, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="wormhole"] .group\/card:hover .bg-card\/80 {
+  background: rgba(0, 60, 60, 0.45) !important;
+  border: 1px solid rgba(0, 255, 200, 0.35) !important;
+  box-shadow:
+    0 12px 40px rgba(0, 150, 150, 0.2),
+    0 0 30px rgba(0, 255, 200, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  transform: translateY(-4px) scale(1.02) !important;
+}
+
+[data-theme="wormhole"] .text-muted {
+  color: #004d4d !important;
+}
+
+[data-theme="wormhole"] ::selection {
+  background: rgba(0, 255, 200, 0.25);
+  color: #ffffff;
+}
+
 /* Quantum Physics Layout Animations */
 
 @keyframes morphWave {
