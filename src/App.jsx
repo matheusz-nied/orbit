@@ -16,6 +16,7 @@ const SettingsModal = lazy(() => import('./components/SettingsModal'))
 const AddSiteModal = lazy(() => import('./components/AddSiteModal'))
 const ConfirmModal = lazy(() => import('./components/ConfirmModal'))
 const AIChatModal = lazy(() => import('./components/AIChatModal'))
+const WelcomeModal = lazy(() => import('./components/WelcomeModal'))
 
 function ModalFallback() {
   return null
@@ -97,6 +98,7 @@ export default function App() {
 
       {/* Modals */}
       <Suspense fallback={<ModalFallback />}>
+        <WelcomeModal />
         <SettingsModal />
         <AddSiteModal />
         <ConfirmModal />

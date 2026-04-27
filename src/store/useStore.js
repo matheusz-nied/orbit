@@ -89,6 +89,7 @@ const useStore = create((set, get) => ({
   addSiteOpen: false,
   editingSite: null,
   deleteConfirmId: null,
+  welcomeSeen: storage.get("welcome_seen") || false,
 
   // Actions — Sites
   setSites: (sites) => {
@@ -281,6 +282,11 @@ const useStore = create((set, get) => ({
 
   confirmDeleteSite: (id) => set({ deleteConfirmId: id }),
   cancelDeleteSite: () => set({ deleteConfirmId: null }),
+
+  dismissWelcome: () => {
+    storage.set("welcome_seen", true)
+    set({ welcomeSeen: true })
+  },
 
   // Toast
   toast: null,
