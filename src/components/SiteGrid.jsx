@@ -17,7 +17,7 @@ import useStore from '../store/useStore'
 import SiteCard from './SiteCard'
 
 export default function SiteGrid() {
-  const { sites, activeCategory, searchQuery, reorderSites, cardLayout } = useStore()
+  const { sites, activeCategory, searchQuery, setSearchQuery, setActiveCategory, reorderSites, openAddSite, cardLayout } = useStore()
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

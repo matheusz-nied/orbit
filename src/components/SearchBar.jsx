@@ -4,7 +4,7 @@ import useStore, { searchProviders } from '../store/useStore'
 import { openUrl } from '../utils/navigation'
 
 export default function SearchBar() {
-  const { searchProvider, searchQuery, setSearchQuery, cycleSearchProvider, openChat, setInitialChatMessage, openInNewTab, sites, activeCategory } = useStore()
+  const { searchProvider, searchQuery, setSearchQuery, cycleSearchProvider, openChat, setInitialChatMessage, openInNewTab, setTheme, sites, activeCategory } = useStore()
   const [localQuery, setLocalQuery] = useState('')
   const inputRef = useRef(null)
   const debounceRef = useRef(null)
