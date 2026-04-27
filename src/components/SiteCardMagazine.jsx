@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2, ExternalLink } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
+import { openUrl } from '../utils/navigation'
 
 const palettes = [
     ['#667eea', '#764ba2'],
@@ -29,6 +30,7 @@ function SiteCardMagazine({ site }) {
     const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
     const openAddSite = useStore((state) => state.openAddSite)
     const setEditingSite = useStore((state) => state.setEditingSite)
+    const openInNewTab = useStore((state) => state.openInNewTab)
     const [showActions, setShowActions] = useState(false)
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -42,7 +44,7 @@ function SiteCardMagazine({ site }) {
 
     const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
     const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-    const handleClick = (e) => { if (e.target.closest('button')) return; window.open(site.url, '_blank') }
+    const handleClick = (e) => { if (e.target.closest('button')) return; openUrl(site.url, openInNewTab) }
 
     const [colors] = useState(() => getGradientColors(site.name))
 

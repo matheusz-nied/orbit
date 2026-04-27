@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
+import { openUrl } from '../utils/navigation'
 
 const spinColors = [
   '#ff2a6d', '#05d9e8', '#d1f7ff', '#7700ff', '#00ff9f',
@@ -33,9 +34,10 @@ const getSpinParams = (name) => {
 }
 
 function SiteCardQuantumSpin({ site }) {
-  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
-  const openAddSite = useStore((state) => state.openAddSite)
-  const setEditingSite = useStore((state) => state.setEditingSite)
+    const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+    const openAddSite = useStore((state) => state.openAddSite)
+    const setEditingSite = useStore((state) => state.setEditingSite)
+    const openInNewTab = useStore((state) => state.openInNewTab)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -49,7 +51,7 @@ function SiteCardQuantumSpin({ site }) {
 
   const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-  const handleClick = () => window.open(site.url, '_blank')
+    const handleClick = () => openUrl(site.url, openInNewTab)
 
   const spinColor = useMemo(() => getSpinColor(site.name), [site.name])
   const { ax1, ax2, dir1, dir2, spd1, spd2 } = useMemo(() => getSpinParams(site.name), [site.name])

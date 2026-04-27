@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
+import { openUrl } from '../utils/navigation'
 
 const waveColors = [
   '#00f5ff', '#7b2dff', '#ff006e', '#00d4aa', '#ffbe0b',
@@ -27,9 +28,10 @@ const getWavePhase = (name) => {
 }
 
 function SiteCardWaveParticle({ site }) {
-  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
-  const openAddSite = useStore((state) => state.openAddSite)
-  const setEditingSite = useStore((state) => state.setEditingSite)
+    const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+    const openAddSite = useStore((state) => state.openAddSite)
+    const setEditingSite = useStore((state) => state.setEditingSite)
+    const openInNewTab = useStore((state) => state.openInNewTab)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -43,7 +45,7 @@ function SiteCardWaveParticle({ site }) {
 
   const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-  const handleClick = () => window.open(site.url, '_blank')
+    const handleClick = () => openUrl(site.url, openInNewTab)
 
   const waveColor = useMemo(() => getWaveColor(site.name), [site.name])
   const phase = useMemo(() => getWavePhase(site.name), [site.name])

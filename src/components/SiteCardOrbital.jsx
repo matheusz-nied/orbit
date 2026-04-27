@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
+import { openUrl } from '../utils/navigation'
 
 const orbitColors = [
   '#6366f1', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6',
@@ -29,9 +30,10 @@ const getFloatDelay = (name) => {
 }
 
 function SiteCardOrbital({ site }) {
-  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
-  const openAddSite = useStore((state) => state.openAddSite)
-  const setEditingSite = useStore((state) => state.setEditingSite)
+    const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+    const openAddSite = useStore((state) => state.openAddSite)
+    const setEditingSite = useStore((state) => state.setEditingSite)
+    const openInNewTab = useStore((state) => state.openInNewTab)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -45,7 +47,7 @@ function SiteCardOrbital({ site }) {
 
   const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-  const handleClick = () => window.open(site.url, '_blank')
+    const handleClick = () => openUrl(site.url, openInNewTab)
 
   const orbitColor = useMemo(() => getOrbitColor(site.name), [site.name])
   const floatDelay = useMemo(() => getFloatDelay(site.name), [site.name])

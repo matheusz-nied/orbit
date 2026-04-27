@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2, FileCode } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
+import { openUrl } from '../utils/navigation'
 
 const syntaxColors = [
   '#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa',
@@ -24,9 +25,10 @@ const getSyntaxColor = (name) => {
 }
 
 function SiteCardTerminal({ site, index }) {
-  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
-  const openAddSite = useStore((state) => state.openAddSite)
-  const setEditingSite = useStore((state) => state.setEditingSite)
+    const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+    const openAddSite = useStore((state) => state.openAddSite)
+    const setEditingSite = useStore((state) => state.setEditingSite)
+    const openInNewTab = useStore((state) => state.openInNewTab)
   const [showActions, setShowActions] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -41,7 +43,7 @@ function SiteCardTerminal({ site, index }) {
 
   const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-  const handleClick = (e) => { if (e.target.closest('button')) return; window.open(site.url, '_blank') }
+    const handleClick = (e) => { if (e.target.closest('button')) return; openUrl(site.url, openInNewTab) }
 
   const displayUrl = useMemo(() => {
     try { return new URL(site.url).hostname.replace('www.', '') } catch { return site.url }

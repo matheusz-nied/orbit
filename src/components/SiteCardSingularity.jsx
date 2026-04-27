@@ -4,6 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
+import { openUrl } from '../utils/navigation'
 
 const accretionPalettes = [
   ['#ff6b35', '#f7931e', '#ffd23f'], // laranja/dourado
@@ -21,9 +22,10 @@ const getAccretionPalette = (name) => {
 }
 
 function SiteCardSingularity({ site }) {
-  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
-  const openAddSite = useStore((state) => state.openAddSite)
-  const setEditingSite = useStore((state) => state.setEditingSite)
+    const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+    const openAddSite = useStore((state) => state.openAddSite)
+    const setEditingSite = useStore((state) => state.setEditingSite)
+    const openInNewTab = useStore((state) => state.openInNewTab)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -37,7 +39,7 @@ function SiteCardSingularity({ site }) {
 
   const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-  const handleClick = () => window.open(site.url, '_blank')
+    const handleClick = () => openUrl(site.url, openInNewTab)
 
   const [c1, c2, c3] = useMemo(() => getAccretionPalette(site.name), [site.name])
 
