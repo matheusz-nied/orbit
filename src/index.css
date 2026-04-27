@@ -276,43 +276,6 @@ input:focus, button:focus, select:focus {
   border-radius: 8px;
 }
 
-/* Windows 95 Theme Specific Styles */
-[data-theme="win95"] body {
-  background-color: var(--bg);
-  background-image: none;
-}
-
-[data-theme="win95"] .bg-card, [data-theme="win95"] .group\/card .bg-card\/80, [data-theme="win95"] .modal-backdrop > div {
-  background: var(--card) !important;
-  border-radius: 0 !important;
-  border: 2px solid;
-  border-color: #ffffff #808080 #808080 #ffffff !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-
-[data-theme="win95"] button, [data-theme="win95"] input {
-  border-radius: 0 !important;
-}
-
-[data-theme="win95"] button {
-  background: #c0c0c0 !important;
-  border: 2px solid;
-  border-color: #ffffff #808080 #808080 #ffffff !important;
-  color: #000 !important;
-}
-
-[data-theme="win95"] button:active {
-  border-color: #808080 #ffffff #ffffff #808080 !important;
-}
-
-[data-theme="win95"] input {
-  background: #ffffff !important;
-  border: 2px solid;
-  border-color: #808080 #ffffff #ffffff #808080 !important;
-  color: #000 !important;
-}
-
 /* CRT / VHS Retro Theme */
 [data-theme="crt"] body {
   background-color: var(--bg);
@@ -453,11 +416,11 @@ input:focus, button:focus, select:focus {
 }
 
 [data-theme="event-horizon"] .text-muted {
-  color: #331100 !important;
+  color: #cc8855 !important;
 }
 
 [data-theme="event-horizon"] .group\/card:hover .text-muted {
-  color: #ff9933 !important;
+  color: #ffcc99 !important;
 }
 
 /* -------- NEBULA -------- */
@@ -520,120 +483,73 @@ input:focus, button:focus, select:focus {
   color: #ffffff;
 }
 
-/* -------- QUANTUM FOAM -------- */
-
-[data-theme="quantum-foam"] body {
-  background: #030308;
-}
-
-/* Easter Egg: partículas quânticas piscando no fundo */
-[data-theme="quantum-foam"]::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    radial-gradient(1px 1px at 15% 25%, rgba(255,0,255,0.5), transparent),
-    radial-gradient(1px 1px at 65% 15%, rgba(0,255,255,0.5), transparent),
-    radial-gradient(1px 1px at 35% 75%, rgba(255,255,0,0.4), transparent),
-    radial-gradient(1px 1px at 85% 65%, rgba(0,255,0,0.4), transparent),
-    radial-gradient(1px 1px at 50% 50%, rgba(255,0,0,0.3), transparent),
-    radial-gradient(1px 1px at 25% 85%, rgba(0,100,255,0.4), transparent),
-    radial-gradient(1px 1px at 75% 35%, rgba(255,100,0,0.4), transparent);
-  background-size: 250px 250px;
-  pointer-events: none;
-  z-index: 0;
-  animation: quantumFlicker 0.15s steps(2) infinite;
-}
-
-@keyframes quantumFlicker {
-  0% { opacity: 0.6; }
-  100% { opacity: 0.9; }
-}
-
-/* Easter Egg: chromatic aberration nos headings */
-[data-theme="quantum-foam"] h1,
-[data-theme="quantum-foam"] h2,
-[data-theme="quantum-foam"] h3 {
-  text-shadow: 1px 0 0 rgba(255,0,255,0.3), -1px 0 0 rgba(0,255,255,0.3);
-}
-
-[data-theme="quantum-foam"] .bg-card,
-[data-theme="quantum-foam"] .group\/card .bg-card\/80 {
-  background: rgba(255, 255, 255, 0.02) !important;
-  backdrop-filter: blur(8px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
-  box-shadow: none !important;
-  transition: all 0.2s steps(3) !important;
-}
-
-[data-theme="quantum-foam"] .group\/card:hover .bg-card\/80 {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 0, 255, 0.4) !important;
-  box-shadow:
-    2px 0 0 rgba(255,0,255,0.2),
-    -2px 0 0 rgba(0,255,255,0.2),
-    0 0 20px rgba(255,0,255,0.1) !important;
-}
-
-[data-theme="quantum-foam"] ::selection {
-  background: rgba(255, 0, 255, 0.3);
-  color: #ffffff;
-}
-
 /* -------- DARK MATTER -------- */
 
 [data-theme="dark-matter"] body {
-  background: #020202;
+  background: #000000;
+  cursor: none;
 }
 
-/* Easter Egg: grid de curvatura do espaço-tempo */
+/* Central dark matter mass glow */
 [data-theme="dark-matter"]::before {
   content: '';
   position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(107, 76, 154, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(107, 76, 154, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 55%);
   pointer-events: none;
   z-index: 0;
-  mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+  animation: darkMatterBreath 8s ease-in-out infinite;
+}
+
+@keyframes darkMatterBreath {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.8; }
 }
 
 [data-theme="dark-matter"] .bg-card,
 [data-theme="dark-matter"] .group\/card .bg-card\/80 {
-  background: #020202 !important;
-  border: 1px solid rgba(107, 76, 154, 0.08) !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  opacity: 0.3;
+  background: rgba(10, 10, 10, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(12px) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-/* Easter Egg: lente gravitacional no hover — objeto aparece distorcido pela gravidade */
+/* Light bending on hover */
 [data-theme="dark-matter"] .group\/card:hover .bg-card\/80 {
-  background: rgba(5, 5, 15, 0.95) !important;
-  border: 1px solid rgba(107, 76, 154, 0.4) !important;
+  background: rgba(20, 20, 20, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
   box-shadow:
-    0 0 40px rgba(107, 76, 154, 0.15),
-    0 0 80px rgba(107, 76, 154, 0.05),
-    inset 0 0 30px rgba(107, 76, 154, 0.05) !important;
-  opacity: 1 !important;
+    0 0 20px rgba(255, 255, 255, 0.05),
+    0 0 40px rgba(255, 255, 255, 0.03),
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
   transform: translateY(-4px) scale(1.03) !important;
 }
 
 [data-theme="dark-matter"] .text-muted {
-  color: #0f0f1a !important;
+  color: #555555 !important;
 }
 
 [data-theme="dark-matter"] .group\/card:hover .text-muted {
-  color: #6b4c9a !important;
+  color: #cccccc !important;
 }
 
 [data-theme="dark-matter"] ::selection {
-  background: rgba(107, 76, 154, 0.3);
-  color: #a080d0;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+/* Cursor glow on interactive elements */
+[data-theme="dark-matter"] button:hover,
+[data-theme="dark-matter"] input:hover,
+[data-theme="dark-matter"] a:hover {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 }
 
 /* -------- SUPERNOVA -------- */
@@ -776,7 +692,11 @@ input:focus, button:focus, select:focus {
 }
 
 [data-theme="wormhole"] .text-muted {
-  color: #004d4d !important;
+  color: #00b894 !important;
+}
+
+[data-theme="wormhole"] .group\/card:hover .text-muted {
+  color: #e6fffa !important;
 }
 
 [data-theme="wormhole"] ::selection {
