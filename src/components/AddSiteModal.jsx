@@ -16,7 +16,7 @@ const isValidUrl = (value) => {
 }
 
 export default function AddSiteModal() {
-  const { addSiteOpen, closeAddSite, editingSite, updateSite, addSite, setEditingSite, categories } = useStore()
+  const { addSiteOpen, closeAddSite, editingSite, updateSite, addSite, setEditingSite, categories, activeCategory } = useStore()
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [category, setCategory] = useState('')
@@ -30,10 +30,10 @@ export default function AddSiteModal() {
     } else {
       setName('')
       setUrl('')
-      setCategory(categories[0] || '')
+      setCategory(activeCategory !== 'all' ? activeCategory : (categories[0] || ''))
     }
     setUrlTouched(false)
-  }, [editingSite, addSiteOpen, categories])
+  }, [editingSite, addSiteOpen, categories, activeCategory])
 
   const handleSubmit = (e) => {
     e.preventDefault()
