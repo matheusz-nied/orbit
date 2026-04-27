@@ -2,52 +2,17 @@ import { useEffect, useState } from 'react'
 import { Newspaper, ExternalLink, RefreshCw, AlertCircle } from 'lucide-react'
 import useStore from '../store/useStore'
 
-const rssFeeds = {
-  technology: 'https://feeds.feedburner.com/TechCrunch',
-  science: 'https://www.sciencedaily.com/rss/all.xml',
-  entertainment: 'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml',
-  business: 'https://feeds.bbci.co.uk/news/business/rss.xml',
-  health: 'https://feeds.bbci.co.uk/news/health/rss.xml',
-  sports: 'https://feeds.bbci.co.uk/sport/rss.xml',
-}
-
-const gnewsTopics = {
-  technology: 'technology',
-  science: 'science',
-  entertainment: 'entertainment',
-  business: 'business',
-  health: 'health',
-  sports: 'sports',
-}
-
-const topicLabels = {
-  technology: 'Tecnologia',
-  science: 'Ciência',
-  entertainment: 'Entretenimento',
-  business: 'Negócios',
-  health: 'Saúde',
-  sports: 'Esportes',
-  relevant: 'Relevantes',
-  recent: 'Recentes',
-}
-
 export default function NewsFeed() {
-  const { newsProvider, newsApiKey, newsTopics, setNewsTopics, newsItems, setNewsItems, newsLoading, setNewsLoading } = useStore()
+  const { newsTopics, setNewsTopics, newsItems, setNewsItems, newsLoading, setNewsLoading } = useStore()
   const [error, setError] = useState(null)
-  const activeTopic = newsTopics[0] || (newsProvider === 'tabnews' ? 'relevant' : 'technology')
+  const activeTopic = newsTopics[0] || 'relevant'
 
   const fetchNews = async () => {
     setNewsLoading(true)
     setError(null)
 
     try {
-      if (newsProvider === 'tabnews') {
-        await fetchFromTabNews()
-      } else if (newsProvider === 'gnews' && newsApiKey) {
-        await fetchFromGNews()
-      } else {
-        await fetchFromRSS()
-      }
+      await fetchFromTabNews()
     } catch (err) {
       setError('Falha ao carregar notícias')
       console.error(err)
@@ -59,14 +24,14 @@ export default function NewsFeed() {
   const fetchFromTabNews = async () => {
     const strategy = activeTopic === 'recent' ? 'new' : 'relevant'
     const url = `https://www.tabnews.com.br/api/v1/contents?strategy=${strategy}&per_page=100`
-    
+
     const response = await fetch(url)
     const data = await response.json()
-    
+
     if (Array.isArray(data)) {
       // Filtra para trazer apenas posts principais (não comentários)
       const postsOnly = data.filter(item => item.parent_id === null)
-      
+
       setNewsItems(postsOnly.slice(0, 30).map(item => ({
         title: item.title,
         url: `https://www.tabnews.com.br/${item.owner_username}/${item.slug}`,
@@ -76,48 +41,12 @@ export default function NewsFeed() {
     }
   }
 
-  const fetchFromGNews = async () => {
-    const topic = gnewsTopics[activeTopic] || 'technology'
-    const url = `https://gnews.io/api/v4/top-headlines?topic=${topic}&lang=pt&token=${newsApiKey}&max=5`
-    
-    const response = await fetch(url)
-    const data = await response.json()
-    
-    if (data.articles) {
-      setNewsItems(data.articles.map(article => ({
-        title: article.title,
-        url: article.url,
-        source: article.source.name,
-        publishedAt: article.publishedAt,
-      })))
-    }
-  }
-
-  const fetchFromRSS = async () => {
-    const topic = activeTopic
-    const feedUrl = rssFeeds[topic] || rssFeeds.technology
-    
-    const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`
-    
-    const response = await fetch(url)
-    const data = await response.json()
-    
-    if (data.items) {
-      setNewsItems(data.items.slice(0, 5).map(item => ({
-        title: item.title,
-        url: item.link,
-        source: item.author || new URL(feedUrl).hostname,
-        publishedAt: item.pubDate,
-      })))
-    }
-  }
-
   useEffect(() => {
     fetchNews()
     // Refresh every 5 minutes
     const interval = setInterval(fetchNews, 5 * 60 * 1000)
     return () => clearInterval(interval)
-  }, [newsProvider, newsApiKey, activeTopic])
+  }, [activeTopic])
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)
@@ -129,37 +58,31 @@ export default function NewsFeed() {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-text flex items-center gap-2">
           <Newspaper size={20} />
-          Notícias
+          TabNews
         </h2>
         <div className="flex items-center gap-3">
-          {newsProvider === 'tabnews' ? (
-            <div className="flex bg-card border border-border rounded-lg p-0.5">
-              <button
-                onClick={() => setNewsTopics(['relevant'])}
-                className={`px-3 py-1 text-xs rounded-md transition-all ${
-                  activeTopic === 'relevant' 
-                    ? 'bg-accent text-accent-foreground shadow-sm' 
-                    : 'text-muted hover:text-text'
-                }`}
-              >
-                Relevantes
-              </button>
-              <button
-                onClick={() => setNewsTopics(['recent'])}
-                className={`px-3 py-1 text-xs rounded-md transition-all ${
-                  activeTopic === 'recent' 
-                    ? 'bg-accent text-accent-foreground shadow-sm' 
-                    : 'text-muted hover:text-text'
-                }`}
-              >
-                Recentes
-              </button>
-            </div>
-          ) : (
-            <span className="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-card border border-border text-xs text-muted">
-              {topicLabels[activeTopic] || 'Tecnologia'}
-            </span>
-          )}
+          <div className="flex bg-card border border-border rounded-lg p-0.5">
+            <button
+              onClick={() => setNewsTopics(['relevant'])}
+              className={`px-3 py-1 text-xs rounded-md transition-all ${
+                activeTopic === 'relevant'
+                  ? 'bg-accent text-accent-foreground shadow-sm'
+                  : 'text-muted hover:text-text'
+              }`}
+            >
+              Relevantes
+            </button>
+            <button
+              onClick={() => setNewsTopics(['recent'])}
+              className={`px-3 py-1 text-xs rounded-md transition-all ${
+                activeTopic === 'recent'
+                  ? 'bg-accent text-accent-foreground shadow-sm'
+                  : 'text-muted hover:text-text'
+              }`}
+            >
+              Recentes
+            </button>
+          </div>
           <button
             onClick={fetchNews}
             disabled={newsLoading}

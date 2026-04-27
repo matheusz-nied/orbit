@@ -29,12 +29,6 @@ const tabs = [
   { id: 'data', label: 'Dados', icon: Database },
 ]
 
-const newsProviders = [
-  { id: 'tabnews', name: 'TabNews (Padrão)', requiresKey: false },
-  { id: 'rss', name: 'RSS (Gratuito)', requiresKey: false },
-  { id: 'gnews', name: 'GNews API', requiresKey: true },
-]
-
 const availableTopics = [
   { id: 'technology', label: 'Tecnologia' },
   { id: 'science', label: 'Ciência' },
@@ -51,7 +45,7 @@ export default function SettingsModal() {
     cardLayout, setCardLayout,
     searchProvider, setSearchProvider, openInNewTab, setOpenInNewTab,
     deepseekApiKey, setDeepseekApiKey,
-    newsProvider, setNewsProvider, newsApiKey, setNewsApiKey, newsTopics, setNewsTopics,
+    newsApiKey, setNewsApiKey, newsTopics, setNewsTopics,
     categories, addCategory, removeCategory,
     exportData, importData, addSites
   } = useStore()
@@ -338,65 +332,37 @@ export default function SettingsModal() {
           {/* News Tab */}
           {activeTab === 'news' && (
             <div className="space-y-6">
+              <div className="p-4 bg-bg rounded-lg border border-border">
+                <h3 className="text-sm font-medium text-text mb-2">Provedor Atual</h3>
+                <p className="text-sm text-muted">
+                  O feed de notícias usa o <span className="text-accent font-medium">TabNews</span> como fonte única.
+                </p>
+              </div>
+
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Provedor de Notícias</h3>
-                <div className="space-y-3">
-                  {newsProviders.map(provider => (
+                <h3 className="text-sm font-medium text-muted mb-3">Ordenação do Feed</h3>
+                <p className="text-xs text-muted mb-3">
+                  Escolha como os posts do TabNews são ordenados.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { id: 'relevant', label: 'Relevantes' },
+                    { id: 'recent', label: 'Recentes' },
+                  ].map(topic => (
                     <button
-                      key={provider.id}
-                      onClick={() => setNewsProvider(provider.id)}
-                      className={`w-full p-3 rounded-xl border transition-all text-left ${newsProvider === provider.id
-                          ? 'border-accent bg-accent/10'
-                          : 'border-border hover:border-accent/50'
-                        }`}
+                      key={topic.id}
+                      onClick={() => selectTopic(topic.id)}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                        newsTopics.includes(topic.id)
+                          ? 'bg-accent text-bg'
+                          : 'bg-bg border border-border text-muted hover:text-text'
+                      }`}
                     >
-                      <span className="text-sm font-medium text-text">{provider.name}</span>
-                      {provider.requiresKey && (
-                        <span className="text-xs text-muted ml-2">(requer API key)</span>
-                      )}
+                      {topic.label}
                     </button>
                   ))}
                 </div>
               </div>
-
-              {newsProvider === 'gnews' && (
-                <div>
-                  <h3 className="text-sm font-medium text-muted mb-3">API Key do GNews</h3>
-                  <input
-                    type="text"
-                    value={newsApiKey}
-                    onChange={e => setNewsApiKey(e.target.value)}
-                    placeholder="Cole sua API key aqui..."
-                    className="w-full px-4 py-3 bg-bg border border-border rounded-lg text-text placeholder-muted focus:border-accent transition-colors"
-                  />
-                  <p className="text-xs text-muted mt-2">
-                    Obtenha uma chave gratuita em <a href="https://gnews.io" target="_blank" rel="noopener" className="text-accent hover:underline">gnews.io</a>
-                  </p>
-                </div>
-              )}
-
-              {newsProvider !== 'tabnews' && (
-                <div>
-                  <h3 className="text-sm font-medium text-muted mb-3">Tópicos de Interesse</h3>
-                  <p className="text-xs text-muted mb-3">
-                    Escolha um tópico principal para o feed. O Orbit usa um tópico por vez para manter os resultados consistentes.
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {availableTopics.map(topic => (
-                      <button
-                        key={topic.id}
-                        onClick={() => selectTopic(topic.id)}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${newsTopics.includes(topic.id)
-                            ? 'bg-accent text-bg'
-                            : 'bg-bg border border-border text-muted hover:text-text'
-                          }`}
-                      >
-                        {topic.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           )}
 

@@ -60,8 +60,15 @@ const useStore = create((set, get) => ({
   ),
   searchQuery: "",
 
-  // News
-  newsProvider: storage.get("news_provider") || "tabnews",
+  // News (fallback: provedores legados rss/gnews são resetados para tabnews)
+  newsProvider: (() => {
+    const saved = storage.get("news_provider")
+    if (saved === "rss" || saved === "gnews") {
+      storage.set("news_provider", "tabnews")
+      return "tabnews"
+    }
+    return saved || "tabnews"
+  })(),
   newsApiKey: storage.get("news_apikey") || "",
   newsTopics: storage.get("news_topics") || defaultNewsTopics,
   newsItems: [],
@@ -287,7 +294,14 @@ const useStore = create((set, get) => ({
         theme: storage.get("theme") || "minimal-dark",
         cardLayout: storage.get("card_layout") || "classic",
         searchProvider: storage.get("search_provider") || 0,
-        newsProvider: storage.get("news_provider") || "rss",
+        newsProvider: (() => {
+          const saved = storage.get("news_provider")
+          if (saved === "rss" || saved === "gnews") {
+            storage.set("news_provider", "tabnews")
+            return "tabnews"
+          }
+          return saved || "tabnews"
+        })(),
         newsApiKey: storage.get("news_apikey") || "",
         newsTopics: storage.get("news_topics") || defaultNewsTopics,
         activeCategory: "all",
