@@ -101,6 +101,19 @@ const useStore = create((set, get) => ({
     set({ sites: updatedSites });
   },
 
+  addSites: (newSites) => {
+    const sites = get().sites;
+    const timestamp = Date.now();
+    const sitesToAdd = newSites.map((site, index) => ({
+      ...site,
+      id: `${timestamp}-${index}`,
+      order: sites.length + index,
+    }));
+    const updatedSites = [...sites, ...sitesToAdd];
+    storage.set("sites", updatedSites);
+    set({ sites: updatedSites });
+  },
+
   updateSite: (id, updates) => {
     const sites = get().sites.map((s) =>
       s.id === id ? { ...s, ...updates } : s,

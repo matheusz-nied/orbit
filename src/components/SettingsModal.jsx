@@ -3,10 +3,22 @@ import {
   X, Palette, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
   LayoutGrid, Rows, GalleryVerticalEnd, Terminal, Sparkles, Gem,
-  CircleDot, Waves, Atom
+  CircleDot, Waves, Atom, ListPlus
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
+
+const isValidUrl = (value) => {
+  try {
+    const candidate = value.startsWith('http://') || value.startsWith('https://')
+      ? value
+      : `https://${value}`
+    new URL(candidate)
+    return true
+  } catch {
+    return false
+  }
+}
 
 const tabs = [
   { id: 'appearance', label: 'Tema', icon: Palette },
@@ -40,12 +52,15 @@ export default function SettingsModal() {
     deepseekApiKey, setDeepseekApiKey,
     newsProvider, setNewsProvider, newsApiKey, setNewsApiKey, newsTopics, setNewsTopics,
     categories, addCategory, removeCategory,
-    exportData, importData
+    exportData, importData, addSites
   } = useStore()
 
   const [activeTab, setActiveTab] = useState('appearance')
   const [newCategory, setNewCategory] = useState('')
   const [importStatus, setImportStatus] = useState(null)
+  const [batchUrls, setBatchUrls] = useState('')
+  const [batchCategory, setBatchCategory] = useState('')
+  const [batchStatus, setBatchStatus] = useState(null)
   const fileInputRef = useRef(null)
 
   const handleAddCategory = () => {
@@ -83,6 +98,47 @@ export default function SettingsModal() {
       }
     }
     reader.readAsText(file)
+  }
+
+  const handleBatchImport = () => {
+    if (!batchUrls.trim()) return
+
+    const lines = batchUrls.split('\n').map(l => l.trim()).filter(l => l)
+    const newSites = []
+
+    for (const line of lines) {
+      if (!isValidUrl(line)) continue
+
+      let finalUrl = line
+      if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+        finalUrl = 'https://' + finalUrl
+      }
+
+      let name = finalUrl
+      try {
+        const hostname = new URL(finalUrl).hostname.replace(/^www\./, '')
+        const suggestion = hostname.split('.')[0]
+        if (suggestion) {
+          name = suggestion.charAt(0).toUpperCase() + suggestion.slice(1)
+        }
+      } catch {}
+
+      newSites.push({
+        name,
+        url: finalUrl,
+        category: batchCategory || categories[0] || 'all'
+      })
+    }
+
+    if (newSites.length > 0) {
+      addSites(newSites)
+      setBatchUrls('')
+      setBatchStatus(`Foram adicionados ${newSites.length} sites com sucesso!`)
+    } else {
+      setBatchStatus('Nenhuma URL válida encontrada.')
+    }
+
+    setTimeout(() => setBatchStatus(null), 4000)
   }
 
   const selectTopic = (topicId) => {
@@ -428,6 +484,50 @@ export default function SettingsModal() {
                     }`}>
                     {importStatus === 'success' ? <Check size={16} /> : <AlertCircle size={16} />}
                     {importStatus === 'success' ? 'Importado com sucesso!' : 'Erro ao importar arquivo'}
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-6 border-t border-border">
+                <h3 className="text-sm font-medium text-muted mb-3">Adicionar Vários Sites</h3>
+                <p className="text-sm text-muted mb-3">
+                  Cole uma lista de URLs (uma por linha) para adicionar vários sites de uma vez. O Orbit irá extrair o nome de cada site automaticamente.
+                </p>
+                <textarea
+                  value={batchUrls}
+                  onChange={e => setBatchUrls(e.target.value)}
+                  placeholder="https://github.com&#10;https://youtube.com&#10;stackoverflow.com"
+                  className="w-full h-32 px-4 py-3 bg-bg border border-border rounded-lg text-text placeholder-muted focus:border-accent transition-colors mb-3 resize-none"
+                />
+                
+                <div className="flex gap-3 mb-3">
+                  <select
+                    value={batchCategory}
+                    onChange={e => setBatchCategory(e.target.value)}
+                    className="flex-1 px-4 py-3 bg-bg border border-border rounded-lg text-text focus:border-accent transition-colors"
+                  >
+                    <option value="">Selecione uma categoria...</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>
+                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                  
+                  <button
+                    onClick={handleBatchImport}
+                    disabled={!batchUrls.trim()}
+                    className="flex items-center gap-2 px-6 py-3 bg-accent rounded-lg text-bg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                  >
+                    <ListPlus size={18} />
+                    Adicionar
+                  </button>
+                </div>
+                
+                {batchStatus && (
+                  <div className={`flex items-center gap-2 text-sm ${batchStatus.includes('sucesso') ? 'text-green-500' : 'text-red-500'}`}>
+                    {batchStatus.includes('sucesso') ? <Check size={16} /> : <AlertCircle size={16} />}
+                    {batchStatus}
                   </div>
                 )}
               </div>
