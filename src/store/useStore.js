@@ -45,7 +45,7 @@ const useStore = create((set, get) => ({
 
   // Categories
   categories: storage.get("categories") || defaultCategories,
-  activeCategory: storage.get("active_category") || "all",
+  activeCategory: "all",
 
   // Theme
   theme: storage.get("theme") || "minimal-dark",
@@ -166,7 +166,6 @@ const useStore = create((set, get) => ({
   },
 
   setActiveCategory: (category) => {
-    storage.set("active_category", category);
     set({ activeCategory: category });
   },
 
@@ -278,7 +277,7 @@ const useStore = create((set, get) => ({
         newsProvider: storage.get("news_provider") || "rss",
         newsApiKey: storage.get("news_apikey") || "",
         newsTopics: storage.get("news_topics") || defaultNewsTopics,
-        activeCategory: storage.get("active_category") || "all",
+        activeCategory: "all",
         deepseekApiKey: storage.get("deepseek_apikey") || "",
         openInNewTab: storage.get("open_in_new_tab") !== false,
       });
