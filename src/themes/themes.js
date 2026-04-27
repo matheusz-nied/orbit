@@ -120,17 +120,6 @@ export const themes = {
     '--font': "'Inter', system-ui, sans-serif",
     '--star': '0',
   },
-  'dark-matter': {
-    name: 'Dark Matter',
-    '--bg': '#000000',
-    '--card': 'rgba(10, 10, 10, 0.7)',
-    '--text': '#f0f0f0',
-    '--accent': '#ffffff',
-    '--muted': '#555555',
-    '--border': 'rgba(255, 255, 255, 0.08)',
-    '--font': "'Inter', system-ui, sans-serif",
-    '--star': '0',
-  },
   'supernova': {
     name: 'Supernova',
     '--bg': '#1a0500',

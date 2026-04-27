@@ -13,7 +13,6 @@ import AddSiteModal from './components/AddSiteModal'
 import ConfirmModal from './components/ConfirmModal'
 import AIChatModal from './components/AIChatModal'
 import StarCanvas from './components/StarCanvas'
-import DarkMatterCursor from './components/DarkMatterCursor'
 import { useEasterEggs } from './hooks/useEasterEggs'
 import Toast from './components/Toast'
 
@@ -49,9 +48,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen relative">
-      {/* Dark Matter singularity cursor effect */}
-      {theme === 'dark-matter' && <DarkMatterCursor />}
-
       {/* Star canvas for space theme */}
       <StarCanvas />
 
