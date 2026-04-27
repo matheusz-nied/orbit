@@ -166,7 +166,7 @@ const useStore = create((set, get) => ({
   },
 
   setActiveCategory: (category) => {
-    storage.clear("active_category", category);
+    storage.set("active_category", category);
     set({ activeCategory: category });
   },
 
