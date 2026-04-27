@@ -1,4 +1,4 @@
-import { Rocket, Plus, Palette, Newspaper, X } from 'lucide-react'
+import { Rocket, Plus, Palette, Newspaper, X, ExternalLink } from 'lucide-react'
 import useStore from '../store/useStore'
 
 export default function WelcomeModal() {
@@ -39,6 +39,8 @@ export default function WelcomeModal() {
           </p>
 
           <div className="space-y-3">
+
+
             <div className="flex items-start gap-3 p-3 bg-bg rounded-xl border border-border">
               <Plus size={18} className="text-accent mt-0.5 shrink-0" />
               <div>
@@ -68,6 +70,21 @@ export default function WelcomeModal() {
                 </p>
               </div>
             </div>
+
+            <a
+              href="https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-3 p-3 bg-accent/10 rounded-xl border border-accent/30 hover:border-accent transition-colors"
+            >
+              <ExternalLink size={18} className="text-accent mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-accent">Use como nova aba</p>
+                <p className="text-xs text-muted mt-0.5">
+                  Instale a extensão <span className="text-text font-medium">New Tab Redirect</span> (de terceiros, não é do Orbit) para abrir o Orbit em cada nova aba.
+                </p>
+              </div>
+            </a>
           </div>
         </div>
 

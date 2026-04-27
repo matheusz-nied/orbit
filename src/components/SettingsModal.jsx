@@ -3,7 +3,7 @@ import {
   X, Palette, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
   LayoutGrid, Rows, GalleryVerticalEnd, Terminal, Sparkles, Gem,
-  CircleDot, Waves, Atom, ListPlus
+  CircleDot, Waves, Atom, ListPlus, ExternalLink
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
@@ -193,6 +193,21 @@ export default function SettingsModal() {
           {/* Appearance Tab */}
           {activeTab === 'appearance' && (
             <div className="space-y-6">
+              <a
+                href="https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-3 bg-accent/10 rounded-xl border border-accent/30 hover:border-accent transition-colors"
+              >
+                <ExternalLink size={18} className="text-accent shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-accent">Abra o Orbit em cada nova aba</p>
+                  <p className="text-xs text-muted mt-0.5">
+                    Instale a extensão <span className="text-text font-medium">New Tab Redirect</span> (de terceiros, não é do Orbit) e configure a URL do Orbit como nova aba.
+                  </p>
+                </div>
+              </a>
+
               <div>
                 <h3 className="text-sm font-medium text-muted mb-3">Tema</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

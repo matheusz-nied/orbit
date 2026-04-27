@@ -95,12 +95,11 @@ Exporte toda sua configuração (sites, categorias, tema, layout) em JSON. Impor
 
 ## 🚀 Como Usar
 
-1. 🌀 **Acesse o deploy** e configure como página inicial do navegador
-2. 📂 **Adicione seus sites** e organize por categorias
-3. 🎨 **Escolha seu tema** e layout favoritos
-4. ✅ **Pronto** — tudo salvo localmente, sem contas
-
-> **Dica:** Oriente seu navegador a abrir o Orbit em novas abas para máxima produtividade.
+1. 🌐 **Acesse** [orbit-portal.netlify.app](https://orbit-portal.netlify.app/) no navegador
+2. 🧩 **Instale a extensão** [New Tab Redirect](https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna) (de terceiros, não é do Orbit) e configure a URL do Orbit — assim ele abre em cada nova aba
+3. 📂 **Adicione seus sites** e organize por categorias
+4. 🎨 **Escolha seu tema** e layout favoritos
+5. ✅ **Pronto** — tudo salvo localmente, sem contas
 
 ---
 
