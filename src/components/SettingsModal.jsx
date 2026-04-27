@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
-import { 
-  X, Palette, Search, Newspaper, FolderOpen, Database, 
+import {
+  X, Palette, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
   LayoutGrid, Rows, GalleryVerticalEnd, Terminal, Sparkles, Gem
 } from 'lucide-react'
@@ -8,12 +8,12 @@ import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
 
 const tabs = [
-  { id: 'appearance', label: 'Theme', icon: Palette },
-  { id: 'search', label: 'Search', icon: Search },
-  { id: 'ai', label: 'AI Chat', icon: MessageSquare },
-  { id: 'news', label: 'News', icon: Newspaper },
-  { id: 'categories', label: 'Categories', icon: FolderOpen },
-  { id: 'data', label: 'Data', icon: Database },
+  { id: 'appearance', label: 'Tema', icon: Palette },
+  { id: 'search', label: 'Busca', icon: Search },
+  { id: 'ai', label: 'Chat IA', icon: MessageSquare },
+  { id: 'news', label: 'Notícias', icon: Newspaper },
+  { id: 'categories', label: 'Categorias', icon: FolderOpen },
+  { id: 'data', label: 'Dados', icon: Database },
 ]
 
 const newsProviders = [
@@ -31,17 +31,17 @@ const availableTopics = [
 ]
 
 export default function SettingsModal() {
-  const { 
-    settingsOpen, closeSettings, 
+  const {
+    settingsOpen, closeSettings,
     theme, setTheme,
     cardLayout, setCardLayout,
-    searchProvider, setSearchProvider,
+    searchProvider, setSearchProvider, openInNewTab, setOpenInNewTab,
     deepseekApiKey, setDeepseekApiKey,
     newsProvider, setNewsProvider, newsApiKey, setNewsApiKey, newsTopics, setNewsTopics,
     categories, addCategory, removeCategory,
     exportData, importData
   } = useStore()
-  
+
   const [activeTab, setActiveTab] = useState('appearance')
   const [newCategory, setNewCategory] = useState('')
   const [importStatus, setImportStatus] = useState(null)
@@ -68,7 +68,7 @@ export default function SettingsModal() {
   const handleImport = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
-    
+
     const reader = new FileReader()
     reader.onload = (event) => {
       try {
@@ -84,19 +84,15 @@ export default function SettingsModal() {
     reader.readAsText(file)
   }
 
-  const toggleTopic = (topicId) => {
-    if (newsTopics.includes(topicId)) {
-      setNewsTopics(newsTopics.filter(t => t !== topicId))
-    } else {
-      setNewsTopics([...newsTopics, topicId])
-    }
+  const selectTopic = (topicId) => {
+    setNewsTopics([topicId])
   }
 
   if (!settingsOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={closeSettings}>
-      <div 
+      <div
         className="bg-card border border-border rounded-2xl w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col animate-slideIn"
         onClick={e => e.stopPropagation()}
       >
@@ -107,7 +103,7 @@ export default function SettingsModal() {
             <X size={20} />
           </button>
         </div>
-        
+
         {/* Tabs */}
         <div className="flex border-b border-border overflow-x-auto">
           {tabs.map(tab => {
@@ -116,11 +112,10 @@ export default function SettingsModal() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeTab === tab.id
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.id
                     ? 'text-accent border-b-2 border-accent'
                     : 'text-muted hover:text-text'
-                }`}
+                  }`}
               >
                 <Icon size={16} />
                 {tab.label}
@@ -128,7 +123,7 @@ export default function SettingsModal() {
             )
           })}
         </div>
-        
+
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {/* Appearance Tab */}
@@ -141,11 +136,10 @@ export default function SettingsModal() {
                     <button
                       key={t.id}
                       onClick={() => setTheme(t.id)}
-                      className={`p-3 rounded-xl border transition-all ${
-                        theme === t.id
+                      className={`p-3 rounded-xl border transition-all ${theme === t.id
                           ? 'border-accent bg-accent/10'
                           : 'border-border hover:border-accent/50'
-                      }`}
+                        }`}
                     >
                       <span className="text-sm font-medium text-text">{t.name}</span>
                     </button>
@@ -157,22 +151,21 @@ export default function SettingsModal() {
               <div>
                 <h3 className="text-sm font-medium text-muted mb-3">Layout dos Cards</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {                  [
-                    { id: 'classic',      label: 'Clássico',     Icon: LayoutGrid,         desc: 'Ícones em grade' },
-                    { id: 'bento',        label: 'Bento',        Icon: Rows,               desc: 'Lista horizontal' },
-                    { id: 'magazine',     label: 'Magazine',     Icon: GalleryVerticalEnd, desc: 'Capas verticais' },
-                    { id: 'terminal',     label: 'Terminal',     Icon: Terminal,           desc: 'Lista estilo código' },
-                    { id: 'orbital',      label: 'Orbital',      Icon: Sparkles,           desc: 'Planetas flutuantes' },
-                    { id: 'orbital-glass', label: 'Orbital Glass', Icon: Gem,                desc: 'Planetas de vidro' },
+                  {[
+                    { id: 'classic', label: 'Clássico', Icon: LayoutGrid, desc: 'Ícones em grade' },
+                    { id: 'bento', label: 'Bento', Icon: Rows, desc: 'Lista horizontal' },
+                    { id: 'magazine', label: 'Magazine', Icon: GalleryVerticalEnd, desc: 'Capas verticais' },
+                    { id: 'terminal', label: 'Terminal', Icon: Terminal, desc: 'Lista estilo código' },
+                    { id: 'orbital', label: 'Orbital', Icon: Sparkles, desc: 'Planetas flutuantes' },
+                    { id: 'orbital-glass', label: 'Orbital Glass', Icon: Gem, desc: 'Planetas de vidro' },
                   ].map(({ id, label, Icon, desc }) => (
                     <button
                       key={id}
                       onClick={() => setCardLayout(id)}
-                      className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-2 ${
-                        cardLayout === id
+                      className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-2 ${cardLayout === id
                           ? 'border-accent bg-accent/10'
                           : 'border-border hover:border-accent/50'
-                      }`}
+                        }`}
                     >
                       <Icon size={22} className={cardLayout === id ? 'text-accent' : 'text-muted'} />
                       <span className="text-sm font-medium text-text">{label}</span>
@@ -183,7 +176,7 @@ export default function SettingsModal() {
               </div>
             </div>
           )}
-          
+
           {/* Search Tab */}
           {activeTab === 'search' && (
             <div className="space-y-6">
@@ -196,13 +189,12 @@ export default function SettingsModal() {
                       <button
                         key={provider.name}
                         onClick={() => setSearchProvider(actualIndex)}
-                        className={`p-3 rounded-xl border transition-all flex items-center gap-3 ${
-                          searchProvider === actualIndex
+                        className={`p-3 rounded-xl border transition-all flex items-center gap-3 ${searchProvider === actualIndex
                             ? 'border-accent bg-accent/10'
                             : 'border-border hover:border-accent/50'
-                        }`}
+                          }`}
                       >
-                        <span 
+                        <span
                           className="w-6 h-6 flex items-center justify-center rounded text-xs font-bold"
                           style={{ backgroundColor: provider.color, color: '#fff' }}
                         >
@@ -214,9 +206,36 @@ export default function SettingsModal() {
                   })}
                 </div>
               </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-muted mb-3">Abrir links e pesquisas</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setOpenInNewTab(true)}
+                    className={`p-3 rounded-xl border transition-all text-left ${openInNewTab
+                        ? 'border-accent bg-accent/10'
+                        : 'border-border hover:border-accent/50'
+                      }`}
+                  >
+                    <span className="text-sm font-medium text-text">Nova aba</span>
+                    <p className="text-xs text-muted mt-1">Pesquisa e clique em site abrem em outra aba.</p>
+                  </button>
+
+                  <button
+                    onClick={() => setOpenInNewTab(false)}
+                    className={`p-3 rounded-xl border transition-all text-left ${!openInNewTab
+                        ? 'border-accent bg-accent/10'
+                        : 'border-border hover:border-accent/50'
+                      }`}
+                  >
+                    <span className="text-sm font-medium text-text">Mesma aba atual</span>
+                    <p className="text-xs text-muted mt-1">Pesquisa e clique em site substituem a página atual.</p>
+                  </button>
+                </div>
+              </div>
             </div>
           )}
-          
+
           {/* AI Chat Tab */}
           {activeTab === 'ai' && (
             <div className="space-y-6">
@@ -236,7 +255,7 @@ export default function SettingsModal() {
                   Sua chave fica salva apenas no navegador (localStorage).
                 </p>
               </div>
-              
+
               <div className="p-4 bg-bg rounded-lg border border-border">
                 <h4 className="text-sm font-medium text-text mb-2">Como usar</h4>
                 <ul className="text-xs text-muted space-y-1">
@@ -245,7 +264,7 @@ export default function SettingsModal() {
                   <li>3. Digite sua pergunta e pressione Enter</li>
                 </ul>
               </div>
-              
+
               {deepseekApiKey && (
                 <div className="flex items-center gap-2 text-green-500 text-sm">
                   <Check size={16} />
@@ -254,7 +273,7 @@ export default function SettingsModal() {
               )}
             </div>
           )}
-          
+
           {/* News Tab */}
           {activeTab === 'news' && (
             <div className="space-y-6">
@@ -265,11 +284,10 @@ export default function SettingsModal() {
                     <button
                       key={provider.id}
                       onClick={() => setNewsProvider(provider.id)}
-                      className={`w-full p-3 rounded-xl border transition-all text-left ${
-                        newsProvider === provider.id
+                      className={`w-full p-3 rounded-xl border transition-all text-left ${newsProvider === provider.id
                           ? 'border-accent bg-accent/10'
                           : 'border-border hover:border-accent/50'
-                      }`}
+                        }`}
                     >
                       <span className="text-sm font-medium text-text">{provider.name}</span>
                       {provider.requiresKey && (
@@ -279,7 +297,7 @@ export default function SettingsModal() {
                   ))}
                 </div>
               </div>
-              
+
               {newsProvider === 'gnews' && (
                 <div>
                   <h3 className="text-sm font-medium text-muted mb-3">API Key do GNews</h3>
@@ -295,19 +313,21 @@ export default function SettingsModal() {
                   </p>
                 </div>
               )}
-              
+
               <div>
                 <h3 className="text-sm font-medium text-muted mb-3">Tópicos de Interesse</h3>
+                <p className="text-xs text-muted mb-3">
+                  Escolha um tópico principal para o feed. O Orbit usa um tópico por vez para manter os resultados consistentes.
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {availableTopics.map(topic => (
                     <button
                       key={topic.id}
-                      onClick={() => toggleTopic(topic.id)}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                        newsTopics.includes(topic.id)
+                      onClick={() => selectTopic(topic.id)}
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${newsTopics.includes(topic.id)
                           ? 'bg-accent text-bg'
                           : 'bg-bg border border-border text-muted hover:text-text'
-                      }`}
+                        }`}
                     >
                       {topic.label}
                     </button>
@@ -316,7 +336,7 @@ export default function SettingsModal() {
               </div>
             </div>
           )}
-          
+
           {/* Categories Tab */}
           {activeTab === 'categories' && (
             <div className="space-y-6">
@@ -324,7 +344,7 @@ export default function SettingsModal() {
                 <h3 className="text-sm font-medium text-muted mb-3">Categorias Existentes</h3>
                 <div className="flex flex-wrap gap-2">
                   {categories.map(cat => (
-                    <div 
+                    <div
                       key={cat}
                       className="flex items-center gap-2 px-3 py-2 bg-bg border border-border rounded-lg"
                     >
@@ -339,7 +359,7 @@ export default function SettingsModal() {
                   ))}
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="text-sm font-medium text-muted mb-3">Adicionar Categoria</h3>
                 <div className="flex gap-2">
@@ -361,7 +381,7 @@ export default function SettingsModal() {
               </div>
             </div>
           )}
-          
+
           {/* Data Tab */}
           {activeTab === 'data' && (
             <div className="space-y-6">
@@ -378,7 +398,7 @@ export default function SettingsModal() {
                   Exportar JSON
                 </button>
               </div>
-              
+
               <div>
                 <h3 className="text-sm font-medium text-muted mb-3">Importar Configuração</h3>
                 <p className="text-sm text-muted mb-3">
@@ -398,11 +418,10 @@ export default function SettingsModal() {
                   <Upload size={18} />
                   Importar JSON
                 </button>
-                
+
                 {importStatus && (
-                  <div className={`flex items-center gap-2 mt-3 text-sm ${
-                    importStatus === 'success' ? 'text-green-500' : 'text-red-500'
-                  }`}>
+                  <div className={`flex items-center gap-2 mt-3 text-sm ${importStatus === 'success' ? 'text-green-500' : 'text-red-500'
+                    }`}>
                     {importStatus === 'success' ? <Check size={16} /> : <AlertCircle size={16} />}
                     {importStatus === 'success' ? 'Importado com sucesso!' : 'Erro ao importar arquivo'}
                   </div>

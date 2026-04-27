@@ -20,9 +20,19 @@ const gnewsTopics = {
   sports: 'sports',
 }
 
+const topicLabels = {
+  technology: 'Tecnologia',
+  science: 'Ciência',
+  entertainment: 'Entretenimento',
+  business: 'Negócios',
+  health: 'Saúde',
+  sports: 'Esportes',
+}
+
 export default function NewsFeed() {
   const { newsProvider, newsApiKey, newsTopics, newsItems, setNewsItems, newsLoading, setNewsLoading } = useStore()
   const [error, setError] = useState(null)
+  const activeTopic = newsTopics[0] || 'technology'
 
   const fetchNews = async () => {
     setNewsLoading(true)
@@ -43,7 +53,7 @@ export default function NewsFeed() {
   }
 
   const fetchFromGNews = async () => {
-    const topic = gnewsTopics[newsTopics[0]] || 'technology'
+    const topic = gnewsTopics[activeTopic] || 'technology'
     const url = `https://gnews.io/api/v4/top-headlines?topic=${topic}&lang=pt&token=${newsApiKey}&max=5`
     
     const response = await fetch(url)
@@ -60,7 +70,7 @@ export default function NewsFeed() {
   }
 
   const fetchFromRSS = async () => {
-    const topic = newsTopics[0] || 'technology'
+    const topic = activeTopic
     const feedUrl = rssFeeds[topic] || rssFeeds.technology
     
     const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}`
@@ -83,7 +93,7 @@ export default function NewsFeed() {
     // Refresh every 5 minutes
     const interval = setInterval(fetchNews, 5 * 60 * 1000)
     return () => clearInterval(interval)
-  }, [newsProvider, newsApiKey, newsTopics])
+  }, [newsProvider, newsApiKey, activeTopic])
 
   const formatDate = (dateString) => {
     const date = new Date(dateString)
@@ -97,13 +107,19 @@ export default function NewsFeed() {
           <Newspaper size={20} />
           Notícias
         </h2>
-        <button
-          onClick={fetchNews}
-          disabled={newsLoading}
-          className="p-2 text-muted hover:text-accent transition-colors disabled:opacity-50"
-        >
-          <RefreshCw size={16} className={newsLoading ? 'animate-spin' : ''} />
-        </button>
+        <div className="flex items-center gap-3">
+          <span className="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-card border border-border text-xs text-muted">
+            {topicLabels[activeTopic] || 'Tecnologia'}
+          </span>
+          <button
+            onClick={fetchNews}
+            disabled={newsLoading}
+            className="p-2 text-muted hover:text-accent transition-colors disabled:opacity-50"
+            aria-label="Atualizar notícias"
+          >
+            <RefreshCw size={16} className={newsLoading ? 'animate-spin' : ''} />
+          </button>
+        </div>
       </div>
       
       {error && (

@@ -15,5 +15,6 @@ export default function SiteCard({ site, index }) {
   if (cardLayout === 'terminal') return <SiteCardTerminal site={site} index={index} />
   if (cardLayout === 'orbital') return <SiteCardOrbital site={site} />
   if (cardLayout === 'orbital-glass') return <SiteCardOrbitalGlass site={site} />
+  
   return <SiteCardClassic site={site} />
 }

@@ -14,11 +14,12 @@ import ConfirmModal from './components/ConfirmModal'
 import AIChatModal from './components/AIChatModal'
 import StarCanvas from './components/StarCanvas'
 import { useEasterEggs } from './hooks/useEasterEggs'
+import Toast from './components/Toast'
 
 export default function App() {
   const { theme, searchProvider, openSettings } = useStore()
   useEasterEggs()
-  
+
   const [hintIndex, setHintIndex] = useState(0)
   const hints = [
     "Orbit · Sua página inicial personalizada",
@@ -78,8 +79,8 @@ export default function App() {
 
         {/* Footer */}
         <footer className="relative h-16 py-6 overflow-hidden">
-          <p 
-            key={hintIndex} 
+          <p
+            key={hintIndex}
             className="absolute inset-0 flex items-center justify-center text-center text-muted text-sm animate-fadeIn"
           >
             {hints[hintIndex]}
@@ -92,6 +93,7 @@ export default function App() {
       <AddSiteModal />
       <ConfirmModal />
       <AIChatModal />
+      <Toast />
     </div>
   )
 }

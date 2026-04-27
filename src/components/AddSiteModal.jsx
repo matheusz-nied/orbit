@@ -1,12 +1,26 @@
 import { useState, useEffect } from 'react'
 import { X, Plus, Pencil } from 'lucide-react'
 import useStore from '../store/useStore'
+import { getFaviconUrl } from '../utils/favicon'
+
+const isValidUrl = (value) => {
+  try {
+    const candidate = value.startsWith('http://') || value.startsWith('https://')
+      ? value
+      : `https://${value}`
+    new URL(candidate)
+    return true
+  } catch {
+    return false
+  }
+}
 
 export default function AddSiteModal() {
   const { addSiteOpen, closeAddSite, editingSite, updateSite, addSite, setEditingSite, categories } = useStore()
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [category, setCategory] = useState('')
+  const [urlTouched, setUrlTouched] = useState(false)
 
   useEffect(() => {
     if (editingSite) {
@@ -18,12 +32,13 @@ export default function AddSiteModal() {
       setUrl('')
       setCategory(categories[0] || '')
     }
+    setUrlTouched(false)
   }, [editingSite, addSiteOpen, categories])
 
   const handleSubmit = (e) => {
     e.preventDefault()
     
-    if (!name.trim() || !url.trim()) return
+    if (!name.trim() || !url.trim() || !isValidUrl(url.trim())) return
     
     let finalUrl = url.trim()
     if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
@@ -51,8 +66,34 @@ export default function AddSiteModal() {
     setName('')
     setUrl('')
     setCategory('')
+    setUrlTouched(false)
     setEditingSite(null)
     closeAddSite()
+  }
+
+  const previewUrl = url.trim()
+    ? (url.trim().startsWith('http://') || url.trim().startsWith('https://') ? url.trim() : `https://${url.trim()}`)
+    : ''
+  const canPreview = previewUrl && isValidUrl(url.trim())
+  const urlHasError = urlTouched && url.trim() && !isValidUrl(url.trim())
+
+  const handleUrlChange = (value) => {
+    setUrl(value)
+
+    if (!name.trim()) {
+      try {
+        const candidate = value.startsWith('http://') || value.startsWith('https://')
+          ? value
+          : `https://${value}`
+        const hostname = new URL(candidate).hostname.replace(/^www\./, '')
+        const suggestion = hostname.split('.')[0]
+        if (suggestion) {
+          setName(suggestion.charAt(0).toUpperCase() + suggestion.slice(1))
+        }
+      } catch {
+        // Ignore invalid URLs while the user is typing.
+      }
+    }
   }
 
   if (!addSiteOpen) return null
@@ -91,11 +132,31 @@ export default function AddSiteModal() {
             <input
               type="text"
               value={url}
-              onChange={e => setUrl(e.target.value)}
+              onChange={e => handleUrlChange(e.target.value)}
+              onBlur={() => setUrlTouched(true)}
               placeholder="https://github.com"
               className="w-full px-4 py-3 bg-bg border border-border rounded-lg text-text placeholder-muted focus:border-accent transition-colors"
             />
+            {urlHasError && (
+              <p className="text-xs text-red-400 mt-2">
+                Informe uma URL válida. Você pode colar sem `https://` que o Orbit completa para você.
+              </p>
+            )}
           </div>
+
+          {canPreview && (
+            <div className="flex items-center gap-3 p-3 bg-bg border border-border rounded-xl">
+              <img
+                src={getFaviconUrl(previewUrl)}
+                alt=""
+                className="w-8 h-8 object-contain"
+              />
+              <div className="min-w-0">
+                <p className="text-sm text-text font-medium line-clamp-1">{name.trim() || 'Prévia do site'}</p>
+                <p className="text-xs text-muted line-clamp-1">{previewUrl}</p>
+              </div>
+            </div>
+          )}
           
           <div>
             <label className="block text-sm text-muted mb-1">Categoria</label>
@@ -122,6 +183,7 @@ export default function AddSiteModal() {
             </button>
             <button
               type="submit"
+              disabled={!name.trim() || !url.trim() || !isValidUrl(url.trim())}
               className="flex-1 px-4 py-3 bg-accent rounded-lg text-bg font-medium hover:opacity-90 transition-opacity"
             >
               {editingSite ? 'Salvar' : 'Adicionar'}
