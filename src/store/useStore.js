@@ -48,10 +48,10 @@ const useStore = create((set, get) => ({
   activeCategory: "all",
 
   // Theme
-  theme: storage.get("theme") || "minimal-dark",
+  theme: storage.get("theme") || "premium-dark",
 
   // Card Layout
-  cardLayout: storage.get("card_layout") || "classic",
+  cardLayout: storage.get("card_layout") || "wave-particle",
 
   // Search
   searchProvider: Math.min(
@@ -302,8 +302,8 @@ const useStore = create((set, get) => ({
       set({
         sites: storage.get("sites") || defaultSites,
         categories: storage.get("categories") || defaultCategories,
-        theme: storage.get("theme") || "minimal-dark",
-        cardLayout: storage.get("card_layout") || "classic",
+        theme: storage.get("theme") || "premium-dark",
+        cardLayout: storage.get("card_layout") || "wave-particle",
         searchProvider: storage.get("search_provider") || 0,
         newsProvider: (() => {
           const saved = storage.get("news_provider")
