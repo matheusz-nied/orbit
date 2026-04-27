@@ -397,3 +397,27 @@ input:focus, button:focus, select:focus {
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+/* Quantum Physics Layout Animations */
+
+@keyframes morphWave {
+  0%, 100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+  25% { border-radius: 55% 45% 60% 40% / 45% 55% 40% 60%; }
+  50% { border-radius: 45% 55% 40% 60% / 60% 40% 55% 45%; }
+  75% { border-radius: 60% 40% 55% 45% / 40% 60% 45% 55%; }
+}
+
+@keyframes spin3dX {
+  0% { transform: rotateX(60deg) rotateZ(0deg); }
+  100% { transform: rotateX(60deg) rotateZ(360deg); }
+}
+
+@keyframes spin3dY {
+  0% { transform: rotateY(60deg) rotateZ(0deg); }
+  100% { transform: rotateY(60deg) rotateZ(360deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(0.9); opacity: 0.4; }
+  50% { transform: scale(1.15); opacity: 0.7; }
+}
+

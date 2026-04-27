@@ -79,9 +79,11 @@ export default function SiteGrid() {
                 ? 'grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 sm:gap-4'
                 : cardLayout === 'terminal'
                   ? 'flex flex-col max-w-4xl mx-auto w-full border border-border/30 rounded-lg overflow-hidden bg-card/20'
-                  : cardLayout === 'orbital' || cardLayout === 'orbital-glass'
+                  : cardLayout === 'orbital' || cardLayout === 'orbital-glass' || cardLayout === 'singularity' || cardLayout === 'quantum-spin'
                     ? 'grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 justify-items-center py-4'
-                    : 'grid grid-cols-[repeat(auto-fill,minmax(70px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-x-2 gap-y-6 sm:gap-x-4 sm:gap-y-8 justify-items-center'
+                    : cardLayout === 'wave-particle'
+                      ? 'grid grid-cols-[repeat(auto-fill,minmax(95px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(115px,1fr))] gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 justify-items-center py-4'
+                      : 'grid grid-cols-[repeat(auto-fill,minmax(70px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-x-2 gap-y-6 sm:gap-x-4 sm:gap-y-8 justify-items-center'
           }>
             {filteredSites.map((site, index) => (
               <SiteCard key={site.id} site={site} index={index} />

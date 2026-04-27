@@ -2,7 +2,8 @@ import { useState, useRef } from 'react'
 import {
   X, Palette, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
-  LayoutGrid, Rows, GalleryVerticalEnd, Terminal, Sparkles, Gem
+  LayoutGrid, Rows, GalleryVerticalEnd, Terminal, Sparkles, Gem,
+  CircleDot, Waves, Atom
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
@@ -158,6 +159,9 @@ export default function SettingsModal() {
                     { id: 'terminal', label: 'Terminal', Icon: Terminal, desc: 'Lista estilo código' },
                     { id: 'orbital', label: 'Orbital', Icon: Sparkles, desc: 'Planetas flutuantes' },
                     { id: 'orbital-glass', label: 'Orbital Glass', Icon: Gem, desc: 'Planetas de vidro' },
+                    { id: 'singularity', label: 'Singularidade', Icon: CircleDot, desc: 'Buraco negro' },
+                    { id: 'wave-particle', label: 'Dualidade', Icon: Waves, desc: 'Onda-partícula' },
+                    { id: 'quantum-spin', label: 'Spin', Icon: Atom, desc: 'Spin quântico' },
                   ].map(({ id, label, Icon, desc }) => (
                     <button
                       key={id}
