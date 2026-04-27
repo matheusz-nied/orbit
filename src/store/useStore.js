@@ -61,7 +61,7 @@ const useStore = create((set, get) => ({
   searchQuery: "",
 
   // News
-  newsProvider: storage.get("news_provider") || "rss",
+  newsProvider: storage.get("news_provider") || "tabnews",
   newsApiKey: storage.get("news_apikey") || "",
   newsTopics: storage.get("news_topics") || defaultNewsTopics,
   newsItems: [],

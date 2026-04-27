@@ -30,6 +30,7 @@ const tabs = [
 ]
 
 const newsProviders = [
+  { id: 'tabnews', name: 'TabNews (Padrão)', requiresKey: false },
   { id: 'rss', name: 'RSS (Gratuito)', requiresKey: false },
   { id: 'gnews', name: 'GNews API', requiresKey: true },
 ]
@@ -374,26 +375,28 @@ export default function SettingsModal() {
                 </div>
               )}
 
-              <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Tópicos de Interesse</h3>
-                <p className="text-xs text-muted mb-3">
-                  Escolha um tópico principal para o feed. O Orbit usa um tópico por vez para manter os resultados consistentes.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {availableTopics.map(topic => (
-                    <button
-                      key={topic.id}
-                      onClick={() => selectTopic(topic.id)}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${newsTopics.includes(topic.id)
-                          ? 'bg-accent text-bg'
-                          : 'bg-bg border border-border text-muted hover:text-text'
-                        }`}
-                    >
-                      {topic.label}
-                    </button>
-                  ))}
+              {newsProvider !== 'tabnews' && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted mb-3">Tópicos de Interesse</h3>
+                  <p className="text-xs text-muted mb-3">
+                    Escolha um tópico principal para o feed. O Orbit usa um tópico por vez para manter os resultados consistentes.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {availableTopics.map(topic => (
+                      <button
+                        key={topic.id}
+                        onClick={() => selectTopic(topic.id)}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${newsTopics.includes(topic.id)
+                            ? 'bg-accent text-bg'
+                            : 'bg-bg border border-border text-muted hover:text-text'
+                          }`}
+                      >
+                        {topic.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
 

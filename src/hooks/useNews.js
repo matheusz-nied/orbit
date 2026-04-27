@@ -19,7 +19,25 @@ export function useNews({ provider, apiKey, topics }) {
     setError(null)
 
     try {
-      if (provider === 'gnews' && apiKey) {
+      if (provider === 'tabnews') {
+        const strategy = topics.includes('new') || topics.includes('recent') ? 'new' : 'relevant'
+        const url = `https://www.tabnews.com.br/api/v1/contents?strategy`
+        
+        const response = await fetch(url)
+        const data = await response.json()
+        
+        if (Array.isArray(data)) {
+          // Filtra para trazer apenas posts principais (não comentários)
+          const postsOnly = data.filter(item => item.parent_id === null)
+
+          setItems(postsOnly.slice(0, 30).map(item => ({
+            title: item.title,
+            url: `https://www.tabnews.com.br/${item.owner_username}/${item.slug}`,
+            source: `TabNews · ${item.owner_username}`,
+            publishedAt: item.published_at,
+          })))
+        }
+      } else if (provider === 'gnews' && apiKey) {
         const topic = topics[0] || 'technology'
         const url = `https://gnews.io/api/v4/top-headlines?topic=${topic}&lang=pt&token=${apiKey}&max=5`
         

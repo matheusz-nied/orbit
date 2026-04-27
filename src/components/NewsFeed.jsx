@@ -27,19 +27,23 @@ const topicLabels = {
   business: 'Negócios',
   health: 'Saúde',
   sports: 'Esportes',
+  relevant: 'Relevantes',
+  recent: 'Recentes',
 }
 
 export default function NewsFeed() {
-  const { newsProvider, newsApiKey, newsTopics, newsItems, setNewsItems, newsLoading, setNewsLoading } = useStore()
+  const { newsProvider, newsApiKey, newsTopics, setNewsTopics, newsItems, setNewsItems, newsLoading, setNewsLoading } = useStore()
   const [error, setError] = useState(null)
-  const activeTopic = newsTopics[0] || 'technology'
+  const activeTopic = newsTopics[0] || (newsProvider === 'tabnews' ? 'relevant' : 'technology')
 
   const fetchNews = async () => {
     setNewsLoading(true)
     setError(null)
 
     try {
-      if (newsProvider === 'gnews' && newsApiKey) {
+      if (newsProvider === 'tabnews') {
+        await fetchFromTabNews()
+      } else if (newsProvider === 'gnews' && newsApiKey) {
         await fetchFromGNews()
       } else {
         await fetchFromRSS()
@@ -50,6 +54,26 @@ export default function NewsFeed() {
     }
 
     setNewsLoading(false)
+  }
+
+  const fetchFromTabNews = async () => {
+    const strategy = activeTopic === 'recent' ? 'new' : 'relevant'
+    const url = `https://www.tabnews.com.br/api/v1/contents?strategy=${strategy}&per_page=100`
+    
+    const response = await fetch(url)
+    const data = await response.json()
+    
+    if (Array.isArray(data)) {
+      // Filtra para trazer apenas posts principais (não comentários)
+      const postsOnly = data.filter(item => item.parent_id === null)
+      
+      setNewsItems(postsOnly.slice(0, 30).map(item => ({
+        title: item.title,
+        url: `https://www.tabnews.com.br/${item.owner_username}/${item.slug}`,
+        source: item.owner_username,
+        publishedAt: item.published_at,
+      })))
+    }
   }
 
   const fetchFromGNews = async () => {
@@ -108,9 +132,34 @@ export default function NewsFeed() {
           Notícias
         </h2>
         <div className="flex items-center gap-3">
-          <span className="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-card border border-border text-xs text-muted">
-            {topicLabels[activeTopic] || 'Tecnologia'}
-          </span>
+          {newsProvider === 'tabnews' ? (
+            <div className="flex bg-card border border-border rounded-lg p-0.5">
+              <button
+                onClick={() => setNewsTopics(['relevant'])}
+                className={`px-3 py-1 text-xs rounded-md transition-all ${
+                  activeTopic === 'relevant' 
+                    ? 'bg-accent text-accent-foreground shadow-sm' 
+                    : 'text-muted hover:text-text'
+                }`}
+              >
+                Relevantes
+              </button>
+              <button
+                onClick={() => setNewsTopics(['recent'])}
+                className={`px-3 py-1 text-xs rounded-md transition-all ${
+                  activeTopic === 'recent' 
+                    ? 'bg-accent text-accent-foreground shadow-sm' 
+                    : 'text-muted hover:text-text'
+                }`}
+              >
+                Recentes
+              </button>
+            </div>
+          ) : (
+            <span className="hidden sm:inline-flex px-2.5 py-1 rounded-full bg-card border border-border text-xs text-muted">
+              {topicLabels[activeTopic] || 'Tecnologia'}
+            </span>
+          )}
           <button
             onClick={fetchNews}
             disabled={newsLoading}
