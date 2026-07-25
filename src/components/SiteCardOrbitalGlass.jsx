@@ -42,7 +42,7 @@ function SiteCardOrbitalGlass({ site }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="relative group flex flex-col items-center"
+      className="relative group flex flex-col items-center card-contain"
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
       {...attributes}
@@ -50,7 +50,8 @@ function SiteCardOrbitalGlass({ site }) {
     >
       <div
         onClick={handleClick}
-        className="relative cursor-pointer w-20 h-20 sm:w-24 sm:h-24 mb-3 animate-float"
+        data-decorative
+        className="relative cursor-pointer w-20 h-20 sm:w-24 sm:h-24 mb-3 animate-float gpu-layer"
         style={{ animationDelay: `${floatDelay}s` }}
       >
         {/* Outer glass ring */}
@@ -98,6 +99,8 @@ function SiteCardOrbitalGlass({ site }) {
           <img
             src={getFaviconUrl(site.url)}
             alt={site.name}
+            loading="lazy"
+            decoding="async"
             className="relative z-10 w-9 h-9 sm:w-11 sm:h-11 object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] transition-transform duration-300 group-hover:scale-110"
             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
           />
@@ -108,7 +111,8 @@ function SiteCardOrbitalGlass({ site }) {
 
         {/* Orbiting glass dot */}
         <div
-          className="absolute inset-[-14px] rounded-full animate-spin"
+          data-decorative
+          className="absolute inset-[-14px] rounded-full animate-spin gpu-layer"
           style={{ animationDuration: '10s' }}
         >
           <div

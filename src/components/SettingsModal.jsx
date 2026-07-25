@@ -3,10 +3,11 @@ import {
   X, Palette, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
   LayoutGrid, Rows, GalleryVerticalEnd, Terminal, Sparkles, Gem,
-  CircleDot, Waves, Atom, ListPlus, ExternalLink
+  CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
+import { motionModes } from '../utils/motion'
 
 const isValidUrl = (value) => {
   try {
@@ -45,6 +46,8 @@ export default function SettingsModal() {
   const setTheme = useStore((state) => state.setTheme)
   const cardLayout = useStore((state) => state.cardLayout)
   const setCardLayout = useStore((state) => state.setCardLayout)
+  const motionMode = useStore((state) => state.motionMode)
+  const setMotionMode = useStore((state) => state.setMotionMode)
   const searchProvider = useStore((state) => state.searchProvider)
   const setSearchProvider = useStore((state) => state.setSearchProvider)
   const openInNewTab = useStore((state) => state.openInNewTab)
@@ -252,6 +255,33 @@ export default function SettingsModal() {
                       <Icon size={22} className={cardLayout === id ? 'text-accent' : 'text-muted'} />
                       <span className="text-sm font-medium text-text">{label}</span>
                       <span className="text-[10px] text-muted">{desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Desempenho / animações */}
+              <div>
+                <h3 className="text-sm font-medium text-muted mb-1 flex items-center gap-2">
+                  <Gauge size={16} />
+                  Animações
+                </h3>
+                <p className="text-xs text-muted mb-3">
+                  O modo <span className="text-text font-medium">Leve</span> desliga brilhos,
+                  órbitas e desfoques decorativos. Use se a página estiver pesando no seu PC.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {motionModes.map(({ id, label, desc }) => (
+                    <button
+                      key={id}
+                      onClick={() => setMotionMode(id)}
+                      className={`p-3 rounded-xl border transition-colors text-left ${motionMode === id
+                          ? 'border-accent bg-accent/10'
+                          : 'border-border hover:border-accent/50'
+                        }`}
+                    >
+                      <span className="block text-sm font-medium text-text">{label}</span>
+                      <span className="block text-[11px] text-muted mt-0.5">{desc}</span>
                     </button>
                   ))}
                 </div>

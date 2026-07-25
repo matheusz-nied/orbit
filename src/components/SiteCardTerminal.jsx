@@ -108,7 +108,7 @@ function SiteCardTerminal({ site, index }) {
 
         {/* Cursor */}
         {isHovered && (
-          <span className="w-2 h-4 bg-accent/80 animate-blink shrink-0" />
+          <span data-decorative className="w-2 h-4 bg-accent/80 animate-blink shrink-0" />
         )}
       </div>
 

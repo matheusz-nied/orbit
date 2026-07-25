@@ -50,7 +50,7 @@ function SiteCardClassic({ site }) {
         <div
             ref={setNodeRef}
             style={style}
-            className="relative group flex flex-col items-center"
+            className="relative group flex flex-col items-center card-contain"
             onMouseEnter={() => setShowActions(true)}
             onMouseLeave={() => setShowActions(false)}
             {...attributes}
@@ -65,6 +65,8 @@ function SiteCardClassic({ site }) {
                     <img
                         src={getFaviconUrl(site.url)}
                         alt={site.name}
+                        loading="lazy"
+                        decoding="async"
                         className="w-10 h-10 sm:w-12 sm:h-12 object-contain transition-transform duration-300 group-hover/card:scale-110 drop-shadow-md"
                         onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
                     />

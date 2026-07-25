@@ -47,7 +47,7 @@ function SiteCardSingularity({ site }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="relative group flex flex-col items-center"
+      className="relative group flex flex-col items-center card-contain"
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
       {...attributes}
@@ -57,9 +57,12 @@ function SiteCardSingularity({ site }) {
         onClick={handleClick}
         className="relative cursor-pointer w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] mb-3"
       >
-        {/* Accretion disk — outer glow */}
+        {/* Accretion disk — outer glow.
+            gpu-layer mantém o disco borrado numa textura própria: o blur é
+            rasterizado uma vez e a rotação roda só no compositor. */}
         <div
-          className="absolute inset-[-10px] rounded-full opacity-60 blur-md"
+          data-decorative
+          className="absolute inset-[-10px] rounded-full opacity-60 blur-md gpu-layer"
           style={{
             background: `conic-gradient(from 0deg, ${c1}00, ${c1}66, ${c2}88, ${c3}66, ${c1}00)`,
             animation: 'spin 6s linear infinite',
@@ -68,7 +71,8 @@ function SiteCardSingularity({ site }) {
 
         {/* Second slower disk layer */}
         <div
-          className="absolute inset-[-6px] rounded-full opacity-40 blur-sm"
+          data-decorative
+          className="absolute inset-[-6px] rounded-full opacity-40 blur-sm gpu-layer"
           style={{
             background: `conic-gradient(from 180deg, ${c2}00, ${c3}55, ${c1}77, ${c2}00)`,
             animation: 'spin 10s linear infinite reverse',
@@ -92,23 +96,22 @@ function SiteCardSingularity({ site }) {
           }}
         />
 
-        {/* Spiraling particles */}
-        <div className="absolute inset-0 rounded-full animate-spin" style={{ animationDuration: '4s' }}>
+        {/* Spiraling particles — duas camadas giratórias em vez de três;
+            a terceira partícula viaja junto da primeira. */}
+        <div data-decorative className="absolute inset-0 rounded-full animate-spin gpu-layer" style={{ animationDuration: '4s' }}>
           <div
             className="absolute top-[5%] left-1/2 w-1 h-1 rounded-full"
             style={{ backgroundColor: c1, boxShadow: `0 0 4px ${c1}` }}
           />
-        </div>
-        <div className="absolute inset-0 rounded-full animate-spin" style={{ animationDuration: '7s', animationDirection: 'reverse' }}>
-          <div
-            className="absolute top-[12%] left-[75%] w-[3px] h-[3px] rounded-full"
-            style={{ backgroundColor: c2, boxShadow: `0 0 5px ${c2}` }}
-          />
-        </div>
-        <div className="absolute inset-0 rounded-full animate-spin" style={{ animationDuration: '5s' }}>
           <div
             className="absolute top-[85%] left-[20%] w-[2px] h-[2px] rounded-full"
             style={{ backgroundColor: c3, boxShadow: `0 0 4px ${c3}` }}
+          />
+        </div>
+        <div data-decorative className="absolute inset-0 rounded-full animate-spin gpu-layer" style={{ animationDuration: '7s', animationDirection: 'reverse' }}>
+          <div
+            className="absolute top-[12%] left-[75%] w-[3px] h-[3px] rounded-full"
+            style={{ backgroundColor: c2, boxShadow: `0 0 5px ${c2}` }}
           />
         </div>
 
@@ -118,6 +121,8 @@ function SiteCardSingularity({ site }) {
             <img
               src={getFaviconUrl(site.url)}
               alt={site.name}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-contain drop-shadow-[0_0_6px_rgba(255,255,255,0.5)] transition-transform duration-300 group-hover:scale-110"
               onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
             />

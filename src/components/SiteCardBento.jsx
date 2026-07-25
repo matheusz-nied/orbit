@@ -70,6 +70,8 @@ function SiteCardBento({ site }) {
                     <img
                         src={getFaviconUrl(site.url)}
                         alt={site.name}
+                        loading="lazy"
+                        decoding="async"
                         className="w-6 h-6 sm:w-7 sm:h-7 object-contain drop-shadow-sm"
                         onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
                     />

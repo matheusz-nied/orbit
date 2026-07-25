@@ -5,11 +5,24 @@ const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
 export default function Clock() {
-  const [time, setTime] = useState(new Date())
+  const [time, setTime] = useState(() => new Date())
 
   useEffect(() => {
-    const interval = setInterval(() => setTime(new Date()), 1000)
-    return () => clearInterval(interval)
+    let timer = 0
+
+    // setInterval de 1000ms acumula desvio e pode disparar duas vezes no
+    // mesmo segundo (render desperdiçado). Aqui cada tick é agendado para o
+    // início do próximo segundo real.
+    const scheduleNextTick = () => {
+      const now = new Date()
+      timer = setTimeout(() => {
+        setTime(new Date())
+        scheduleNextTick()
+      }, 1000 - now.getMilliseconds())
+    }
+
+    scheduleNextTick()
+    return () => clearTimeout(timer)
   }, [])
 
   const dayName = days[time.getDay()]

@@ -66,7 +66,7 @@ function SiteCardWaveParticle({ site }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="relative group flex flex-col items-center"
+      className="relative group flex flex-col items-center card-contain"
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
       {...attributes}
@@ -76,37 +76,28 @@ function SiteCardWaveParticle({ site }) {
         onClick={handleClick}
         className="relative cursor-pointer w-[82px] h-[82px] sm:w-[96px] sm:h-[96px] mb-3"
       >
-        {/* Probability wave glow — ghost layer 1 */}
+        {/* Probability wave glow — camada estática: o blur é rasterizado uma
+            única vez em vez de a cada frame. */}
         <div
+          data-decorative
           className="absolute inset-[-8px] opacity-30 blur-md group-hover:opacity-0 transition-opacity duration-500"
           style={{
             borderRadius,
-            background: `radial-gradient(circle, ${waveColor}22, transparent 70%)`,
-            transform: `translate(-3px, 2px)`,
-            animation: 'morphWave 5s ease-in-out infinite',
+            background: `radial-gradient(circle, ${waveColor}2b, transparent 65%)`,
           }}
         />
 
-        {/* Probability wave glow — ghost layer 2 */}
+        {/* Main wave packet — o "morph" agora é transform (compositor),
+            não border-radius (repaint a cada frame). */}
         <div
-          className="absolute inset-[-6px] opacity-25 blur-sm group-hover:opacity-0 transition-opacity duration-500"
-          style={{
-            borderRadius,
-            background: `radial-gradient(circle, ${waveColor}33, transparent 60%)`,
-            transform: `translate(3px, -2px)`,
-            animation: 'morphWave 6s ease-in-out infinite reverse',
-          }}
-        />
-
-        {/* Main wave packet */}
-        <div
-          className="relative w-full h-full flex items-center justify-center overflow-hidden border-2 transition-all duration-500 group-hover:rounded-2xl"
+          data-decorative
+          className="absolute inset-0 overflow-hidden border-2 gpu-layer transition-[border-radius,box-shadow,border-color] duration-500 group-hover:rounded-2xl"
           style={{
             borderRadius,
             borderColor: `${waveColor}55`,
             background: `radial-gradient(circle at 40% 40%, ${waveColor}18, ${waveColor}08 60%, transparent 90%)`,
             boxShadow: `0 0 20px ${waveColor}15, inset 0 0 20px ${waveColor}08`,
-            animation: 'morphWave 4s ease-in-out infinite',
+            animation: 'wobble 6s ease-in-out infinite',
             animationDelay: `${(phase % 10) * 0.1}s`,
           }}
         >
@@ -120,12 +111,18 @@ function SiteCardWaveParticle({ site }) {
               ${waveColor}22 9px
             )`,
           }} />
+        </div>
 
-          {/* Favicon */}
+        {/* Favicon — fora da camada animada para não herdar o wobble */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="relative z-10 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center">
             <img
               src={getFaviconUrl(site.url)}
               alt={site.name}
+              loading="lazy"
+              decoding="async"
+              width="40"
+              height="40"
               className="w-full h-full object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
               onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
             />
@@ -135,17 +132,11 @@ function SiteCardWaveParticle({ site }) {
           </div>
         </div>
 
-        {/* Wave function probability dots orbiting */}
-        <div className="absolute inset-[-14px] rounded-full animate-spin" style={{ animationDuration: '8s' }}>
+        {/* Wave function probability dot orbiting */}
+        <div data-decorative className="absolute inset-[-14px] rounded-full animate-spin gpu-layer" style={{ animationDuration: '10s' }}>
           <div
             className="absolute top-0 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full opacity-70 group-hover:opacity-0 transition-opacity"
             style={{ backgroundColor: waveColor, boxShadow: `0 0 6px ${waveColor}` }}
-          />
-        </div>
-        <div className="absolute inset-[-14px] rounded-full animate-spin" style={{ animationDuration: '12s', animationDirection: 'reverse' }}>
-          <div
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[2px] h-[2px] rounded-full opacity-50 group-hover:opacity-0 transition-opacity"
-            style={{ backgroundColor: waveColor, boxShadow: `0 0 4px ${waveColor}` }}
           />
         </div>
       </div>

@@ -1,8 +1,10 @@
-import { useEffect, useState, lazy, Suspense } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { Settings } from 'lucide-react'
 import useStore, { searchProviders } from './store/useStore'
 import { applyTheme } from './themes/themes'
+import { applyMotion, watchSystemMotion } from './utils/motion'
 import { trackOrbitUsage } from './utils/analytics'
+import FooterHints from './components/FooterHints'
 import Clock from './components/Clock'
 import SearchBar from './components/SearchBar'
 import CategoryFilter from './components/CategoryFilter'
@@ -26,26 +28,18 @@ export default function App() {
   const theme = useStore((state) => state.theme)
   const searchProvider = useStore((state) => state.searchProvider)
   const openSettings = useStore((state) => state.openSettings)
+  const motionMode = useStore((state) => state.motionMode)
   useEasterEggs()
-
-  const [hintIndex, setHintIndex] = useState(0)
-  const hints = [
-    "Orbit · Sua página inicial personalizada",
-    "💡 Dica: O que acontece se digitar 'do a barrel roll' na busca?",
-    "⚠️ Aviso: Jamais pesquise por comandos como 'sudo rm -rf /'",
-    "🕹️ Segredo: O clássico código (↑ ↑ ↓ ↓ ← → ← → B A) funciona aqui...",
-  ]
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHintIndex(prev => (prev + 1) % hints.length)
-    }, 15000) // Troca a cada 15 segundos
-    return () => clearInterval(interval)
-  }, [])
 
   useEffect(() => {
     applyTheme(theme)
   }, [theme])
+
+  useEffect(() => {
+    applyMotion(motionMode)
+    // No modo 'auto' seguimos o sistema, então reagimos se ele mudar.
+    return watchSystemMotion(() => applyMotion(motionMode))
+  }, [motionMode])
 
   useEffect(() => {
     trackOrbitUsage({
@@ -86,14 +80,7 @@ export default function App() {
         </div>
 
         {/* Footer */}
-        <footer className="relative h-16 py-6 overflow-hidden">
-          <p
-            key={hintIndex}
-            className="absolute inset-0 flex items-center justify-center text-center text-muted text-sm animate-fadeIn"
-          >
-            {hints[hintIndex]}
-          </p>
-        </footer>
+        <FooterHints />
       </div>
 
       {/* Modals */}

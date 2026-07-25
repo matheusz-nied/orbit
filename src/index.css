@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap');
+/* As fontes são carregadas via <link> em index.html (preconnect + não bloqueante).
+   Um @import aqui bloquearia o parse do CSS até o Google Fonts responder. */
 
 @tailwind base;
 @tailwind components;
@@ -239,7 +240,9 @@ input:focus, button:focus, select:focus {
   border-radius: 22px !important;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              background-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
 }
 
 [data-theme="macos"] .group\/card:hover .bg-card\/80 {
@@ -336,7 +339,10 @@ input:focus, button:focus, select:focus {
   backdrop-filter: blur(24px) saturate(150%) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: 0 10px 40px -10px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.03) !important;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 [data-theme="premium-dark"] .group\/card:hover .bg-card\/80 {
@@ -384,6 +390,7 @@ input:focus, button:focus, select:focus {
   background: radial-gradient(circle, transparent 45%, rgba(255,102,0,0.06) 48%, rgba(255,153,51,0.12) 50%, rgba(255,102,0,0.06) 52%, transparent 55%);
   pointer-events: none;
   z-index: 0;
+  will-change: transform, opacity;
   animation: accretionPulse 8s ease-in-out infinite;
 }
 
@@ -405,7 +412,10 @@ input:focus, button:focus, select:focus {
   border: 1px solid rgba(255, 102, 0, 0.15) !important;
   backdrop-filter: none !important;
   box-shadow: none !important;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 [data-theme="event-horizon"] .group\/card:hover .bg-card\/80 {
@@ -450,6 +460,7 @@ input:focus, button:focus, select:focus {
   background-repeat: repeat;
   pointer-events: none;
   z-index: 0;
+  will-change: transform, opacity;
   animation: nebulaStars 10s ease-in-out infinite alternate;
 }
 
@@ -464,7 +475,8 @@ input:focus, button:focus, select:focus {
   backdrop-filter: blur(20px) saturate(160%) !important;
   border: 1px solid rgba(0, 255, 255, 0.15) !important;
   box-shadow: 0 8px 32px rgba(120, 0, 200, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
-  transition: all 0.4s ease !important;
+  transition: transform 0.4s ease, box-shadow 0.4s ease,
+              border-color 0.4s ease, background-color 0.4s ease !important;
 }
 
 [data-theme="nebula"] .group\/card:hover .bg-card\/80 {
@@ -500,6 +512,7 @@ input:focus, button:focus, select:focus {
   background: radial-gradient(circle at 50% 30%, rgba(255, 248, 231, 0.12) 0%, transparent 40%);
   pointer-events: none;
   z-index: 0;
+  will-change: transform, opacity;
   animation: supernovaFlash 25s ease-out infinite;
 }
 
@@ -516,7 +529,8 @@ input:focus, button:focus, select:focus {
   backdrop-filter: blur(16px) saturate(140%) !important;
   border: 1px solid rgba(255, 165, 0, 0.12) !important;
   box-shadow: 0 8px 30px rgba(255, 140, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
-  transition: all 0.3s ease !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+              border-color 0.3s ease, background-color 0.3s ease !important;
 }
 
 [data-theme="supernova"] .group\/card:hover .bg-card\/80 {
@@ -572,6 +586,7 @@ input:focus, button:focus, select:focus {
   );
   pointer-events: none;
   z-index: 0;
+  will-change: transform;
   animation: wormholeSpin 60s linear infinite;
 }
 
@@ -597,6 +612,7 @@ input:focus, button:focus, select:focus {
     0 0 0 60px rgba(0, 255, 200, 0.02),
     0 0 0 120px rgba(0, 200, 255, 0.015),
     0 0 0 180px rgba(0, 255, 170, 0.01);
+  will-change: transform, opacity;
   animation: wormholePulse 6s ease-in-out infinite;
 }
 
@@ -611,7 +627,10 @@ input:focus, button:focus, select:focus {
   backdrop-filter: blur(12px) saturate(140%) !important;
   border: 1px solid rgba(0, 255, 200, 0.1) !important;
   box-shadow: 0 8px 24px rgba(0, 100, 100, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 [data-theme="wormhole"] .group\/card:hover .bg-card\/80 {
@@ -659,5 +678,96 @@ input:focus, button:focus, select:focus {
 @keyframes pulseGlow {
   0%, 100% { transform: scale(0.9); opacity: 0.4; }
   50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+/* =========================================================
+   DESEMPENHO
+   ========================================================= */
+
+/* Isola o layout de cada card: uma animação dentro de um card não obriga
+   o navegador a recalcular o grid inteiro.
+   Sem `paint` de propósito — os cards têm brilhos e botões que passam
+   das bordas e seriam recortados. */
+.card-contain {
+  contain: layout style;
+}
+
+/* Camadas decorativas animadas ficam na GPU e não repintam. */
+.gpu-layer {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Notícias ficam abaixo da dobra — o navegador só faz layout/paint
+   das que entram na viewport. */
+.deferred-paint {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 92px;
+}
+
+/* Wobble composited: substitui a animação de border-radius (que repinta
+   a cada frame) por transform, que roda só no compositor. */
+@keyframes wobble {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  33% { transform: scale(1.04) rotate(2deg); }
+  66% { transform: scale(0.97) rotate(-2deg); }
+}
+
+/* =========================================================
+   MODO LEVE — desliga o que é caro e puramente decorativo.
+   Ativado por prefers-reduced-motion ou pelo seletor em Configurações.
+   ========================================================= */
+
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Animações infinitas somem de vez (não só aceleram). */
+[data-motion="reduced"] .animate-float,
+[data-motion="reduced"] .animate-blink,
+[data-motion="reduced"] .animate-orbit-glow,
+[data-motion="reduced"] [data-decorative] {
+  animation: none !important;
+}
+
+/* Exceção: spinners que comunicam estado (carregando) continuam girando —
+   parados eles pareceriam um bug, não uma otimização. */
+[data-motion="reduced"] [data-loading] {
+  animation: spin 1s linear infinite !important;
+}
+
+/* Camadas decorativas de tela cheia dos temas: as mais caras de rasterizar. */
+[data-motion="reduced"][data-theme="wormhole"]::before,
+[data-motion="reduced"][data-theme="nebula"]::after,
+[data-motion="reduced"][data-theme="supernova"]::after,
+[data-motion="reduced"][data-theme="event-horizon"]::before {
+  animation: none !important;
+  will-change: auto !important;
+}
+
+/* backdrop-filter é o efeito mais caro da página: com N cards na tela,
+   cada um força o compositor a reamostrar o fundo. */
+[data-motion="reduced"] .bg-card,
+[data-motion="reduced"] .group\/card .bg-card\/80,
+[data-motion="reduced"] [class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+[data-motion="reduced"] .modal-backdrop {
+  backdrop-filter: none !important;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+/* Blur em elemento animado obriga o navegador a refazer o blur a cada
+   frame — no modo leve as camadas de brilho ficam estáticas e leves. */
+[data-motion="reduced"] [data-decorative][class*="blur"] {
+  filter: none !important;
 }
 

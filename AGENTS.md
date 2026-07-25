@@ -60,6 +60,19 @@ src/
 - `SettingsModal` — 5 abas (Geral, Sites, Categorias, Notícias, Dados).
 - `AddSiteModal` — modal para adicionar/editar site.
 
+### Desempenho / Animações
+
+A página tem muitas animações decorativas infinitas. Regras para não regredir:
+
+- **Nunca anime propriedades que repintam** (`border-radius`, `box-shadow`, `background`, `width/height`) em elementos com `filter: blur()` ou `backdrop-filter` — o navegador refaz o blur a cada frame. Use `transform`/`opacity` (keyframe `wobble` existe para isso).
+- **Evite `transition: all`** — liste as propriedades explicitamente.
+- Camadas decorativas animadas levam `data-decorative` (permite desligá-las no modo leve) e `gpu-layer` (mantém no compositor).
+- Root de card leva `card-contain` (`contain: layout style` — sem `paint`, que recortaria brilhos e botões que saem da borda).
+- Listas longas fora da dobra levam `deferred-paint` (`content-visibility: auto`).
+
+**Modo de animações** (`motionMode` no store: `'auto' | 'full' | 'reduced'`, persistido em `sp_motion_mode`):
+`src/utils/motion.js` escreve `data-motion="full|reduced"` no `<html>`; o bloco `[data-motion="reduced"]` em `index.css` desliga animações infinitas, blurs e `backdrop-filter`. `'auto'` segue `prefers-reduced-motion`. Aplicado antes do primeiro render em `main.jsx`. Spinners de estado usam `data-loading` para escapar da regra.
+
 ### Modais
 - Controlados por booleanos no store (`settingsOpen`, `addSiteOpen`).
 - Retornam `null` quando fechados.

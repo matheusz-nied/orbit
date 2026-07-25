@@ -6,6 +6,7 @@ import {
   defaultNewsTopics,
 } from "../utils/storage";
 import { applyTheme } from "../themes/themes";
+import { applyMotion } from "../utils/motion";
 
 const searchProviders = [
   {
@@ -52,6 +53,9 @@ const useStore = create((set, get) => ({
 
   // Card Layout
   cardLayout: storage.get("card_layout") || "wave-particle",
+
+  // Motion / desempenho — 'auto' | 'full' | 'reduced'
+  motionMode: storage.get("motion_mode") || "auto",
 
   // Search
   searchProvider: Math.min(
@@ -202,6 +206,12 @@ const useStore = create((set, get) => ({
     set({ cardLayout: layout });
   },
 
+  setMotionMode: (mode) => {
+    storage.set("motion_mode", mode);
+    applyMotion(mode);
+    set({ motionMode: mode });
+  },
+
   // Actions — Search
   setSearchProvider: (provider) => {
     storage.set("search_provider", provider);
@@ -304,6 +314,7 @@ const useStore = create((set, get) => ({
         categories: storage.get("categories") || defaultCategories,
         theme: storage.get("theme") || "premium-dark",
         cardLayout: storage.get("card_layout") || "wave-particle",
+        motionMode: storage.get("motion_mode") || "auto",
         searchProvider: storage.get("search_provider") || 0,
         newsProvider: (() => {
           const saved = storage.get("news_provider")
@@ -320,6 +331,7 @@ const useStore = create((set, get) => ({
         openInNewTab: storage.get("open_in_new_tab") !== false,
       });
       applyTheme(get().theme);
+      applyMotion(get().motionMode);
     }
     return success;
   },

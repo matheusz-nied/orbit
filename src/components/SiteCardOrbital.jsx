@@ -56,7 +56,7 @@ function SiteCardOrbital({ site }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="relative group flex flex-col items-center"
+      className="relative group flex flex-col items-center card-contain"
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
       {...attributes}
@@ -64,7 +64,8 @@ function SiteCardOrbital({ site }) {
     >
       <div
         onClick={handleClick}
-        className="relative cursor-pointer w-20 h-20 sm:w-24 sm:h-24 mb-3 animate-float"
+        data-decorative
+        className="relative cursor-pointer w-20 h-20 sm:w-24 sm:h-24 mb-3 animate-float gpu-layer"
         style={{ animationDelay: `${floatDelay}s` }}
       >
         {/* Outer ring */}
@@ -99,6 +100,8 @@ function SiteCardOrbital({ site }) {
           <img
             src={getFaviconUrl(site.url)}
             alt={site.name}
+            loading="lazy"
+            decoding="async"
             className="relative z-10 w-9 h-9 sm:w-11 sm:h-11 object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
           />
@@ -112,7 +115,8 @@ function SiteCardOrbital({ site }) {
 
         {/* Orbiting dot */}
         <div
-          className="absolute inset-[-12px] rounded-full animate-spin"
+          data-decorative
+          className="absolute inset-[-12px] rounded-full animate-spin gpu-layer"
           style={{ animationDuration: '8s' }}
         >
           <div

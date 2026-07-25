@@ -48,8 +48,14 @@ export default function NewsFeed() {
 
   useEffect(() => {
     fetchNews()
-    // Refresh every 5 minutes
-    const interval = setInterval(fetchNews, 5 * 60 * 1000)
+
+    // Refresh a cada 5 minutos, mas só com a aba visível. Numa startpage que
+    // fica aberta o dia inteiro em segundo plano isso evita centenas de
+    // requests e re-renders inúteis.
+    const interval = setInterval(() => {
+      if (!document.hidden) fetchNews()
+    }, 5 * 60 * 1000)
+
     return () => clearInterval(interval)
   }, [fetchNews])
 
@@ -65,7 +71,7 @@ export default function NewsFeed() {
         href={item.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="block bg-card border border-border rounded-xl p-4 hover:border-accent transition-colors group"
+        className="deferred-paint block bg-card border border-border rounded-xl p-4 hover:border-accent transition-colors group"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -118,7 +124,7 @@ export default function NewsFeed() {
             className="p-2 text-muted hover:text-accent transition-colors disabled:opacity-50"
             aria-label="Atualizar notícias"
           >
-            <RefreshCw size={16} className={newsLoading ? 'animate-spin' : ''} />
+            <RefreshCw size={16} data-loading={newsLoading || undefined} className={newsLoading ? 'animate-spin' : ''} />
           </button>
         </div>
       </div>

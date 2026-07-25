@@ -60,7 +60,7 @@ function SiteCardQuantumSpin({ site }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="relative group flex flex-col items-center"
+      className="relative group flex flex-col items-center card-contain"
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
       {...attributes}
@@ -78,7 +78,8 @@ function SiteCardQuantumSpin({ site }) {
 
         {/* Spin ring 1 — tilted X axis */}
         <div
-          className="absolute inset-0 rounded-full border-[1.5px] opacity-60 group-hover:opacity-90 transition-opacity"
+          data-decorative
+          className="absolute inset-0 rounded-full border-[1.5px] opacity-60 gpu-layer group-hover:opacity-90 transition-opacity"
           style={{
             borderColor: `${spinColor}88`,
             transform: `rotateX(${ax1}deg) rotateY(0deg)`,
@@ -89,7 +90,8 @@ function SiteCardQuantumSpin({ site }) {
 
         {/* Spin ring 2 — tilted Y axis */}
         <div
-          className="absolute inset-[4px] rounded-full border opacity-40 group-hover:opacity-70 transition-opacity"
+          data-decorative
+          className="absolute inset-[4px] rounded-full border opacity-40 gpu-layer group-hover:opacity-70 transition-opacity"
           style={{
             borderColor: `${spinColor}66`,
             transform: `rotateX(0deg) rotateY(${ax2}deg)`,
@@ -100,7 +102,8 @@ function SiteCardQuantumSpin({ site }) {
 
         {/* Equatorial ring */}
         <div
-          className="absolute inset-[8px] rounded-full border-[1.5px] border-dashed opacity-50"
+          data-decorative
+          className="absolute inset-[8px] rounded-full border-[1.5px] border-dashed opacity-50 gpu-layer"
           style={{
             borderColor: `${spinColor}99`,
             animation: 'spin 4s linear infinite',
@@ -118,7 +121,8 @@ function SiteCardQuantumSpin({ site }) {
         >
           {/* Inner energy pulse */}
           <div
-            className="absolute inset-0 rounded-full opacity-50"
+            data-decorative
+            className="absolute inset-0 rounded-full opacity-50 gpu-layer"
             style={{
               background: `radial-gradient(circle, ${spinColor}66 0%, transparent 60%)`,
               animation: 'pulseGlow 2.5s ease-in-out infinite',
@@ -129,6 +133,8 @@ function SiteCardQuantumSpin({ site }) {
             <img
               src={getFaviconUrl(site.url)}
               alt={site.name}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
               onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
             />
@@ -144,7 +150,8 @@ function SiteCardQuantumSpin({ site }) {
 
         {/* Orbiting electron 1 */}
         <div
-          className="absolute inset-[-6px] rounded-full"
+          data-decorative
+          className="absolute inset-[-6px] rounded-full gpu-layer"
           style={{
             animation: `spin3dX ${spd1 * 0.8}s linear infinite ${dir1}`,
             transform: `rotateX(${ax1}deg)`,
@@ -158,7 +165,8 @@ function SiteCardQuantumSpin({ site }) {
 
         {/* Orbiting electron 2 */}
         <div
-          className="absolute inset-[-6px] rounded-full"
+          data-decorative
+          className="absolute inset-[-6px] rounded-full gpu-layer"
           style={{
             animation: `spin3dY ${spd2 * 0.7}s linear infinite ${dir2}`,
             transform: `rotateY(${ax2}deg)`,

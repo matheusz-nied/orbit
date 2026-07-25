@@ -81,6 +81,8 @@ function SiteCardMagazine({ site }) {
                         <img
                             src={getFaviconUrl(site.url)}
                             alt={site.name}
+                            loading="lazy"
+                            decoding="async"
                             className="w-7 h-7 sm:w-9 sm:h-9 object-contain drop-shadow"
                             onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
                         />
