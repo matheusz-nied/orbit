@@ -40,6 +40,30 @@ Exibição em tempo real, sempre visível. Simples e elegante.
 - Digite para filtrar seus sites simultaneamente
 - `Enter` → abre a busca web
 
+### ⭐ Sites Frequentes
+- O Orbit conta quantas vezes você abre cada site e monta uma aba **Frequentes** sozinho
+- Os contadores ficam só no seu navegador — dá para zerar quando quiser
+
+### 🗂️ Espaços de Trabalho
+- Crie conjuntos independentes de sites: **Pessoal**, **Trabalho**, **Estudos**...
+- Troque de contexto com um clique, sem misturar os atalhos
+- Remover um espaço nunca apaga sites — eles são movidos para outro
+
+### 🌤️ Clima
+- Temperatura, condição, máxima/mínima e sensação térmica logo abaixo do relógio
+- Dados do **Open-Meteo** — gratuito e **sem API key**
+- Busque a cidade pelo nome ou use sua localização
+
+### 📝 Notas Rápidas e ⏱️ Pomodoro
+- Bloco de anotações sempre à mão, salvo automaticamente
+- Timer de foco com ciclos de 25/5 min, com o tempo no título da aba
+- O timer usa o relógio do sistema, então não atrasa com a aba em segundo plano
+
+### 📴 Funciona Offline (PWA)
+- Instale o Orbit como aplicativo no desktop ou celular
+- A página abre completa mesmo sem internet
+- Favicons e fontes ficam em cache — carregamento instantâneo e menos requisições externas
+
 ### 🗂️ Cards de Sites
 - Adicione quantos sites quiser
 - **Arraste e solte** para reorganizar
@@ -107,6 +131,7 @@ Exporte toda sua configuração (sites, categorias, tema, layout) em JSON. Impor
 
 - 🔒 **Sem rastreamento** — seus dados ficam no seu navegador
 - 🚫 **Sem contas** — não precisa se cadastrar em nada
+- 🆓 **Sem API key** — clima e notícias funcionam sem você cadastrar nada
 - 📴 **Sem backend** — funciona offline, 100% client-side
 - 🪶 **Sem peso** — build leve, carregamento instantâneo
 - 🤝 **Open source** — código aberto, contribuições bem-vindas

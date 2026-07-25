@@ -39,7 +39,13 @@ export default function NewsFeed() {
     try {
       await fetchFromTabNews()
     } catch (err) {
-      setError('Falha ao carregar notícias')
+      // Com o service worker o app abre offline, então vale distinguir "sem
+      // internet" de "a API falhou" — a ação do usuário é diferente em cada caso.
+      setError(
+        navigator.onLine
+          ? 'Falha ao carregar notícias'
+          : 'Você está offline — as notícias voltam quando a conexão retornar',
+      )
       console.error(err)
     }
 

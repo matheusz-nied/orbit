@@ -15,6 +15,11 @@ import {
 import { Plus, RotateCcw } from 'lucide-react'
 import useStore from '../store/useStore'
 import SiteCard from './SiteCard'
+import { FREQUENT_CATEGORY, FREQUENT_LIMIT, rankByUsage } from '../utils/frequent'
+
+// Constante de módulo em vez de `[]` inline: um array novo a cada render faria
+// o DndContext reconfigurar os sensores sem necessidade.
+const NO_SENSORS = []
 
 export default function SiteGrid() {
   const sites = useStore((state) => state.sites)
@@ -25,6 +30,12 @@ export default function SiteGrid() {
   const reorderSites = useStore((state) => state.reorderSites)
   const openAddSite = useStore((state) => state.openAddSite)
   const cardLayout = useStore((state) => state.cardLayout)
+  const activeWorkspace = useStore((state) => state.activeWorkspace)
+  const siteStats = useStore((state) => state.siteStats)
+
+  // Em "Frequentes" a ordem é derivada do uso, então arrastar não faria
+  // sentido — a posição voltaria sozinha no próximo clique.
+  const isFrequentView = activeCategory === FREQUENT_CATEGORY
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -38,9 +49,13 @@ export default function SiteGrid() {
   )
 
   const filteredSites = useMemo(() => {
-    let result = [...sites].sort((a, b) => a.order - b.order)
+    let result = [...sites]
+      .filter(s => s.workspace === activeWorkspace)
+      .sort((a, b) => a.order - b.order)
 
-    if (activeCategory !== 'all') {
+    if (isFrequentView) {
+      result = rankByUsage(result, siteStats).slice(0, FREQUENT_LIMIT)
+    } else if (activeCategory !== 'all') {
       result = result.filter(s => s.category === activeCategory)
     }
 
@@ -53,11 +68,11 @@ export default function SiteGrid() {
     }
 
     return result
-  }, [sites, activeCategory, searchQuery])
+  }, [sites, activeCategory, searchQuery, activeWorkspace, isFrequentView, siteStats])
 
   const handleDragEnd = (event) => {
     const { active, over } = event
-    if (!over || active.id === over.id) return
+    if (isFrequentView || !over || active.id === over.id) return
 
     const oldIndex = filteredSites.findIndex(s => s.id === active.id)
     const newIndex = filteredSites.findIndex(s => s.id === over.id)
@@ -93,7 +108,7 @@ export default function SiteGrid() {
   return (
     <div className="w-full max-w-6xl mx-auto px-4 mb-12">
       <DndContext
-        sensors={sensors}
+        sensors={isFrequentView ? NO_SENSORS : sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
@@ -108,11 +123,15 @@ export default function SiteGrid() {
 
       {filteredSites.length === 0 && (
         <div className="text-center py-12 px-6 bg-card/60 border border-border rounded-2xl text-muted max-w-xl mx-auto">
-          <p className="text-base text-text font-medium mb-2">Nenhum site encontrado</p>
+          <p className="text-base text-text font-medium mb-2">
+            {isFrequentView && !searchQuery.trim() ? 'Ainda sem histórico de uso' : 'Nenhum site encontrado'}
+          </p>
           <p className="text-sm mb-5">
             {searchQuery.trim()
               ? 'Tente limpar o filtro atual ou adicione um novo atalho para essa busca.'
-              : 'Essa categoria ainda não tem sites. Você pode adicionar um agora.'}
+              : isFrequentView
+                ? 'Assim que você abrir alguns sites daqui, os mais usados aparecem nesta aba automaticamente.'
+                : 'Essa categoria ainda não tem sites. Você pode adicionar um agora.'}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             {searchQuery.trim() && (

@@ -1,9 +1,13 @@
 import { create } from "zustand";
 import {
   storage,
+  loadSites,
   defaultSites,
   defaultCategories,
   defaultNewsTopics,
+  defaultWorkspaces,
+  defaultWidgets,
+  DEFAULT_WORKSPACE,
 } from "../utils/storage";
 import { applyTheme } from "../themes/themes";
 import { applyMotion } from "../utils/motion";
@@ -42,11 +46,23 @@ const searchProviders = [
 
 const useStore = create((set, get) => ({
   // Sites
-  sites: storage.get("sites") || defaultSites,
+  sites: loadSites(),
 
   // Categories
   categories: storage.get("categories") || defaultCategories,
   activeCategory: "all",
+
+  // Workspaces — conjuntos independentes de sites (ex.: Pessoal / Trabalho)
+  workspaces: storage.get("workspaces") || defaultWorkspaces,
+  activeWorkspace: storage.get("active_workspace") || DEFAULT_WORKSPACE,
+
+  // Uso: { [siteId]: { count, lastUsed } } — alimenta a aba "Frequentes"
+  siteStats: storage.get("site_stats") || {},
+
+  // Widgets
+  widgets: { ...defaultWidgets, ...(storage.get("widgets") || {}) },
+  weatherLocation: storage.get("weather_location") || null,
+  notes: storage.get("notes") || "",
 
   // Theme
   theme: storage.get("theme") || "premium-dark",
@@ -104,6 +120,7 @@ const useStore = create((set, get) => ({
   addSite: (site) => {
     const sites = get().sites;
     const newSite = {
+      workspace: get().activeWorkspace,
       ...site,
       id: Date.now().toString(),
       order: sites.length,
@@ -117,6 +134,7 @@ const useStore = create((set, get) => ({
     const sites = get().sites;
     const timestamp = Date.now();
     const sitesToAdd = newSites.map((site, index) => ({
+      workspace: get().activeWorkspace,
       ...site,
       id: `${timestamp}-${index}`,
       order: sites.length + index,
@@ -137,7 +155,29 @@ const useStore = create((set, get) => ({
   removeSite: (id) => {
     const sites = get().sites.filter((s) => s.id !== id);
     storage.set("sites", sites);
-    set({ sites });
+
+    // Sem isso as estatísticas de sites apagados ficariam acumulando para
+    // sempre no localStorage.
+    const { [id]: _removed, ...siteStats } = get().siteStats;
+    storage.set("site_stats", siteStats);
+
+    set({ sites, siteStats });
+  },
+
+  // Chamado a cada abertura de site — base da aba "Frequentes".
+  registerSiteVisit: (id) => {
+    const current = get().siteStats[id] || { count: 0, lastUsed: 0 };
+    const siteStats = {
+      ...get().siteStats,
+      [id]: { count: current.count + 1, lastUsed: Date.now() },
+    };
+    storage.set("site_stats", siteStats);
+    set({ siteStats });
+  },
+
+  resetSiteStats: () => {
+    storage.set("site_stats", {});
+    set({ siteStats: {} });
   },
 
   reorderSites: (newOrder) => {
@@ -192,6 +232,77 @@ const useStore = create((set, get) => ({
 
   setActiveCategory: (category) => {
     set({ activeCategory: category });
+  },
+
+  // Actions — Workspaces
+  setActiveWorkspace: (id) => {
+    storage.set("active_workspace", id);
+    // A categoria é resetada porque ela pode não existir no espaço destino,
+    // o que deixaria a grade vazia sem explicação aparente.
+    set({ activeWorkspace: id, activeCategory: "all" });
+  },
+
+  addWorkspace: (name) => {
+    const trimmed = name.trim();
+    if (!trimmed) return null;
+
+    const id = `ws-${Date.now()}`;
+    const workspaces = [...get().workspaces, { id, name: trimmed }];
+    storage.set("workspaces", workspaces);
+    set({ workspaces });
+    return id;
+  },
+
+  renameWorkspace: (id, name) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+
+    const workspaces = get().workspaces.map((w) =>
+      w.id === id ? { ...w, name: trimmed } : w,
+    );
+    storage.set("workspaces", workspaces);
+    set({ workspaces });
+  },
+
+  removeWorkspace: (id) => {
+    const workspaces = get().workspaces.filter((w) => w.id !== id);
+    // Sempre resta pelo menos um espaço: sem nenhum, os sites ficariam órfãos
+    // e invisíveis.
+    if (workspaces.length === 0) return;
+
+    const fallback = workspaces[0].id;
+
+    // Os sites são movidos, nunca apagados — remover um espaço por engano não
+    // pode custar os atalhos do usuário.
+    const sites = get().sites.map((s) =>
+      s.workspace === id ? { ...s, workspace: fallback } : s,
+    );
+
+    storage.set("workspaces", workspaces);
+    storage.set("sites", sites);
+
+    const activeWorkspace =
+      get().activeWorkspace === id ? fallback : get().activeWorkspace;
+    storage.set("active_workspace", activeWorkspace);
+
+    set({ workspaces, sites, activeWorkspace });
+  },
+
+  // Actions — Widgets
+  setWidgetVisible: (key, value) => {
+    const widgets = { ...get().widgets, [key]: value };
+    storage.set("widgets", widgets);
+    set({ widgets });
+  },
+
+  setWeatherLocation: (location) => {
+    storage.set("weather_location", location);
+    set({ weatherLocation: location });
+  },
+
+  setNotes: (notes) => {
+    storage.set("notes", notes);
+    set({ notes });
   },
 
   // Actions — Theme & Layout
@@ -310,8 +421,14 @@ const useStore = create((set, get) => ({
     const success = storage.importAll(data);
     if (success) {
       set({
-        sites: storage.get("sites") || defaultSites,
+        sites: loadSites(),
         categories: storage.get("categories") || defaultCategories,
+        workspaces: storage.get("workspaces") || defaultWorkspaces,
+        activeWorkspace: storage.get("active_workspace") || DEFAULT_WORKSPACE,
+        siteStats: storage.get("site_stats") || {},
+        widgets: { ...defaultWidgets, ...(storage.get("widgets") || {}) },
+        weatherLocation: storage.get("weather_location") || null,
+        notes: storage.get("notes") || "",
         theme: storage.get("theme") || "premium-dark",
         cardLayout: storage.get("card_layout") || "wave-particle",
         motionMode: storage.get("motion_mode") || "auto",

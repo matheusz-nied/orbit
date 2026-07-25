@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
-import { openUrl } from '../utils/navigation'
+import { openSite } from '../utils/navigation'
 
 const orbitColors = [
   '#6366f1', '#ec4899', '#10b981', '#f59e0b', '#8b5cf6',
@@ -47,7 +47,7 @@ function SiteCardOrbital({ site }) {
 
   const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-    const handleClick = () => openUrl(site.url, openInNewTab)
+    const handleClick = () => openSite(site, openInNewTab)
 
   const orbitColor = useMemo(() => getOrbitColor(site.name), [site.name])
   const floatDelay = useMemo(() => getFloatDelay(site.name), [site.name])

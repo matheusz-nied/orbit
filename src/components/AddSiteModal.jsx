@@ -24,10 +24,13 @@ export default function AddSiteModal() {
   const setEditingSite = useStore((state) => state.setEditingSite)
   const categories = useStore((state) => state.categories)
   const activeCategory = useStore((state) => state.activeCategory)
+  const workspaces = useStore((state) => state.workspaces)
+  const activeWorkspace = useStore((state) => state.activeWorkspace)
 
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [category, setCategory] = useState('')
+  const [workspace, setWorkspace] = useState(activeWorkspace)
   const [urlTouched, setUrlTouched] = useState(false)
 
   useEffect(() => {
@@ -35,10 +38,14 @@ export default function AddSiteModal() {
       setName(editingSite.name)
       setUrl(editingSite.url)
       setCategory(editingSite.category)
+      setWorkspace(editingSite.workspace || activeWorkspace)
     } else {
+      setWorkspace(activeWorkspace)
       setName('')
       setUrl('')
-      setCategory(activeCategory !== 'all' ? activeCategory : (categories[0] || ''))
+      // 'all' e 'Frequentes' são visões, não categorias atribuíveis.
+      const isRealCategory = activeCategory !== 'all' && categories.includes(activeCategory)
+      setCategory(isRealCategory ? activeCategory : (categories[0] || ''))
     }
     setUrlTouched(false)
   }, [editingSite, addSiteOpen, categories, activeCategory])
@@ -53,20 +60,19 @@ export default function AddSiteModal() {
       finalUrl = 'https://' + finalUrl
     }
     
-    if (editingSite) {
-      updateSite(editingSite.id, {
-        name: name.trim(),
-        url: finalUrl,
-        category: category || categories[0] || 'all'
-      })
-    } else {
-      addSite({
-        name: name.trim(),
-        url: finalUrl,
-        category: category || categories[0] || 'all'
-      })
+    const payload = {
+      name: name.trim(),
+      url: finalUrl,
+      category: category || categories[0] || 'all',
+      workspace: workspace || activeWorkspace,
     }
-    
+
+    if (editingSite) {
+      updateSite(editingSite.id, payload)
+    } else {
+      addSite(payload)
+    }
+
     handleClose()
   }
 
@@ -74,6 +80,7 @@ export default function AddSiteModal() {
     setName('')
     setUrl('')
     setCategory('')
+    setWorkspace(activeWorkspace)
     setUrlTouched(false)
     setEditingSite(null)
     closeAddSite()
@@ -166,19 +173,37 @@ export default function AddSiteModal() {
             </div>
           )}
           
-          <div>
-            <label className="block text-sm text-muted mb-1">Categoria</label>
-            <select
-              value={category}
-              onChange={e => setCategory(e.target.value)}
-              className="w-full px-4 py-3 bg-bg border border-border rounded-lg text-text focus:border-accent transition-colors"
-            >
-              {categories.map(cat => (
-                <option key={cat} value={cat}>
-                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                </option>
-              ))}
-            </select>
+          <div className={workspaces.length > 1 ? 'grid grid-cols-2 gap-3' : ''}>
+            <div>
+              <label className="block text-sm text-muted mb-1">Categoria</label>
+              <select
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+                className="w-full px-4 py-3 bg-bg border border-border rounded-lg text-text focus:border-accent transition-colors"
+              >
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>
+                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Só faz sentido escolher espaço quando existe mais de um. */}
+            {workspaces.length > 1 && (
+              <div>
+                <label className="block text-sm text-muted mb-1">Espaço</label>
+                <select
+                  value={workspace}
+                  onChange={e => setWorkspace(e.target.value)}
+                  className="w-full px-4 py-3 bg-bg border border-border rounded-lg text-text focus:border-accent transition-colors"
+                >
+                  {workspaces.map(w => (
+                    <option key={w.id} value={w.id}>{w.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
           
           <div className="flex gap-3 pt-2">

@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
-import { openUrl } from '../utils/navigation'
+import { openSite } from '../utils/navigation'
 
 const accretionPalettes = [
   ['#ff6b35', '#f7931e', '#ffd23f'], // laranja/dourado
@@ -39,7 +39,7 @@ function SiteCardSingularity({ site }) {
 
   const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-    const handleClick = () => openUrl(site.url, openInNewTab)
+    const handleClick = () => openSite(site, openInNewTab)
 
   const [c1, c2, c3] = useMemo(() => getAccretionPalette(site.name), [site.name])
 

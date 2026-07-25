@@ -6,9 +6,12 @@ import { applyMotion, watchSystemMotion } from './utils/motion'
 import { trackOrbitUsage } from './utils/analytics'
 import FooterHints from './components/FooterHints'
 import Clock from './components/Clock'
+import WeatherWidget from './components/WeatherWidget'
 import SearchBar from './components/SearchBar'
+import WorkspaceSwitcher from './components/WorkspaceSwitcher'
 import CategoryFilter from './components/CategoryFilter'
 import SiteGrid from './components/SiteGrid'
+import WidgetDock from './components/WidgetDock'
 import NewsFeed from './components/NewsFeed'
 import StarCanvas from './components/StarCanvas'
 import { useEasterEggs } from './hooks/useEasterEggs'
@@ -68,7 +71,9 @@ export default function App() {
         <div className="container mx-auto px-4 flex flex-col min-h-[85vh]">
           <div className="flex-1 flex flex-col pt-8">
             <Clock />
+            <WeatherWidget />
             <SearchBar />
+            <WorkspaceSwitcher />
             <CategoryFilter />
             <SiteGrid />
           </div>
@@ -91,6 +96,7 @@ export default function App() {
         <ConfirmModal />
         <AIChatModal />
       </Suspense>
+      <WidgetDock />
       <Toast />
     </div>
   )

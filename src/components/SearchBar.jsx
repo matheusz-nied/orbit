@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { Search, X } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { openUrl } from '../utils/navigation'
+import { FREQUENT_CATEGORY, FREQUENT_LIMIT, rankByUsage } from '../utils/frequent'
 
 export default function SearchBar() {
   const searchProvider = useStore((state) => state.searchProvider)
@@ -14,6 +15,8 @@ export default function SearchBar() {
   const setTheme = useStore((state) => state.setTheme)
   const sites = useStore((state) => state.sites)
   const activeCategory = useStore((state) => state.activeCategory)
+  const activeWorkspace = useStore((state) => state.activeWorkspace)
+  const siteStats = useStore((state) => state.siteStats)
 
   const [localQuery, setLocalQuery] = useState('')
   const inputRef = useRef(null)
@@ -32,18 +35,22 @@ export default function SearchBar() {
   const normalizedQuery = localQuery.trim().toLowerCase()
 
   const filteredCount = useMemo(() => {
-    if (!normalizedQuery) {
-      return activeCategory === 'all'
-        ? sites.length
-        : sites.filter(site => site.category === activeCategory).length
-    }
-    return sites.filter(site => {
-      if (activeCategory !== 'all' && site.category !== activeCategory) {
-        return false
-      }
-      return site.name.toLowerCase().includes(normalizedQuery) || site.url.toLowerCase().includes(normalizedQuery)
-    }).length
-  }, [normalizedQuery, sites, activeCategory])
+    const inScope = sites.filter(site => site.workspace === activeWorkspace)
+
+    // "Frequentes" é uma visão derivada do uso, não uma categoria real.
+    const inCategory = activeCategory === FREQUENT_CATEGORY
+      ? rankByUsage(inScope, siteStats).slice(0, FREQUENT_LIMIT)
+      : activeCategory === 'all'
+        ? inScope
+        : inScope.filter(site => site.category === activeCategory)
+
+    if (!normalizedQuery) return inCategory.length
+
+    return inCategory.filter(site =>
+      site.name.toLowerCase().includes(normalizedQuery) ||
+      site.url.toLowerCase().includes(normalizedQuery)
+    ).length
+  }, [normalizedQuery, sites, activeCategory, activeWorkspace, siteStats])
 
   const handleChange = (e) => {
     const value = e.target.value
@@ -166,7 +173,7 @@ export default function SearchBar() {
         <p className="text-sm text-muted">
           {normalizedQuery
             ? `${filteredCount} ${filteredCount === 1 ? 'site encontrado' : 'sites encontrados'} na grade`
-            : `${activeCategory === 'all' ? sites.length : filteredCount} ${filteredCount === 1 ? 'site visível' : 'sites visíveis'} agora`}
+            : `${filteredCount} ${filteredCount === 1 ? 'site visível' : 'sites visíveis'} agora`}
         </p>
         <p className="text-center text-muted text-sm">
           <kbd className="px-1.5 py-0.5 bg-border rounded text-xs">Tab</kbd> ou clique no provedor para trocar ·

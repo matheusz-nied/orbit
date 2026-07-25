@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
-import { openUrl } from '../utils/navigation'
+import { openSite } from '../utils/navigation'
 
 const waveColors = [
   '#00f5ff', '#7b2dff', '#ff006e', '#00d4aa', '#ffbe0b',
@@ -45,7 +45,7 @@ function SiteCardWaveParticle({ site }) {
 
   const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-    const handleClick = () => openUrl(site.url, openInNewTab)
+    const handleClick = () => openSite(site, openInNewTab)
 
   const waveColor = useMemo(() => getWaveColor(site.name), [site.name])
   const phase = useMemo(() => getWavePhase(site.name), [site.name])

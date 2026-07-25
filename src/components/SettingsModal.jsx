@@ -3,11 +3,13 @@ import {
   X, Palette, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
   LayoutGrid, Rows, GalleryVerticalEnd, Terminal, Sparkles, Gem,
-  CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge
+  CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge, Layers, LayoutDashboard
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
 import { motionModes } from '../utils/motion'
+import WorkspaceManager from './WorkspaceManager'
+import WeatherLocationPicker from './WeatherLocationPicker'
 
 const isValidUrl = (value) => {
   try {
@@ -23,11 +25,20 @@ const isValidUrl = (value) => {
 
 const tabs = [
   { id: 'appearance', label: 'Tema', icon: Palette },
+  { id: 'widgets', label: 'Widgets', icon: LayoutDashboard },
   { id: 'search', label: 'Busca', icon: Search },
   { id: 'ai', label: 'Chat IA', icon: MessageSquare },
   { id: 'news', label: 'Notícias', icon: Newspaper },
+  { id: 'workspaces', label: 'Espaços', icon: Layers },
   { id: 'categories', label: 'Categorias', icon: FolderOpen },
   { id: 'data', label: 'Dados', icon: Database },
+]
+
+const widgetOptions = [
+  { id: 'weather', label: 'Clima', desc: 'Temperatura e condição abaixo do relógio' },
+  { id: 'frequent', label: 'Sites frequentes', desc: 'Aba com os sites que você mais abre' },
+  { id: 'notes', label: 'Notas rápidas', desc: 'Bloco de anotações no canto inferior' },
+  { id: 'pomodoro', label: 'Pomodoro', desc: 'Timer de foco com ciclos de 25/5 min' },
 ]
 
 const availableTopics = [
@@ -48,6 +59,10 @@ export default function SettingsModal() {
   const setCardLayout = useStore((state) => state.setCardLayout)
   const motionMode = useStore((state) => state.motionMode)
   const setMotionMode = useStore((state) => state.setMotionMode)
+  const widgets = useStore((state) => state.widgets)
+  const setWidgetVisible = useStore((state) => state.setWidgetVisible)
+  const siteStats = useStore((state) => state.siteStats)
+  const resetSiteStats = useStore((state) => state.resetSiteStats)
   const searchProvider = useStore((state) => state.searchProvider)
   const setSearchProvider = useStore((state) => state.setSearchProvider)
   const openInNewTab = useStore((state) => state.openInNewTab)
@@ -288,6 +303,59 @@ export default function SettingsModal() {
               </div>
             </div>
           )}
+
+          {/* Widgets Tab */}
+          {activeTab === 'widgets' && (
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-sm font-medium text-muted mb-3">O que mostrar</h3>
+                <div className="space-y-2">
+                  {widgetOptions.map(({ id, label, desc }) => (
+                    <button
+                      key={id}
+                      onClick={() => setWidgetVisible(id, !widgets[id])}
+                      className={`w-full flex items-center justify-between gap-3 p-3 rounded-xl border transition-colors text-left ${
+                        widgets[id] ? 'border-accent bg-accent/10' : 'border-border hover:border-accent/50'
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <span className="block text-sm font-medium text-text">{label}</span>
+                        <span className="block text-xs text-muted mt-0.5">{desc}</span>
+                      </div>
+                      <span
+                        className={`shrink-0 w-10 h-6 rounded-full border flex items-center px-0.5 transition-colors ${
+                          widgets[id] ? 'bg-accent border-accent justify-end' : 'bg-bg border-border justify-start'
+                        }`}
+                      >
+                        <span className={`w-4 h-4 rounded-full ${widgets[id] ? 'bg-bg' : 'bg-muted'}`} />
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <WeatherLocationPicker />
+
+              <div>
+                <h3 className="text-sm font-medium text-muted mb-1">Histórico de uso</h3>
+                <p className="text-xs text-muted mb-3">
+                  A aba "Frequentes" conta quantas vezes você abre cada site. Esses números ficam
+                  só neste navegador e nunca saem dele.
+                </p>
+                <button
+                  onClick={resetSiteStats}
+                  disabled={Object.keys(siteStats).length === 0}
+                  className="px-4 py-2.5 bg-bg border border-border rounded-lg text-sm text-muted hover:text-red-500 hover:border-red-500 transition-colors disabled:opacity-40 disabled:hover:text-muted disabled:hover:border-border"
+                >
+                  Zerar contadores
+                  {Object.keys(siteStats).length > 0 && ` (${Object.keys(siteStats).length} sites)`}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Workspaces Tab */}
+          {activeTab === 'workspaces' && <WorkspaceManager />}
 
           {/* Search Tab */}
           {activeTab === 'search' && (

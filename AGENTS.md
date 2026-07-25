@@ -49,6 +49,34 @@ src/
 - Tailwind referencia variáveis: `bg-[var(--bg)]`, etc. (configurado em `tailwind.config.js` com tokens `bg`, `card`, `text`, `accent`, `muted`, `border`, `font-theme`).
 - `applyTheme()` em `src/themes/themes.js` reage a mudanças via `useEffect` em `App.jsx`.
 
+### Workspaces (Espaços)
+
+- Cada site tem `site.workspace`; `activeWorkspace` no store filtra a grade.
+- **Migração**: `loadSites()` em `storage.js` normaliza sites antigos para `'default'` e regrava — o resto do código pode assumir que o campo sempre existe.
+- Remover um espaço **move** os sites para o primeiro da lista, nunca apaga. Nunca é possível ficar com zero espaços.
+- `WorkspaceSwitcher` só renderiza com 2+ espaços.
+
+### Uso / Frequentes
+
+- `siteStats: { [siteId]: { count, lastUsed } }`, persistido em `sp_site_stats`.
+- **Todo card deve abrir sites via `openSite(site, openInNewTab)`** (`utils/navigation.js`), não `openUrl` — é ele que registra a visita.
+- `FREQUENT_CATEGORY` (`utils/frequent.js`) é uma categoria **virtual**: não existe em `categories`. Ao adicionar código que trata categorias, lembre que `'all'` e `FREQUENT_CATEGORY` não são atribuíveis a um site.
+- Drag & drop fica desabilitado na visão Frequentes (a ordem é derivada do uso).
+
+### Widgets
+
+- Flags em `widgets` (`weather`, `notes`, `pomodoro`, `frequent`), aba "Widgets" nas Configurações.
+- **Clima**: Open-Meteo, sem API key. `utils/weather.js` faz geocoding + previsão e mapeia códigos WMO. Cache de 30 min em `sp_weather_cache`, revalidado só com a aba visível.
+- **Pomodoro**: `usePomodoro` deriva o restante de um **timestamp de término**, nunca de um contador decrementado — navegadores limitam timers em abas de segundo plano. O hook vive no `WidgetDock` para o timer sobreviver ao fechamento do painel.
+- **Notas**: debounce de 400ms + flush em `pagehide` para não perder texto pendente.
+
+### PWA / Offline
+
+- `public/manifest.webmanifest` + ícones PNG (`icon-192`, `icon-512`, `icon-maskable-512`).
+- `public/sw.js` é escrito à mão (sem plugin de build). Estratégias: navegação = network-first; `/assets/*` = cache-first (nomes com hash são imutáveis); favicons e fontes = cache-first.
+- Registrado só em produção (`utils/pwa.js`) — em dev atrapalharia o HMR.
+- **Ao mudar o SW, incremente `VERSION`** — é o que invalida os caches antigos.
+
 ### Componentes Principais
 - `StarCanvas` — canvas animado com estrelas, renderiza **apenas** no tema `space`.
 - `Clock` — relógio/data em tempo real.

@@ -76,3 +76,33 @@ export const defaultSites = [
 export const defaultCategories = ['dev', 'trabalho', 'social', 'entretenimento']
 
 export const defaultNewsTopics = ['technology', 'science']
+
+export const DEFAULT_WORKSPACE = 'default'
+
+export const defaultWorkspaces = [
+  { id: DEFAULT_WORKSPACE, name: 'Pessoal' },
+]
+
+export const defaultWidgets = {
+  weather: true,
+  notes: true,
+  pomodoro: true,
+  frequent: true,
+}
+
+// Sites salvos antes dos workspaces não têm o campo `workspace`. Em vez de
+// tratar `undefined` espalhado pelo código, normalizamos uma vez na leitura e
+// regravamos — assim o resto do app pode assumir que o campo sempre existe.
+export const loadSites = () => {
+  const sites = storage.get('sites') || defaultSites
+  let needsMigration = false
+
+  const migrated = sites.map((site) => {
+    if (site.workspace) return site
+    needsMigration = true
+    return { ...site, workspace: DEFAULT_WORKSPACE }
+  })
+
+  if (needsMigration) storage.set('sites', migrated)
+  return migrated
+}
