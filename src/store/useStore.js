@@ -2,7 +2,6 @@ import { create } from "zustand";
 import {
   storage,
   loadSites,
-  defaultSites,
   defaultCategories,
   defaultNewsTopics,
   defaultWorkspaces,
