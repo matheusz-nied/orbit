@@ -2,18 +2,7 @@ import { useState, useEffect } from 'react'
 import { X, Plus, Pencil } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
-
-const isValidUrl = (value) => {
-  try {
-    const candidate = value.startsWith('http://') || value.startsWith('https://')
-      ? value
-      : `https://${value}`
-    new URL(candidate)
-    return true
-  } catch {
-    return false
-  }
-}
+import { isSafeHttpUrl, normalizeHttpUrl } from '../utils/url'
 
 export default function AddSiteModal() {
   const addSiteOpen = useStore((state) => state.addSiteOpen)
@@ -53,17 +42,13 @@ export default function AddSiteModal() {
   const handleSubmit = (e) => {
     e.preventDefault()
     
-    if (!name.trim() || !url.trim() || !isValidUrl(url.trim())) return
-    
-    let finalUrl = url.trim()
-    if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
-      finalUrl = 'https://' + finalUrl
-    }
-    
+    const finalUrl = normalizeHttpUrl(url)
+    if (!name.trim() || !finalUrl) return
+
     const payload = {
       name: name.trim(),
       url: finalUrl,
-      category: category || categories[0] || 'all',
+      category: category || categories[0] || 'geral',
       workspace: workspace || activeWorkspace,
     }
 
@@ -86,21 +71,18 @@ export default function AddSiteModal() {
     closeAddSite()
   }
 
-  const previewUrl = url.trim()
-    ? (url.trim().startsWith('http://') || url.trim().startsWith('https://') ? url.trim() : `https://${url.trim()}`)
-    : ''
-  const canPreview = previewUrl && isValidUrl(url.trim())
-  const urlHasError = urlTouched && url.trim() && !isValidUrl(url.trim())
+  const previewUrl = normalizeHttpUrl(url) || ''
+  const canPreview = Boolean(previewUrl)
+  const urlHasError = urlTouched && url.trim() && !isSafeHttpUrl(url.trim())
 
   const handleUrlChange = (value) => {
     setUrl(value)
 
     if (!name.trim()) {
+      const normalized = normalizeHttpUrl(value)
+      if (!normalized) return
       try {
-        const candidate = value.startsWith('http://') || value.startsWith('https://')
-          ? value
-          : `https://${value}`
-        const hostname = new URL(candidate).hostname.replace(/^www\./, '')
+        const hostname = new URL(normalized).hostname.replace(/^www\./, '')
         const suggestion = hostname.split('.')[0]
         if (suggestion) {
           setName(suggestion.charAt(0).toUpperCase() + suggestion.slice(1))
@@ -216,7 +198,7 @@ export default function AddSiteModal() {
             </button>
             <button
               type="submit"
-              disabled={!name.trim() || !url.trim() || !isValidUrl(url.trim())}
+              disabled={!name.trim() || !isSafeHttpUrl(url.trim())}
               className="flex-1 px-4 py-3 bg-accent rounded-lg text-bg font-medium hover:opacity-90 transition-opacity"
             >
               {editingSite ? 'Salvar' : 'Adicionar'}

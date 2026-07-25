@@ -2,7 +2,7 @@
 
 **Sua página inicial, do seu jeito.**
 
-Orbit é uma startpage personalizada para seu navegador. Rápida, bonita, sem rastreamento, sem contas, sem complicação. Apenas você e seus sites favoritos — a um clique de distância.
+Orbit é uma startpage personalizada para seu navegador. Rápida, bonita, sem contas, sem backend. Apenas você e seus sites favoritos — a um clique de distância.
 
 ---
 
@@ -26,7 +26,7 @@ Você abre o navegador dezenas de vezes por dia. Cada vez é a mesma história: 
 
 ## 📖 Sobre
 
-Orbit nasceu da frustração com páginas iniciais genéricas e invasivas. É um projeto open source feito por quem usa — sem contas, sem trackers, sem backend. Tudo roda no seu navegador, tudo fica salvo localmente. Sua startpage, seus dados, seu jeito.
+Orbit nasceu da frustração com páginas iniciais genéricas e invasivas. É um projeto open source feito por quem usa — sem contas, sem backend. Seus atalhos, temas e preferências ficam no `localStorage` do navegador. Sua startpage, seus dados, seu jeito.
 
 ---
 
@@ -36,7 +36,7 @@ Orbit nasceu da frustração com páginas iniciais genéricas e invasivas. É um
 Exibição em tempo real, sempre visível. Simples e elegante.
 
 ### 🔍 Barra de Pesquisa Inteligente
-- `Tab` → alterna entre 6 provedores de busca (Google, Bing, DuckDuckGo, YouTube, Ecosia, Brave)
+- `Tab` → alterna entre provedores (Google, DuckDuckGo, YouTube, Ecosia) e Chat IA
 - Digite para filtrar seus sites simultaneamente
 - `Enter` → abre a busca web
 
@@ -113,7 +113,10 @@ Exibição em tempo real, sempre visível. Simples e elegante.
 | ⚛️ Spin | Spin quântico animado |
 
 ### 💾 Export/Import
-Exporte toda sua configuração (sites, categorias, tema, layout) em JSON. Importe em outro dispositivo e tenha tudo exatamente igual.
+Exporte sites, espaços, widgets, tema e preferências em JSON. Importe em outro dispositivo e tenha tudo exatamente igual. Chaves de API ficam de fora por padrão (opção na exportação).
+
+### 🪶 Modo Leve de Animações
+Reduza animações decorativas (ou siga `prefers-reduced-motion`) para economizar CPU/GPU — ideal em notebooks e temas com muitos efeitos.
 
 ---
 
@@ -129,12 +132,14 @@ Exporte toda sua configuração (sites, categorias, tema, layout) em JSON. Impor
 
 ## 🛡️ Filosofia
 
-- 🔒 **Sem rastreamento** — seus dados ficam no seu navegador
+- 🔒 **Dados locais** — atalhos e preferências ficam no seu navegador
 - 🚫 **Sem contas** — não precisa se cadastrar em nada
-- 🆓 **Sem API key** — clima e notícias funcionam sem você cadastrar nada
-- 📴 **Sem backend** — funciona offline, 100% client-side
-- 🪶 **Sem peso** — build leve, carregamento instantâneo
+- 🆓 **Sem API key** — clima (Open-Meteo) e notícias (TabNews) funcionam sem cadastro; Chat IA é opcional
+- 📴 **Sem backend** — PWA com shell offline, 100% client-side
+- 🪶 **Leve quando precisa** — modo de animações reduzidas
 - 🤝 **Open source** — código aberto, contribuições bem-vindas
+
+> Há analytics anônimo opcional (Umami) na página hospedada para entender uso agregado. Seus sites e configurações **não** são enviados.
 
 ---
 

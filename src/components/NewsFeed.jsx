@@ -62,7 +62,15 @@ export default function NewsFeed() {
       if (!document.hidden) fetchNews()
     }, 5 * 60 * 1000)
 
-    return () => clearInterval(interval)
+    const onVisibility = () => {
+      if (!document.hidden) fetchNews()
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
   }, [fetchNews])
 
   const formatDate = useCallback((dateString) => {

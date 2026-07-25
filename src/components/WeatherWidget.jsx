@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   Sun, CloudSun, Cloud, CloudFog, CloudDrizzle,
   CloudRain, CloudSnow, CloudLightning, MapPin,
@@ -20,6 +20,9 @@ const icons = {
   'cloud-lightning': CloudLightning,
 }
 
+const locationKey = (location) =>
+  location ? `${location.lat},${location.lon}` : null
+
 export default function WeatherWidget() {
   const widgets = useStore((state) => state.widgets)
   const location = useStore((state) => state.weatherLocation)
@@ -27,15 +30,18 @@ export default function WeatherWidget() {
 
   const [weather, setWeather] = useState(null)
   const [failed, setFailed] = useState(false)
+  const shownLocationRef = useRef(null)
 
   const enabled = widgets.weather && !!location
 
   const load = useCallback(async (signal) => {
     if (!location) return
 
+    const key = locationKey(location)
     const cached = readWeatherCache(location, storage)
     if (cached) {
       setWeather(cached)
+      shownLocationRef.current = key
       setFailed(false)
       return
     }
@@ -44,17 +50,29 @@ export default function WeatherWidget() {
       const data = await fetchWeather(location, signal)
       writeWeatherCache(location, data, storage)
       setWeather(data)
+      shownLocationRef.current = key
       setFailed(false)
     } catch (err) {
       if (err.name === 'AbortError') return
       // Mantém o último valor conhecido na tela em vez de apagar o widget:
-      // um clima de 40 minutos atrás é mais útil que nada.
+      // um clima de 40 minutos atrás é mais útil que nada — mas só se ainda
+      // for da mesma cidade.
+      if (shownLocationRef.current !== key) {
+        setWeather(null)
+      }
       setFailed(true)
     }
   }, [location])
 
   useEffect(() => {
     if (!enabled) return
+
+    const key = locationKey(location)
+    // Evita mostrar temperatura da cidade anterior enquanto a nova carrega.
+    if (shownLocationRef.current !== key) {
+      setWeather(null)
+      setFailed(false)
+    }
 
     const controller = new AbortController()
     load(controller.signal)
@@ -65,11 +83,17 @@ export default function WeatherWidget() {
       if (!document.hidden) load(controller.signal)
     }, CACHE_TTL_MS)
 
+    const onVisibility = () => {
+      if (!document.hidden) load(controller.signal)
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+
     return () => {
       controller.abort()
       clearInterval(interval)
+      document.removeEventListener('visibilitychange', onVisibility)
     }
-  }, [enabled, load])
+  }, [enabled, load, location])
 
   if (!widgets.weather) return null
 

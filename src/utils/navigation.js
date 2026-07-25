@@ -1,12 +1,16 @@
 import useStore from '../store/useStore'
+import { normalizeHttpUrl } from './url'
 
 export function openUrl(url, openInNewTab) {
+  const safeUrl = normalizeHttpUrl(url)
+  if (!safeUrl) return
+
   if (openInNewTab) {
-    window.open(url, '_blank', 'noopener,noreferrer')
+    window.open(safeUrl, '_blank', 'noopener,noreferrer')
     return
   }
 
-  window.location.assign(url)
+  window.location.assign(safeUrl)
 }
 
 // Ponto único de abertura de sites: registra a visita antes de navegar, para

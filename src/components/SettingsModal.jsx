@@ -8,20 +8,9 @@ import {
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
 import { motionModes } from '../utils/motion'
+import { normalizeHttpUrl } from '../utils/url'
 import WorkspaceManager from './WorkspaceManager'
 import WeatherLocationPicker from './WeatherLocationPicker'
-
-const isValidUrl = (value) => {
-  try {
-    const candidate = value.startsWith('http://') || value.startsWith('https://')
-      ? value
-      : `https://${value}`
-    new URL(candidate)
-    return true
-  } catch {
-    return false
-  }
-}
 
 const tabs = [
   { id: 'appearance', label: 'Tema', icon: Palette },
@@ -39,15 +28,6 @@ const widgetOptions = [
   { id: 'frequent', label: 'Sites frequentes', desc: 'Aba com os sites que você mais abre' },
   { id: 'notes', label: 'Notas rápidas', desc: 'Bloco de anotações no canto inferior' },
   { id: 'pomodoro', label: 'Pomodoro', desc: 'Timer de foco com ciclos de 25/5 min' },
-]
-
-const availableTopics = [
-  { id: 'technology', label: 'Tecnologia' },
-  { id: 'science', label: 'Ciência' },
-  { id: 'entertainment', label: 'Entretenimento' },
-  { id: 'business', label: 'Negócios' },
-  { id: 'health', label: 'Saúde' },
-  { id: 'sports', label: 'Esportes' },
 ]
 
 export default function SettingsModal() {
@@ -69,8 +49,6 @@ export default function SettingsModal() {
   const setOpenInNewTab = useStore((state) => state.setOpenInNewTab)
   const deepseekApiKey = useStore((state) => state.deepseekApiKey)
   const setDeepseekApiKey = useStore((state) => state.setDeepseekApiKey)
-  const newsApiKey = useStore((state) => state.newsApiKey)
-  const setNewsApiKey = useStore((state) => state.setNewsApiKey)
   const newsTopics = useStore((state) => state.newsTopics)
   const setNewsTopics = useStore((state) => state.setNewsTopics)
   const categories = useStore((state) => state.categories)
@@ -83,6 +61,7 @@ export default function SettingsModal() {
   const [activeTab, setActiveTab] = useState('appearance')
   const [newCategory, setNewCategory] = useState('')
   const [importStatus, setImportStatus] = useState(null)
+  const [includeSecrets, setIncludeSecrets] = useState(false)
   const [batchUrls, setBatchUrls] = useState('')
   const [batchCategory, setBatchCategory] = useState('')
   const [batchStatus, setBatchStatus] = useState(null)
@@ -96,7 +75,7 @@ export default function SettingsModal() {
   }
 
   const handleExport = () => {
-    const data = exportData()
+    const data = exportData({ includeSecrets })
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -132,12 +111,8 @@ export default function SettingsModal() {
     const newSites = []
 
     for (const line of lines) {
-      if (!isValidUrl(line)) continue
-
-      let finalUrl = line
-      if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
-        finalUrl = 'https://' + finalUrl
-      }
+      const finalUrl = normalizeHttpUrl(line)
+      if (!finalUrl) continue
 
       let name = finalUrl
       try {
@@ -151,7 +126,7 @@ export default function SettingsModal() {
       newSites.push({
         name,
         url: finalUrl,
-        category: batchCategory || categories[0] || 'all'
+        category: batchCategory || categories[0] || 'geral'
       })
     }
 
@@ -542,8 +517,18 @@ export default function SettingsModal() {
               <div>
                 <h3 className="text-sm font-medium text-muted mb-3">Exportar Configuração</h3>
                 <p className="text-sm text-muted mb-3">
-                  Exporte todas as suas configurações, sites e categorias para um arquivo JSON.
+                  Exporte sites, espaços, widgets, tema e preferências para um arquivo JSON.
+                  Chaves de API ficam de fora por padrão.
                 </p>
+                <label className="flex items-center gap-2 mb-3 text-sm text-muted cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeSecrets}
+                    onChange={(e) => setIncludeSecrets(e.target.checked)}
+                    className="rounded border-border"
+                  />
+                  Incluir chaves de API (DeepSeek / legadas)
+                </label>
                 <button
                   onClick={handleExport}
                   className="flex items-center gap-2 px-4 py-3 bg-accent rounded-lg text-bg font-medium hover:opacity-90 transition-opacity"

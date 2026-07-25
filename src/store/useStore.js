@@ -8,9 +8,13 @@ import {
   defaultWorkspaces,
   defaultWidgets,
   DEFAULT_WORKSPACE,
+  resolveActiveWorkspace,
 } from "../utils/storage";
+import { FREQUENT_CATEGORY } from "../utils/frequent";
 import { applyTheme } from "../themes/themes";
 import { applyMotion } from "../utils/motion";
+
+const loadWorkspaces = () => storage.get("workspaces") || defaultWorkspaces;
 
 const searchProviders = [
   {
@@ -53,8 +57,18 @@ const useStore = create((set, get) => ({
   activeCategory: "all",
 
   // Workspaces — conjuntos independentes de sites (ex.: Pessoal / Trabalho)
-  workspaces: storage.get("workspaces") || defaultWorkspaces,
-  activeWorkspace: storage.get("active_workspace") || DEFAULT_WORKSPACE,
+  workspaces: loadWorkspaces(),
+  activeWorkspace: (() => {
+    const workspaces = loadWorkspaces();
+    const resolved = resolveActiveWorkspace(
+      workspaces,
+      storage.get("active_workspace") || DEFAULT_WORKSPACE,
+    );
+    if (resolved !== storage.get("active_workspace")) {
+      storage.set("active_workspace", resolved);
+    }
+    return resolved;
+  })(),
 
   // Uso: { [siteId]: { count, lastUsed } } — alimenta a aba "Frequentes"
   siteStats: storage.get("site_stats") || {},
@@ -220,11 +234,14 @@ const useStore = create((set, get) => ({
 
   removeCategory: (category) => {
     const categories = get().categories.filter((c) => c !== category);
-    storage.set("categories", categories);
-    set({ categories });
+    // "all" não é categoria real — sites órfãos iam sumir do filtro por categoria.
+    const fallback = categories[0] || "geral";
+    const nextCategories = categories.length > 0 ? categories : [fallback];
+    storage.set("categories", nextCategories);
+    set({ categories: nextCategories });
 
     const sites = get().sites.map((s) =>
-      s.category === category ? { ...s, category: "all" } : s,
+      s.category === category ? { ...s, category: fallback } : s,
     );
     storage.set("sites", sites);
     set({ sites });
@@ -292,6 +309,13 @@ const useStore = create((set, get) => ({
   setWidgetVisible: (key, value) => {
     const widgets = { ...get().widgets, [key]: value };
     storage.set("widgets", widgets);
+
+    // Desligar Frequentes com a aba ativa deixaria a grade numa visão sem atalho.
+    if (key === "frequent" && !value && get().activeCategory === FREQUENT_CATEGORY) {
+      set({ widgets, activeCategory: "all" });
+      return;
+    }
+
     set({ widgets });
   },
 
@@ -415,16 +439,24 @@ const useStore = create((set, get) => ({
   clearToast: () => set({ toast: null }),
 
   // Actions — Data
-  exportData: () => storage.exportAll(),
+  exportData: (options) => storage.exportAll(options),
 
   importData: (data) => {
     const success = storage.importAll(data);
     if (success) {
+      const workspaces = storage.get("workspaces") || defaultWorkspaces;
+      const activeWorkspace = resolveActiveWorkspace(
+        workspaces,
+        storage.get("active_workspace") || DEFAULT_WORKSPACE,
+      );
+      storage.set("active_workspace", activeWorkspace);
+      storage.set("workspaces", workspaces);
+
       set({
         sites: loadSites(),
         categories: storage.get("categories") || defaultCategories,
-        workspaces: storage.get("workspaces") || defaultWorkspaces,
-        activeWorkspace: storage.get("active_workspace") || DEFAULT_WORKSPACE,
+        workspaces,
+        activeWorkspace,
         siteStats: storage.get("site_stats") || {},
         widgets: { ...defaultWidgets, ...(storage.get("widgets") || {}) },
         weatherLocation: storage.get("weather_location") || null,
@@ -446,6 +478,7 @@ const useStore = create((set, get) => ({
         activeCategory: "all",
         deepseekApiKey: storage.get("deepseek_apikey") || "",
         openInNewTab: storage.get("open_in_new_tab") !== false,
+        welcomeSeen: storage.get("welcome_seen") || false,
       });
       applyTheme(get().theme);
       applyMotion(get().motionMode);
