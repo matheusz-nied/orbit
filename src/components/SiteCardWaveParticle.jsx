@@ -27,11 +27,14 @@ const getWavePhase = (name) => {
   return Math.abs(hash) % 360
 }
 
+/* Três fases do pacote de probabilidade — um único spinner, três dots. */
+const PROBABILITY_PHASES = [0, 120, 240]
+
 function SiteCardWaveParticle({ site }) {
-    const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
-    const openAddSite = useStore((state) => state.openAddSite)
-    const setEditingSite = useStore((state) => state.setEditingSite)
-    const openInNewTab = useStore((state) => state.openInNewTab)
+  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+  const openAddSite = useStore((state) => state.openAddSite)
+  const setEditingSite = useStore((state) => state.setEditingSite)
+  const openInNewTab = useStore((state) => state.openInNewTab)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -45,12 +48,19 @@ function SiteCardWaveParticle({ site }) {
 
   const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-    const handleClick = () => openSite(site, openInNewTab)
+  const handleClick = () => openSite(site, openInNewTab)
 
   const waveColor = useMemo(() => getWaveColor(site.name), [site.name])
   const phase = useMemo(() => getWavePhase(site.name), [site.name])
 
-  // Wavy border-radius values that animate
+  const timings = useMemo(() => ({
+    morph: 4.5 + (phase % 7) * 0.15,
+    fringe: 16 + (phase % 9),
+    orbit: 9 + (phase % 5),
+    ghost: 13 + (phase % 4),
+    delay: (phase % 10) * 0.08,
+  }), [phase])
+
   const r1 = 50 + (phase % 15)
   const r2 = 50 + ((phase + 30) % 20)
   const r3 = 50 + ((phase + 60) % 18)
@@ -59,7 +69,6 @@ function SiteCardWaveParticle({ site }) {
   const r6 = 50 + ((phase + 150) % 12)
   const r7 = 50 + ((phase + 180) % 19)
   const r8 = 50 + ((phase + 210) % 13)
-
   const borderRadius = `${r1}% ${r2}% ${r3}% ${r4}% / ${r5}% ${r6}% ${r7}% ${r8}%`
 
   return (
@@ -76,44 +85,89 @@ function SiteCardWaveParticle({ site }) {
         onClick={handleClick}
         className="relative cursor-pointer w-[82px] h-[82px] sm:w-[96px] sm:h-[96px] mb-3"
       >
-        {/* Probability wave glow — camada estática: o blur é rasterizado uma
-            única vez em vez de a cada frame. */}
+        {/* Glow estático — blur rasterizado uma vez. */}
         <div
           data-decorative
-          className="absolute inset-[-8px] opacity-30 blur-md group-hover:opacity-0 transition-opacity duration-500"
+          className="absolute inset-[-8px] opacity-30 blur-md pointer-events-none transition-opacity duration-500 group-hover:opacity-0"
           style={{
             borderRadius,
             background: `radial-gradient(circle, ${waveColor}2b, transparent 65%)`,
           }}
         />
 
-        {/* Main wave packet — o "morph" agora é transform (compositor),
-            não border-radius (repaint a cada frame). */}
+        {/* Membrana ondulante — morph sem filter. No hover: colapsa em partícula. */}
         <div
           data-decorative
-          className="absolute inset-0 overflow-hidden border-2 gpu-layer transition-[border-radius,box-shadow,border-color] duration-500 group-hover:rounded-2xl"
+          className="absolute inset-0 overflow-hidden border-2 pointer-events-none transition-[border-radius,box-shadow,border-color] duration-500 group-hover:rounded-full group-hover:[animation:none]"
           style={{
             borderRadius,
-            borderColor: `${waveColor}55`,
-            background: `radial-gradient(circle at 40% 40%, ${waveColor}18, ${waveColor}08 60%, transparent 90%)`,
-            boxShadow: `0 0 20px ${waveColor}15, inset 0 0 20px ${waveColor}08`,
-            animation: 'wobble 6s ease-in-out infinite',
-            animationDelay: `${(phase % 10) * 0.1}s`,
+            borderColor: `${waveColor}66`,
+            background: `radial-gradient(circle at 38% 36%, ${waveColor}22, ${waveColor}0a 55%, transparent 88%)`,
+            boxShadow: `0 0 18px ${waveColor}18, inset 0 0 16px ${waveColor}0c`,
+            animation: `morphWave ${timings.morph}s ease-in-out infinite`,
+            animationDelay: `${timings.delay}s`,
           }}
         >
-          {/* Interference pattern lines */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
-            background: `repeating-linear-gradient(
-              ${phase}deg,
-              transparent,
-              transparent 8px,
-              ${waveColor}22 8px,
-              ${waveColor}22 9px
-            )`,
-          }} />
+          {/* Franjas de interferência girando dentro do clip do morph. */}
+          <div
+            data-decorative
+            className="absolute inset-[-40%] opacity-[0.22] gpu-layer group-hover:opacity-0 transition-opacity duration-500"
+            style={{
+              background: `repeating-linear-gradient(
+                ${phase}deg,
+                transparent 0 7px,
+                ${waveColor}33 7px 8px
+              )`,
+              animation: `waveFringe ${timings.fringe}s linear infinite`,
+            }}
+          />
+          {/* Segunda franja ortogonal, mais lenta — batimento visual. */}
+          <div
+            data-decorative
+            className="absolute inset-[-40%] opacity-[0.12] gpu-layer group-hover:opacity-0 transition-opacity duration-500"
+            style={{
+              background: `repeating-linear-gradient(
+                ${phase + 90}deg,
+                transparent 0 11px,
+                ${waveColor}28 11px 12px
+              )`,
+              animation: `waveFringe ${timings.fringe * 1.35}s linear infinite reverse`,
+            }}
+          />
         </div>
 
-        {/* Favicon — fora da camada animada para não herdar o wobble */}
+        {/* Elipse de amplitude (onda estacionária). */}
+        <div
+          data-decorative
+          className="absolute inset-[-2px] rounded-full border pointer-events-none gpu-layer transition-opacity duration-500 group-hover:opacity-0"
+          style={{
+            borderColor: `${waveColor}40`,
+            animation: `waveAmplitude ${2.8 + (phase % 5) * 0.2}s ease-in-out infinite`,
+            animationDelay: `${timings.delay}s`,
+          }}
+        />
+
+        {/* Anel de fase — gira no sentido oposto ao pacote. */}
+        <div
+          data-decorative
+          className="absolute inset-[-10px] rounded-full border border-dashed opacity-40 pointer-events-none gpu-layer transition-opacity duration-500 group-hover:opacity-0"
+          style={{
+            borderColor: `${waveColor}55`,
+            animation: `waveOrbit ${timings.ghost}s linear infinite reverse`,
+          }}
+        />
+
+        {/* Núcleo quântico pulsando sob o favicon. */}
+        <div
+          data-decorative
+          className="absolute inset-[28%] rounded-full pointer-events-none gpu-layer transition-opacity duration-500 group-hover:opacity-90"
+          style={{
+            background: `radial-gradient(circle, ${waveColor}55 0%, transparent 70%)`,
+            animation: 'waveCore 2.6s ease-in-out infinite',
+          }}
+        />
+
+        {/* Favicon — fora das camadas animadas. */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="relative z-10 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center">
             <img
@@ -132,21 +186,51 @@ function SiteCardWaveParticle({ site }) {
           </div>
         </div>
 
-        {/* Wave function probability dot orbiting */}
-        <div data-decorative className="absolute inset-[-14px] rounded-full animate-spin gpu-layer" style={{ animationDuration: '10s' }}>
+        {/* Pacote de probabilidade: 1 órbita, 3 fases + bob radial = caminho ondulado. */}
+        <div
+          data-decorative
+          className="absolute inset-[-16px] pointer-events-none gpu-layer transition-transform duration-500 group-hover:scale-[0.55]"
+          style={{ animation: `waveOrbit ${timings.orbit}s linear infinite` }}
+        >
+          {PROBABILITY_PHASES.map((deg, i) => (
+            <div
+              key={deg}
+              className="absolute inset-0"
+              style={{ transform: `rotate(${deg}deg)` }}
+            >
+              <div
+                className="absolute top-0 left-1/2 w-[3px] h-[3px] rounded-full gpu-layer group-hover:opacity-0 transition-opacity duration-300"
+                style={{
+                  backgroundColor: waveColor,
+                  boxShadow: `0 0 6px ${waveColor}, 0 0 12px ${waveColor}55`,
+                  animation: `waveBob ${2.2 + i * 0.35}s ease-in-out infinite`,
+                  animationDelay: `${i * 0.35 + timings.delay}s`,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Fantasma anti-fase — dualidade onda/partícula. */}
+        <div
+          data-decorative
+          className="absolute inset-[-16px] pointer-events-none gpu-layer transition-opacity duration-500 group-hover:opacity-0"
+          style={{ animation: `waveOrbit ${timings.ghost}s linear infinite reverse` }}
+        >
           <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full opacity-70 group-hover:opacity-0 transition-opacity"
-            style={{ backgroundColor: waveColor, boxShadow: `0 0 6px ${waveColor}` }}
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[2px] h-[2px] rounded-full opacity-45"
+            style={{
+              backgroundColor: waveColor,
+              boxShadow: `0 0 5px ${waveColor}`,
+            }}
           />
         </div>
       </div>
 
-      {/* Label */}
       <h3 className="text-[10px] sm:text-xs font-medium text-center truncate w-24 sm:w-28 text-muted group-hover:text-text transition-colors">
         {site.name}
       </h3>
 
-      {/* Actions */}
       {showActions && (
         <div className="absolute -top-2 -right-2 flex flex-col gap-1.5 animate-slideIn z-30">
           <button

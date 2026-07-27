@@ -279,6 +279,247 @@ input:focus, button:focus, select:focus {
   border-radius: 8px;
 }
 
+/* =========================================================
+   CYBERPUNK — HUD estilo Night City (CP2077)
+   Neon vermelho + ciano, scanlines, cantos chanfrados, brackets.
+   ========================================================= */
+
+[data-theme="cyberpunk"] {
+  --cp-cyan: #00f0ff;
+  --cp-red: #ff003c;
+  --cp-yellow: #fcee0a;
+  --cp-panel: rgba(8, 6, 8, 0.9);
+}
+
+[data-theme="cyberpunk"] body {
+  background-color: #050505;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 12% -8%, rgba(255, 0, 60, 0.28), transparent 55%),
+    radial-gradient(ellipse 55% 35% at 92% 108%, rgba(0, 240, 255, 0.1), transparent 50%),
+    linear-gradient(rgba(255, 0, 60, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 60, 0.04) 1px, transparent 1px);
+  background-size: auto, auto, 40px 40px, 40px 40px;
+  background-attachment: fixed;
+  letter-spacing: 0.03em;
+}
+
+/* Scanlines + vinheta — overlay fixo (sem animação / blur). */
+[data-theme="cyberpunk"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(18, 12, 14, 0) 50%, rgba(0, 0, 0, 0.22) 50%),
+    radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
+  background-size: 100% 3px, 100% 100%;
+  opacity: 0.5;
+}
+
+/* Grain digital estático. */
+[data-theme="cyberpunk"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+[data-theme="cyberpunk"] h1,
+[data-theme="cyberpunk"] h2,
+[data-theme="cyberpunk"] h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+}
+
+[data-theme="cyberpunk"] .text-muted {
+  color: #9a6a72 !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+[data-theme="cyberpunk"] .group\/card:hover .text-muted,
+[data-theme="cyberpunk"] .group:hover .text-muted {
+  color: var(--cp-cyan) !important;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.55);
+}
+
+/* Sem blur ornamental — HUD é afiado, não glassmorphism. */
+[data-theme="cyberpunk"] .group\/card .blur-xl,
+[data-theme="cyberpunk"] .group\/card [class*="blur-"] {
+  display: none !important;
+}
+
+[data-theme="cyberpunk"] .rounded-lg,
+[data-theme="cyberpunk"] .rounded-xl,
+[data-theme="cyberpunk"] .rounded-2xl,
+[data-theme="cyberpunk"] .rounded-md {
+  border-radius: 0 !important;
+}
+
+/* Painéis HUD: chanfro + brackets nos cantos + glow neon. */
+[data-theme="cyberpunk"] .bg-card,
+[data-theme="cyberpunk"] .group\/card .bg-card\/80 {
+  background-color: var(--cp-panel) !important;
+  background-image:
+    linear-gradient(var(--cp-red), var(--cp-red)),
+    linear-gradient(var(--cp-red), var(--cp-red)),
+    linear-gradient(var(--cp-red), var(--cp-red)),
+    linear-gradient(var(--cp-red), var(--cp-red)),
+    linear-gradient(var(--cp-red), var(--cp-red)),
+    linear-gradient(var(--cp-red), var(--cp-red)),
+    linear-gradient(var(--cp-red), var(--cp-red)),
+    linear-gradient(var(--cp-red), var(--cp-red)) !important;
+  background-size:
+    12px 2px, 2px 12px,
+    12px 2px, 2px 12px,
+    12px 2px, 2px 12px,
+    12px 2px, 2px 12px !important;
+  background-position:
+    left top, left top,
+    right top, right top,
+    left bottom, left bottom,
+    right bottom, right bottom !important;
+  background-repeat: no-repeat !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 0 !important;
+  border: 1px solid rgba(255, 0, 60, 0.5) !important;
+  clip-path: polygon(
+    0 7px, 7px 0,
+    calc(100% - 7px) 0, 100% 7px,
+    100% calc(100% - 7px), calc(100% - 7px) 100%,
+    7px 100%, 0 calc(100% - 7px)
+  );
+  box-shadow:
+    0 0 0 1px rgba(255, 0, 60, 0.1),
+    0 0 20px rgba(255, 0, 60, 0.12),
+    inset 0 0 28px rgba(255, 0, 60, 0.04) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+[data-theme="cyberpunk"] .group\/card:hover .bg-card\/80 {
+  border-color: var(--cp-cyan) !important;
+  background-image:
+    linear-gradient(var(--cp-cyan), var(--cp-cyan)),
+    linear-gradient(var(--cp-cyan), var(--cp-cyan)),
+    linear-gradient(var(--cp-cyan), var(--cp-cyan)),
+    linear-gradient(var(--cp-cyan), var(--cp-cyan)),
+    linear-gradient(var(--cp-cyan), var(--cp-cyan)),
+    linear-gradient(var(--cp-cyan), var(--cp-cyan)),
+    linear-gradient(var(--cp-cyan), var(--cp-cyan)),
+    linear-gradient(var(--cp-cyan), var(--cp-cyan)) !important;
+  box-shadow:
+    0 0 0 1px rgba(0, 240, 255, 0.4),
+    0 0 24px rgba(0, 240, 255, 0.28),
+    0 0 40px rgba(255, 0, 60, 0.18),
+    inset 0 0 18px rgba(0, 240, 255, 0.06) !important;
+}
+
+[data-theme="cyberpunk"] .bg-card {
+  box-shadow:
+    0 0 0 1px rgba(255, 0, 60, 0.22),
+    0 14px 42px rgba(0, 0, 0, 0.7),
+    0 0 32px rgba(255, 0, 60, 0.12),
+    inset 0 1px 0 rgba(255, 0, 60, 0.18) !important;
+}
+
+[data-theme="cyberpunk"] .modal-backdrop {
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: none !important;
+}
+
+[data-theme="cyberpunk"] input,
+[data-theme="cyberpunk"] textarea,
+[data-theme="cyberpunk"] select {
+  border-radius: 0 !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  border: 1px solid rgba(255, 0, 60, 0.45) !important;
+  letter-spacing: 0.06em;
+  clip-path: polygon(
+    0 5px, 5px 0,
+    calc(100% - 5px) 0, 100% 5px,
+    100% calc(100% - 5px), calc(100% - 5px) 100%,
+    5px 100%, 0 calc(100% - 5px)
+  );
+}
+
+[data-theme="cyberpunk"] input:focus,
+[data-theme="cyberpunk"] textarea:focus,
+[data-theme="cyberpunk"] select:focus {
+  border-color: var(--cp-cyan) !important;
+  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.4), 0 0 18px rgba(0, 240, 255, 0.22);
+  outline: none;
+}
+
+[data-theme="cyberpunk"] button {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+[data-theme="cyberpunk"] button:not(.rounded-full) {
+  border-radius: 0 !important;
+}
+
+[data-theme="cyberpunk"] button:hover {
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.45);
+}
+
+[data-theme="cyberpunk"] ::selection {
+  background: rgba(255, 0, 60, 0.85);
+  color: #fff;
+}
+
+/* Seleção ativa — barra ciano lateral (inventário CP2077). */
+[data-theme="cyberpunk"] .bg-accent\/10,
+[data-theme="cyberpunk"] .bg-accent\/20 {
+  background: rgba(0, 240, 255, 0.07) !important;
+  border-color: var(--cp-cyan) !important;
+  box-shadow: inset 3px 0 0 var(--cp-cyan), 0 0 12px rgba(0, 240, 255, 0.12);
+}
+
+[data-theme="cyberpunk"] .border-accent {
+  border-color: var(--cp-red) !important;
+  box-shadow: 0 0 10px rgba(255, 0, 60, 0.35);
+}
+
+[data-theme="cyberpunk"] .border-accent.bg-accent\/10,
+[data-theme="cyberpunk"] .border-accent.bg-accent\/20 {
+  border-color: var(--cp-cyan) !important;
+}
+
+[data-theme="cyberpunk"] .text-accent {
+  color: var(--cp-red) !important;
+  text-shadow: 0 0 10px rgba(255, 0, 60, 0.55);
+}
+
+[data-theme="cyberpunk"] .bg-accent {
+  background: var(--cp-red) !important;
+  box-shadow: 0 0 14px rgba(255, 0, 60, 0.55), 0 0 28px rgba(255, 0, 60, 0.25);
+  color: #050505 !important;
+}
+
+[data-theme="cyberpunk"] .hover\:bg-accent:hover,
+[data-theme="cyberpunk"] .hover\:bg-accent\/90:hover,
+[data-theme="cyberpunk"] .hover\:opacity-90:hover.bg-accent {
+  filter: brightness(1.08);
+}
+
+/* Relógio / headers com glow HUD. */
+[data-theme="cyberpunk"] .tabular-nums,
+[data-theme="cyberpunk"] time {
+  color: var(--cp-red);
+  text-shadow: 0 0 12px rgba(255, 0, 60, 0.45);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
 /* CRT / VHS Retro Theme */
 [data-theme="crt"] body {
   background-color: var(--bg);
@@ -658,11 +899,43 @@ input:focus, button:focus, select:focus {
 
 /* Quantum Physics Layout Animations */
 
+/* Pacote de onda: morph orgânico (só border-radius, sem filter no mesmo nó). */
 @keyframes morphWave {
-  0%, 100% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
-  25% { border-radius: 55% 45% 60% 40% / 45% 55% 40% 60%; }
-  50% { border-radius: 45% 55% 40% 60% / 60% 40% 55% 45%; }
-  75% { border-radius: 60% 40% 55% 45% / 40% 60% 45% 55%; }
+  0%, 100% { border-radius: 42% 58% 52% 48% / 48% 42% 58% 52%; }
+  20% { border-radius: 58% 42% 38% 62% / 42% 58% 42% 58%; }
+  40% { border-radius: 48% 52% 68% 32% / 55% 35% 65% 45%; }
+  60% { border-radius: 35% 65% 45% 55% / 62% 48% 52% 38%; }
+  80% { border-radius: 62% 38% 55% 45% / 38% 62% 45% 55%; }
+}
+
+/* Franjas de interferência — só rotate (compositor). */
+@keyframes waveFringe {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Elipse de amplitude (onda estacionária). */
+@keyframes waveAmplitude {
+  0%, 100% { transform: scale(1, 0.72); opacity: 0.3; }
+  50% { transform: scale(1.05, 1); opacity: 0.7; }
+}
+
+/* Órbita do pacote — from/to em rotate evita o bug de matriz do spin. */
+@keyframes waveOrbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Bob radial: combina com a órbita e desenha um caminho ondulado. */
+@keyframes waveBob {
+  0%, 100% { transform: translate3d(-50%, 0, 0); opacity: 0.85; }
+  50% { transform: translate3d(-50%, 7px, 0); opacity: 0.4; }
+}
+
+/* Colapso onda→partícula no núcleo. */
+@keyframes waveCore {
+  0%, 100% { transform: scale(0.85); opacity: 0.25; }
+  50% { transform: scale(1.2); opacity: 0.55; }
 }
 
 @keyframes spin3dX {
@@ -692,10 +965,12 @@ input:focus, button:focus, select:focus {
   contain: layout style;
 }
 
-/* Camadas decorativas animadas ficam na GPU e não repintam. */
+/* Camadas decorativas animadas: will-change promove pro compositor.
+   Sem translateZ(0) — ele vira o `from` implícito do @keyframes spin
+   (só `to { rotate(360deg) }`), e a interpolação por matriz congela
+   porque rotate(360deg) ≡ identidade. */
 .gpu-layer {
   will-change: transform;
-  transform: translateZ(0);
   backface-visibility: hidden;
 }
 
@@ -704,14 +979,6 @@ input:focus, button:focus, select:focus {
 .deferred-paint {
   content-visibility: auto;
   contain-intrinsic-size: auto 92px;
-}
-
-/* Wobble composited: substitui a animação de border-radius (que repinta
-   a cada frame) por transform, que roda só no compositor. */
-@keyframes wobble {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  33% { transform: scale(1.04) rotate(2deg); }
-  66% { transform: scale(0.97) rotate(-2deg); }
 }
 
 /* =========================================================
@@ -749,6 +1016,11 @@ input:focus, button:focus, select:focus {
 [data-motion="reduced"][data-theme="event-horizon"]::before {
   animation: none !important;
   will-change: auto !important;
+}
+
+[data-motion="reduced"][data-theme="cyberpunk"]::before,
+[data-motion="reduced"][data-theme="cyberpunk"]::after {
+  opacity: 0.2;
 }
 
 /* backdrop-filter é o efeito mais caro da página: com N cards na tela,
