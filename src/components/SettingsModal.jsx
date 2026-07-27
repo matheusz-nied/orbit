@@ -26,6 +26,7 @@ const tabs = [
 const widgetOptions = [
   { id: 'weather', label: 'Clima', desc: 'Temperatura e condição abaixo do relógio' },
   { id: 'frequent', label: 'Sites frequentes', desc: 'Aba com os sites que você mais abre' },
+  { id: 'agenda', label: 'Agenda do dia', desc: 'Lista de tarefas no dock — tecla t para abrir' },
   { id: 'notes', label: 'Notas rápidas', desc: 'Bloco de anotações no canto inferior' },
   { id: 'pomodoro', label: 'Pomodoro', desc: 'Timer de foco com ciclos de 25/5 min' },
 ]

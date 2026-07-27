@@ -3,6 +3,7 @@ import { X, Plus, Pencil } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
 import { isSafeHttpUrl, normalizeHttpUrl } from '../utils/url'
+import { findShortcutConflict, normalizeShortcutKey } from '../utils/shortcuts'
 
 export default function AddSiteModal() {
   const addSiteOpen = useStore((state) => state.addSiteOpen)
@@ -11,6 +12,7 @@ export default function AddSiteModal() {
   const updateSite = useStore((state) => state.updateSite)
   const addSite = useStore((state) => state.addSite)
   const setEditingSite = useStore((state) => state.setEditingSite)
+  const sites = useStore((state) => state.sites)
   const categories = useStore((state) => state.categories)
   const activeCategory = useStore((state) => state.activeCategory)
   const workspaces = useStore((state) => state.workspaces)
@@ -20,6 +22,7 @@ export default function AddSiteModal() {
   const [url, setUrl] = useState('')
   const [category, setCategory] = useState('')
   const [workspace, setWorkspace] = useState(activeWorkspace)
+  const [shortcut, setShortcut] = useState('')
   const [urlTouched, setUrlTouched] = useState(false)
 
   useEffect(() => {
@@ -28,10 +31,12 @@ export default function AddSiteModal() {
       setUrl(editingSite.url)
       setCategory(editingSite.category)
       setWorkspace(editingSite.workspace || activeWorkspace)
+      setShortcut(editingSite.shortcut || '')
     } else {
       setWorkspace(activeWorkspace)
       setName('')
       setUrl('')
+      setShortcut('')
       // 'all' e 'Frequentes' são visões, não categorias atribuíveis.
       const isRealCategory = activeCategory !== 'all' && categories.includes(activeCategory)
       setCategory(isRealCategory ? activeCategory : (categories[0] || ''))
@@ -45,11 +50,18 @@ export default function AddSiteModal() {
     const finalUrl = normalizeHttpUrl(url)
     if (!name.trim() || !finalUrl) return
 
+    const normalizedShortcut = normalizeShortcutKey(shortcut)
+    if (normalizedShortcut) {
+      const conflict = findShortcutConflict(sites, normalizedShortcut, editingSite?.id)
+      if (conflict) return
+    }
+
     const payload = {
       name: name.trim(),
       url: finalUrl,
       category: category || categories[0] || 'geral',
       workspace: workspace || activeWorkspace,
+      shortcut: normalizedShortcut || undefined,
     }
 
     if (editingSite) {
@@ -66,6 +78,7 @@ export default function AddSiteModal() {
     setUrl('')
     setCategory('')
     setWorkspace(activeWorkspace)
+    setShortcut('')
     setUrlTouched(false)
     setEditingSite(null)
     closeAddSite()
@@ -74,6 +87,20 @@ export default function AddSiteModal() {
   const previewUrl = normalizeHttpUrl(url) || ''
   const canPreview = Boolean(previewUrl)
   const urlHasError = urlTouched && url.trim() && !isSafeHttpUrl(url.trim())
+  const normalizedShortcut = normalizeShortcutKey(shortcut)
+  const shortcutConflict = normalizedShortcut
+    ? findShortcutConflict(sites, normalizedShortcut, editingSite?.id)
+    : null
+
+  const handleShortcutKeyDown = (e) => {
+    e.preventDefault()
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      setShortcut('')
+      return
+    }
+    const key = normalizeShortcutKey(e.key)
+    if (key) setShortcut(key)
+  }
 
   const handleUrlChange = (value) => {
     setUrl(value)
@@ -155,6 +182,37 @@ export default function AddSiteModal() {
             </div>
           )}
           
+          <div>
+            <label className="block text-sm text-muted mb-1">Atalho de teclado</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                readOnly
+                value={shortcut ? shortcut.toUpperCase() : ''}
+                onKeyDown={handleShortcutKeyDown}
+                placeholder="Pressione uma tecla"
+                className="w-24 px-4 py-3 bg-bg border border-border rounded-lg text-text text-center font-mono uppercase focus:border-accent transition-colors cursor-default"
+              />
+              {shortcut && (
+                <button
+                  type="button"
+                  onClick={() => setShortcut('')}
+                  className="px-3 py-3 text-sm text-muted hover:text-text border border-border rounded-lg transition-colors"
+                >
+                  Limpar
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-muted mt-1.5">
+              Uma tecla (a–z ou 0–9). Funciona fora de campos de texto — abre o site no espaço atual.
+            </p>
+            {shortcutConflict && (
+              <p className="text-xs text-red-400 mt-1">
+                Já usado por &quot;{shortcutConflict.name}&quot;
+              </p>
+            )}
+          </div>
+
           <div className={workspaces.length > 1 ? 'grid grid-cols-2 gap-3' : ''}>
             <div>
               <label className="block text-sm text-muted mb-1">Categoria</label>
@@ -198,8 +256,8 @@ export default function AddSiteModal() {
             </button>
             <button
               type="submit"
-              disabled={!name.trim() || !isSafeHttpUrl(url.trim())}
-              className="flex-1 px-4 py-3 bg-accent rounded-lg text-bg font-medium hover:opacity-90 transition-opacity"
+              disabled={!name.trim() || !isSafeHttpUrl(url.trim()) || Boolean(shortcutConflict)}
+              className="flex-1 px-4 py-3 bg-accent rounded-lg text-bg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {editingSite ? 'Salvar' : 'Adicionar'}
             </button>

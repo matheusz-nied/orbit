@@ -12,6 +12,7 @@ import {
 import { FREQUENT_CATEGORY } from "../utils/frequent";
 import { applyTheme } from "../themes/themes";
 import { applyMotion } from "../utils/motion";
+import { loadAgenda, rolloverAgenda } from "../utils/agenda";
 
 const loadWorkspaces = () => storage.get("workspaces") || defaultWorkspaces;
 
@@ -76,6 +77,10 @@ const useStore = create((set, get) => ({
   widgets: { ...defaultWidgets, ...(storage.get("widgets") || {}) },
   weatherLocation: storage.get("weather_location") || null,
   notes: storage.get("notes") || "",
+  agenda: loadAgenda(),
+
+  // Dock panel aberto (efêmero — atalho `t` abre a agenda)
+  dockPanel: null,
 
   // Theme
   theme: storage.get("theme") || "premium-dark",
@@ -309,13 +314,18 @@ const useStore = create((set, get) => ({
     const widgets = { ...get().widgets, [key]: value };
     storage.set("widgets", widgets);
 
+    const extra = {};
+    if (key === "agenda" && !value && get().dockPanel === "agenda") {
+      extra.dockPanel = null;
+    }
+
     // Desligar Frequentes com a aba ativa deixaria a grade numa visão sem atalho.
     if (key === "frequent" && !value && get().activeCategory === FREQUENT_CATEGORY) {
-      set({ widgets, activeCategory: "all" });
+      set({ widgets, activeCategory: "all", ...extra });
       return;
     }
 
-    set({ widgets });
+    set({ widgets, ...extra });
   },
 
   setWeatherLocation: (location) => {
@@ -326,6 +336,75 @@ const useStore = create((set, get) => ({
   setNotes: (notes) => {
     storage.set("notes", notes);
     set({ notes });
+  },
+
+  setDockPanel: (panel) => set({ dockPanel: panel }),
+
+  toggleDockPanel: (panel) => {
+    set({ dockPanel: get().dockPanel === panel ? null : panel });
+  },
+
+  ensureAgendaDay: () => {
+    const current = get().agenda;
+    const rolled = rolloverAgenda(current);
+    if (rolled.date === current.date) return;
+    storage.set("agenda", rolled);
+    set({ agenda: rolled });
+  },
+
+  addAgendaItem: (text) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    get().ensureAgendaDay();
+    const agenda = get().agenda;
+    const item = { id: Date.now().toString(), text: trimmed, done: false };
+    const next = {
+      ...agenda,
+      items: [...agenda.items, item],
+    };
+    storage.set("agenda", next);
+    set({ agenda: next });
+  },
+
+  toggleAgendaItem: (id) => {
+    get().ensureAgendaDay();
+    const agenda = get().agenda;
+    const next = {
+      ...agenda,
+      items: agenda.items.map((item) =>
+        item.id === id ? { ...item, done: !item.done } : item,
+      ),
+    };
+    storage.set("agenda", next);
+    set({ agenda: next });
+  },
+
+  removeAgendaItem: (id) => {
+    get().ensureAgendaDay();
+    const agenda = get().agenda;
+    const next = {
+      ...agenda,
+      items: agenda.items.filter((item) => item.id !== id),
+    };
+    storage.set("agenda", next);
+    set({ agenda: next });
+  },
+
+  editAgendaItem: (id, text) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    get().ensureAgendaDay();
+    const agenda = get().agenda;
+    const next = {
+      ...agenda,
+      items: agenda.items.map((item) =>
+        item.id === id ? { ...item, text: trimmed } : item,
+      ),
+    };
+    storage.set("agenda", next);
+    set({ agenda: next });
   },
 
   // Actions — Theme & Layout
@@ -460,6 +539,7 @@ const useStore = create((set, get) => ({
         widgets: { ...defaultWidgets, ...(storage.get("widgets") || {}) },
         weatherLocation: storage.get("weather_location") || null,
         notes: storage.get("notes") || "",
+        agenda: loadAgenda(),
         theme: storage.get("theme") || "premium-dark",
         cardLayout: storage.get("card_layout") || "wave-particle",
         motionMode: storage.get("motion_mode") || "auto",

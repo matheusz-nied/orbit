@@ -115,7 +115,17 @@ export default function SiteGrid() {
         <SortableContext items={filteredSites.map(s => s.id)} strategy={rectSortingStrategy}>
           <div className={gridClassName}>
             {filteredSites.map((site, index) => (
-              <SiteCard key={site.id} site={site} index={index} />
+              <div key={site.id} className="relative w-full flex justify-center">
+                {site.shortcut && cardLayout !== 'terminal' && (
+                  <kbd
+                    className="absolute top-0 left-1/2 -translate-x-[calc(50%+28px)] sm:-translate-x-[calc(50%+32px)] z-20 min-w-[1.25rem] px-1 py-0.5 text-[9px] font-mono font-bold text-center text-muted bg-card/90 border border-border rounded shadow-sm pointer-events-none uppercase"
+                    title={`Atalho: ${site.shortcut}`}
+                  >
+                    {site.shortcut}
+                  </kbd>
+                )}
+                <SiteCard site={site} index={index} />
+              </div>
             ))}
           </div>
         </SortableContext>

@@ -2,6 +2,7 @@ import { useEffect, useState, memo } from 'react'
 
 const hints = [
   'Orbit · Sua página inicial personalizada',
+  '⌨️ Defina atalhos nos sites · `t` abre a agenda · `/` foca a busca',
   "💡 Dica: O que acontece se digitar 'do a barrel roll' na busca?",
   "⚠️ Aviso: Jamais pesquise por comandos como 'sudo rm -rf /'",
   '🕹️ Segredo: O clássico código (↑ ↑ ↓ ↓ ← → ← → B A) funciona aqui...',

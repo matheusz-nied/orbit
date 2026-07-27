@@ -3,6 +3,7 @@ import { Search, X } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { openUrl } from '../utils/navigation'
 import { FREQUENT_CATEGORY, FREQUENT_LIMIT, rankByUsage } from '../utils/frequent'
+import { FOCUS_SEARCH_EVENT } from '../hooks/useKeyboardShortcuts'
 
 export default function SearchBar() {
   const searchProvider = useStore((state) => state.searchProvider)
@@ -30,6 +31,15 @@ export default function SearchBar() {
 
   useEffect(() => {
     inputRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    const onFocusSearch = () => {
+      inputRef.current?.focus()
+      inputRef.current?.select()
+    }
+    window.addEventListener(FOCUS_SEARCH_EVENT, onFocusSearch)
+    return () => window.removeEventListener(FOCUS_SEARCH_EVENT, onFocusSearch)
   }, [])
 
   const normalizedQuery = localQuery.trim().toLowerCase()
@@ -170,11 +180,6 @@ export default function SearchBar() {
       </div>
 
       <div className="mt-2 flex flex-col gap-1 text-center">
-        <p className="text-sm text-muted">
-          {normalizedQuery
-            ? `${filteredCount} ${filteredCount === 1 ? 'site encontrado' : 'sites encontrados'} na grade`
-            : `${filteredCount} ${filteredCount === 1 ? 'site visível' : 'sites visíveis'} agora`}
-        </p>
         <p className="text-center text-muted text-sm">
           <kbd className="px-1.5 py-0.5 bg-border rounded text-xs">Tab</kbd> ou clique no provedor para trocar ·
           <kbd className="px-1.5 py-0.5 bg-border rounded text-xs ml-1">Enter</kbd> {provider.type === 'ai' ? 'para abrir o chat' : `para pesquisar com ${provider.name}`}

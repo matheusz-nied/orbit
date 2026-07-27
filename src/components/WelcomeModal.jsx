@@ -1,4 +1,4 @@
-import { Rocket, Plus, Palette, Newspaper, X, ExternalLink } from 'lucide-react'
+import { Rocket, Plus, Palette, Keyboard, ListTodo, X, ExternalLink } from 'lucide-react'
 import useStore from '../store/useStore'
 
 export default function WelcomeModal() {
@@ -10,7 +10,7 @@ export default function WelcomeModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={dismissWelcome}>
       <div
-        className="bg-card border border-border rounded-2xl w-full max-w-lg mx-4 p-6 animate-slideIn"
+        className="bg-card border border-border rounded-2xl w-full max-w-lg mx-4 p-6 animate-slideIn max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -35,18 +35,38 @@ export default function WelcomeModal() {
         {/* Content */}
         <div className="space-y-4">
           <p className="text-sm text-muted leading-relaxed">
-            Aqui você organiza seus sites favoritos em categorias e acessa tudo rapidamente.
+            Organize sites, use atalhos de teclado e acompanhe a agenda do dia — tudo neste navegador.
           </p>
 
           <div className="space-y-3">
-
-
             <div className="flex items-start gap-3 p-3 bg-bg rounded-xl border border-border">
               <Plus size={18} className="text-accent mt-0.5 shrink-0" />
               <div>
                 <p className="text-sm font-medium text-text">Adicionar sites</p>
                 <p className="text-xs text-muted mt-0.5">
-                  Use o botão "Adicionar Site" no topo ou importe vários de uma vez em Configurações &gt; Dados.
+                  Use o botão &quot;Adicionar Site&quot; no topo ou importe vários de uma vez em Configurações &gt; Dados.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 bg-bg rounded-xl border border-border">
+              <Keyboard size={18} className="text-accent mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-text">Atalhos de teclado</p>
+                <p className="text-xs text-muted mt-0.5">
+                  Ao editar um site, defina uma tecla (a–z ou 0–9) para abri-lo na hora.
+                  Pressione <kbd className="px-1 py-0.5 bg-border rounded text-[10px]">/</kbd> para focar a busca
+                  e <kbd className="px-1 py-0.5 bg-border rounded text-[10px]">t</kbd> para a agenda.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 bg-bg rounded-xl border border-border">
+              <ListTodo size={18} className="text-accent mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-medium text-text">Agenda do dia</p>
+                <p className="text-xs text-muted mt-0.5">
+                  No canto inferior, anote o que precisa fazer hoje. Pendentes passam para amanhã; concluídas somem à meia-noite.
                 </p>
               </div>
             </div>
@@ -57,16 +77,6 @@ export default function WelcomeModal() {
                 <p className="text-sm font-medium text-text">Mudar tema e layout</p>
                 <p className="text-xs text-muted mt-0.5">
                   Em Configurações &gt; Tema você escolhe o visual e o layout dos cards que combina com você.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 bg-bg rounded-xl border border-border">
-              <Newspaper size={18} className="text-accent mt-0.5 shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-text">Notícias do TabNews</p>
-                <p className="text-xs text-muted mt-0.5">
-                  Na parte inferior, acompanhe os posts mais recentes e relevantes da comunidade tech brasileira.
                 </p>
               </div>
             </div>

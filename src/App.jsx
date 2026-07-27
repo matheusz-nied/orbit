@@ -15,6 +15,7 @@ import WidgetDock from './components/WidgetDock'
 import NewsFeed from './components/NewsFeed'
 import StarCanvas from './components/StarCanvas'
 import { useEasterEggs } from './hooks/useEasterEggs'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import Toast from './components/Toast'
 
 const SettingsModal = lazy(() => import('./components/SettingsModal'))
@@ -33,6 +34,7 @@ export default function App() {
   const openSettings = useStore((state) => state.openSettings)
   const motionMode = useStore((state) => state.motionMode)
   useEasterEggs()
+  useKeyboardShortcuts()
 
   useEffect(() => {
     applyTheme(theme)

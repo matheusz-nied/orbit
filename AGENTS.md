@@ -41,7 +41,7 @@ src/
 ### Estado (Zustand)
 - Store único e plano em `src/store/useStore.js`.
 - Toda mutação que precisa persistir chama `storage.set()` **sincronamente** dentro da ação.
-- Estado principal: `sites`, `categories`, `activeCategory`, `workspaces`, `activeWorkspace`, `siteStats`, `widgets`, `weatherLocation`, `notes`, `theme`, `cardLayout`, `motionMode`, `searchProvider`, `searchQuery`, `newsProvider`, `newsTopics`, `newsItems`, `newsLoading`, `deepseekApiKey`, `chat*`, `openInNewTab`, `settingsOpen`, `addSiteOpen`, `editingSite`, `welcomeSeen`.
+- Estado principal: `sites`, `categories`, `activeCategory`, `workspaces`, `activeWorkspace`, `siteStats`, `widgets`, `weatherLocation`, `notes`, `agenda`, `theme`, `cardLayout`, `motionMode`, `searchProvider`, `searchQuery`, `newsProvider`, `newsTopics`, `newsItems`, `newsLoading`, `deepseekApiKey`, `chat*`, `openInNewTab`, `settingsOpen`, `addSiteOpen`, `editingSite`, `welcomeSeen`, `dockPanel` (efêmero).
 - Exporta também o array `searchProviders` (Google, DuckDuckGo, YouTube, Ecosia, AI Chat).
 
 ### Temas
@@ -66,12 +66,19 @@ src/
 - Drag & drop fica desabilitado na visão Frequentes (a ordem é derivada do uso).
 - Desligar o widget `frequent` reseta `activeCategory` se estava em Frequentes.
 
+### Atalhos de teclado
+
+- Cada site pode ter `shortcut` (uma tecla `a`–`z` ou `0`–`9`), configurável no modal Adicionar/Editar Site. Unicidade global entre sites.
+- `useKeyboardShortcuts` (`hooks/useKeyboardShortcuts.js`): fora de inputs/modais, a tecla abre o site do **espaço ativo** via `openSite()`.
+- Atalhos globais: `/` foca a busca (`orbit:focus-search` no `SearchBar`); `t` abre/fecha a Agenda no dock (se widget ligado).
+
 ### Widgets
 
-- Flags em `widgets` (`weather`, `notes`, `pomodoro`, `frequent`), aba "Widgets" nas Configurações.
+- Flags em `widgets` (`weather`, `notes`, `pomodoro`, `agenda`, `frequent`), aba "Widgets" nas Configurações.
 - **Clima**: Open-Meteo, sem API key. `utils/weather.js` faz geocoding + previsão e mapeia códigos WMO. Cache de 30 min em `sp_weather_cache`, revalidado só com a aba visível (`visibilitychange` + interval). Ao trocar cidade, o widget limpa o clima antigo até a nova resposta.
 - **Pomodoro**: `usePomodoro` deriva o restante de um **timestamp de término**, nunca de um contador decrementado — navegadores limitam timers em abas de segundo plano. O hook vive no `WidgetDock` para o timer sobreviver ao fechamento do painel.
 - **Notas**: debounce de 400ms + flush em `pagehide` para não perder texto pendente.
+- **Agenda**: `agenda: { date, items[] }` em `sp_agenda`. Rollover à meia-noite via `ensureAgendaDay()` — itens concluídos somem, pendentes carregam para o dia atual (`utils/agenda.js`).
 
 ### URLs e dados
 
@@ -96,7 +103,7 @@ src/
 - `CategoryFilter` — abas de filtro + Frequentes + botão "Adicionar Site".
 - `SiteGrid` — grid sortable com `DndContext > SortableContext`, usa `rectSortingStrategy`.
 - `SiteCard` — facade dos 10 layouts (`classic`, `bento`, `magazine`, `terminal`, `orbital`, `orbital-glass`, `singularity`, `wave-particle`, `quantum-spin`, `cyber`).
-- `WidgetDock` / `NotesPanel` / `PomodoroPanel` — dock inferior.
+- `WidgetDock` / `NotesPanel` / `PomodoroPanel` / `AgendaPanel` — dock inferior.
 - `NewsFeed` — TabNews (relevantes/recentes), auto-refresh 5min com aba visível.
 - `SettingsModal` — abas: Tema, Widgets, Busca, Chat IA, Notícias, Espaços, Categorias, Dados.
 - `AddSiteModal` — modal para adicionar/editar site.

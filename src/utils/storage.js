@@ -107,6 +107,7 @@ export const defaultWidgets = {
   weather: true,
   notes: true,
   pomodoro: true,
+  agenda: true,
   frequent: true,
 }
 
