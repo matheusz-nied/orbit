@@ -953,6 +953,34 @@ input:focus, button:focus, select:focus {
   50% { transform: scale(1.15); opacity: 0.7; }
 }
 
+/* Layout Cyber — scan / glitch / LED (só transform + opacity). */
+@keyframes cyberScan {
+  0% { transform: translateY(-120%); opacity: 0; }
+  8% { opacity: 0.7; }
+  92% { opacity: 0.5; }
+  100% { transform: translateY(280%); opacity: 0; }
+}
+
+@keyframes cyberGlitch {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 0); }
+  50% { transform: translate(2px, 1px); }
+  75% { transform: translate(-1px, -1px); }
+}
+
+@keyframes cyberPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+.cyber-card-hit:hover {
+  animation: cyberGlitch 0.35s steps(2) 1;
+}
+
+[data-motion="reduced"] .cyber-card-hit:hover {
+  animation: none;
+}
+
 /* =========================================================
    DESEMPENHO
    ========================================================= */

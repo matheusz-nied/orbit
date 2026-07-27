@@ -95,7 +95,7 @@ src/
 - `WorkspaceSwitcher` / `WorkspaceManager` — troca e CRUD de espaços.
 - `CategoryFilter` — abas de filtro + Frequentes + botão "Adicionar Site".
 - `SiteGrid` — grid sortable com `DndContext > SortableContext`, usa `rectSortingStrategy`.
-- `SiteCard` — facade dos 9 layouts (`classic`, `bento`, `magazine`, `terminal`, `orbital`, `orbital-glass`, `singularity`, `wave-particle`, `quantum-spin`).
+- `SiteCard` — facade dos 10 layouts (`classic`, `bento`, `magazine`, `terminal`, `orbital`, `orbital-glass`, `singularity`, `wave-particle`, `quantum-spin`, `cyber`).
 - `WidgetDock` / `NotesPanel` / `PomodoroPanel` — dock inferior.
 - `NewsFeed` — TabNews (relevantes/recentes), auto-refresh 5min com aba visível.
 - `SettingsModal` — abas: Tema, Widgets, Busca, Chat IA, Notícias, Espaços, Categorias, Dados.
