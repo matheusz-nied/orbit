@@ -121,7 +121,7 @@ export default function WeatherWidget() {
   const Icon = icons[icon] || Cloud
 
   return (
-    <div className="flex items-center justify-center gap-3 text-muted animate-fadeIn">
+    <div className="flex items-center justify-center gap-3 text-muted animate-fadeIn mb-6">
       <Icon size={22} className="text-accent shrink-0" />
 
       <span className="text-2xl font-light text-text tabular-nums">

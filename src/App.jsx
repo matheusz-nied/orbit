@@ -71,7 +71,7 @@ export default function App() {
 
         {/* Main layout */}
         <div className="container mx-auto px-4 flex flex-col min-h-[85vh]">
-          <div className="flex-1 flex flex-col pt-8">
+          <div className="flex-1 flex flex-col pt-">
             <Clock />
             <WeatherWidget />
             <SearchBar />
