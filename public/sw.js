@@ -1,6 +1,6 @@
 // Service worker do Orbit — escrito à mão para não trazer uma dependência de
 // build só por causa disso. Bump em VERSION invalida todos os caches.
-const VERSION = 'v1'
+const VERSION = 'v2'
 const SHELL_CACHE = `orbit-shell-${VERSION}`
 const ASSET_CACHE = `orbit-assets-${VERSION}`
 const FAVICON_CACHE = `orbit-favicons-${VERSION}`
@@ -61,21 +61,20 @@ const cacheFirst = async (request, cacheName) => {
   }
 }
 
-const networkFirst = async (request, cacheName) => {
-  const cache = await caches.open(cacheName)
+const staleWhileRevalidate = async (request, cachePromise, update) => {
+  const cache = await cachePromise
+  const cached = await cache.match(request)
 
-  try {
-    const response = await fetch(request)
-    if (response && response.ok) cache.put(request, response.clone())
-    return response
-  } catch (err) {
-    const cached = await cache.match(request)
-    if (cached) return cached
-    // Navegação offline sem cache exato: o app é uma SPA, então o index serve.
-    const shell = await caches.match('/index.html')
-    if (shell) return shell
-    throw err
-  }
+  if (cached) return cached
+
+  const response = await update
+  if (response) return response
+
+  // Navegação offline sem cache exato: o app é uma SPA, então o index serve.
+  const shell = await caches.match('/index.html')
+  if (shell) return shell
+
+  throw new TypeError('Falha ao carregar a navegação e não há cache disponível')
 }
 
 self.addEventListener('fetch', (event) => {
@@ -85,10 +84,23 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url)
 
-  // Navegação: rede primeiro para pegar deploys novos, cache como rede de
-  // segurança quando estiver offline.
+  // Navegação: abre do cache imediatamente e atualiza em segundo plano.
   if (request.mode === 'navigate') {
-    event.respondWith(networkFirst(request, SHELL_CACHE))
+    const cachePromise = caches.open(SHELL_CACHE)
+    const update = fetch(request)
+      .then(async (response) => {
+        if (response && response.ok) {
+          const cache = await cachePromise
+          await cache.put(request, response.clone())
+        }
+        return response
+      })
+      .catch(() => null)
+
+    // waitUntil precisa ser chamado durante o evento; assim a atualização do
+    // cache segue mesmo depois que a resposta em cache já abriu a aba.
+    event.waitUntil(update)
+    event.respondWith(staleWhileRevalidate(request, cachePromise, update))
     return
   }
 
