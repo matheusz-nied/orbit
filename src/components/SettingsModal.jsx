@@ -226,7 +226,7 @@ export default function SettingsModal() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {[
                     { id: 'classic', label: 'Clássico', Icon: LayoutGrid, desc: 'Ícones em grade' },
-                    { id: 'orbital', label: 'Orbital', Icon: Sparkles, desc: 'Planetas flutuantes' },
+                    { id: 'space', label: 'Space', Icon: Sparkles, desc: 'Janela para o cosmos' },
                     { id: 'orbital-glass', label: 'Orbital Glass', Icon: Gem, desc: 'Planetas de vidro' },
                     { id: 'singularity', label: 'Singularidade', Icon: CircleDot, desc: 'Buraco negro' },
                     { id: 'wave-particle', label: 'Dualidade', Icon: Waves, desc: 'Onda-partícula' },

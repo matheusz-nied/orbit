@@ -87,7 +87,7 @@ export default function SiteGrid() {
   }
 
   const gridClassName = useMemo(() => {
-    if (cardLayout === 'orbital' || cardLayout === 'orbital-glass' || cardLayout === 'singularity' || cardLayout === 'quantum-spin' || cardLayout === 'cyber') {
+    if (cardLayout === 'space' || cardLayout === 'orbital-glass' || cardLayout === 'singularity' || cardLayout === 'quantum-spin' || cardLayout === 'cyber') {
       return 'grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 justify-items-center py-4'
     }
     if (cardLayout === 'wave-particle') {

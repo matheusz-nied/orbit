@@ -35,7 +35,7 @@ export default function Clock() {
   const seconds = String(time.getSeconds()).padStart(2, '0')
 
   return (
-    <div className="text-center py-8 animate-fadeIn">
+    <div className="orbit-clock text-center py-8 animate-fadeIn">
       <div className="text-6xl md:text-8xl font-light tracking-tight text-text mb-2 tabular-nums">
         {hours}<span className="opacity-50">:</span>{minutes}
         <span className="text-3xl md:text-5xl opacity-40 ml-1">{seconds}</span>

@@ -149,7 +149,7 @@ export default function SearchBar() {
         </div>
       </div>
 
-      <div className="relative">
+      <div className="orbit-search relative">
         <input
           ref={inputRef}
           type="text"

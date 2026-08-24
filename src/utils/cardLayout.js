@@ -3,7 +3,7 @@ export const FALLBACK_CARD_LAYOUT = 'classic'
 
 export const cardLayoutIds = [
   'classic',
-  'orbital',
+  'space',
   'orbital-glass',
   'singularity',
   'wave-particle',
@@ -13,5 +13,7 @@ export const cardLayoutIds = [
 
 export function resolveCardLayout(layout) {
   if (!layout) return DEFAULT_CARD_LAYOUT
+  // Migração do nome antigo sem perder a preferência já salva.
+  if (layout === 'orbital') return 'space'
   return cardLayoutIds.includes(layout) ? layout : FALLBACK_CARD_LAYOUT
 }

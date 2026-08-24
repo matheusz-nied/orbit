@@ -35,6 +35,102 @@ body {
   overflow-x: hidden;
 }
 
+/* Space — profundidade com gradientes estáticos; só as estrelas cadentes
+   usam animação e se movem exclusivamente por transform/opacity. */
+[data-theme="space"] body {
+  background-image:
+    radial-gradient(circle at 50% -20%, rgba(70, 100, 190, 0.12), transparent 46%),
+    linear-gradient(180deg, #030510 0%, var(--bg) 72%);
+}
+
+.space-nebula {
+  background:
+    radial-gradient(ellipse at 12% 20%, rgba(55, 90, 190, 0.2) 0%, rgba(33, 47, 120, 0.08) 23%, transparent 48%),
+    radial-gradient(ellipse at 88% 16%, rgba(112, 55, 180, 0.16) 0%, rgba(52, 35, 105, 0.06) 27%, transparent 51%),
+    radial-gradient(ellipse at 55% 76%, rgba(20, 95, 145, 0.1) 0%, transparent 44%),
+    linear-gradient(118deg, transparent 24%, rgba(92, 112, 205, 0.035) 43%, rgba(150, 105, 210, 0.055) 51%, transparent 70%);
+}
+
+.space-nebula::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.32;
+  background-image: radial-gradient(circle, rgba(220, 230, 255, 0.8) 0 0.6px, transparent 0.9px);
+  background-size: 37px 37px;
+  background-position: 7px 13px;
+}
+
+.space-planet {
+  right: -18rem;
+  bottom: -31rem;
+  width: 52rem;
+  height: 52rem;
+  border-radius: 50%;
+  opacity: 0.72;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(67, 91, 145, 0.22), transparent 31%),
+    radial-gradient(circle at 48% 38%, #11192f 0%, #070b18 48%, #010207 72%);
+  box-shadow:
+    -12px -15px 0 -10px rgba(139, 168, 255, 0.28),
+    -24px -25px 80px rgba(78, 111, 215, 0.13);
+}
+
+@keyframes spaceShoot {
+  0%, 72% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-35deg) scaleX(0.35); }
+  75% { opacity: 0.75; }
+  86% { opacity: 0; transform: translate3d(-34vw, 24vw, 0) rotate(-35deg) scaleX(1); }
+  100% { opacity: 0; transform: translate3d(-34vw, 24vw, 0) rotate(-35deg) scaleX(1); }
+}
+
+.space-shooting-star {
+  width: 9rem;
+  height: 1px;
+  opacity: 0;
+  transform-origin: right center;
+  background: linear-gradient(90deg, transparent, rgba(214, 228, 255, 0.8));
+  animation: spaceShoot 12s ease-in infinite;
+}
+
+.space-shooting-star-one {
+  top: 13%;
+  right: 9%;
+}
+
+.space-shooting-star-two {
+  top: 32%;
+  right: 31%;
+  animation-delay: -5.5s;
+  animation-duration: 17s;
+}
+
+[data-theme="space"] .orbit-clock > div:first-child {
+  color: #f2f6ff;
+  text-shadow: 0 0 28px rgba(108, 142, 255, 0.3);
+}
+
+[data-theme="space"] .orbit-search input,
+[data-theme="space"] .bg-card {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 12px 35px rgba(0, 0, 0, 0.16);
+}
+
+[data-theme="space"] .orbit-search input:focus {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 3px rgba(139, 168, 255, 0.08), 0 14px 45px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 640px) {
+  .space-planet {
+    right: -20rem;
+    bottom: -30rem;
+    width: 44rem;
+    height: 44rem;
+  }
+
+  .space-shooting-star-two {
+    display: none;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -103,6 +199,123 @@ body {
 
 .animate-orbit-glow {
   animation: orbit-glow 3s ease-in-out infinite;
+}
+
+/* Layout Space — uma pequena viewport para o cosmos. As camadas de cenário
+   são estáticas; apenas o reflexo e o sinal usam transform/opacity. */
+.space-card {
+  border-color: color-mix(in srgb, var(--space-card-accent) 38%, transparent);
+  background: #040717;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 28px rgba(0, 0, 0, 0.28),
+    0 0 18px color-mix(in srgb, var(--space-card-accent) 12%, transparent);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.group:hover .space-card {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--space-card-accent) 72%, transparent);
+}
+
+.space-card-nebula {
+  opacity: 0.75;
+  background:
+    radial-gradient(ellipse at 15% 22%, color-mix(in srgb, var(--space-card-accent) 42%, transparent), transparent 43%),
+    radial-gradient(ellipse at 88% 72%, rgba(98, 55, 170, 0.3), transparent 52%),
+    linear-gradient(145deg, #090d25 0%, #030511 66%);
+}
+
+.space-card-stars {
+  opacity: 0.82;
+  background-image:
+    radial-gradient(circle at 16% 19%, #fff 0 0.7px, transparent 1px),
+    radial-gradient(circle at 75% 15%, #dce8ff 0 0.8px, transparent 1.2px),
+    radial-gradient(circle at 89% 39%, #fff 0 0.5px, transparent 0.9px),
+    radial-gradient(circle at 25% 63%, #b9ccff 0 0.6px, transparent 1px),
+    radial-gradient(circle at 64% 72%, #fff 0 0.7px, transparent 1.1px),
+    radial-gradient(circle at 43% 35%, #d8c7ff 0 0.5px, transparent 0.9px);
+}
+
+.space-card-world {
+  right: -2.3rem;
+  bottom: -3.5rem;
+  width: 6.8rem;
+  height: 6.8rem;
+  background:
+    radial-gradient(circle at 31% 26%, color-mix(in srgb, var(--space-card-accent) 70%, white), transparent 5%),
+    radial-gradient(circle at 38% 31%, color-mix(in srgb, var(--space-card-accent) 48%, #17203d) 0%, #080d20 53%, #01030a 74%);
+  box-shadow: -5px -5px 0 -3px color-mix(in srgb, var(--space-card-accent) 55%, transparent);
+}
+
+.space-card-atmosphere {
+  right: -1rem;
+  bottom: 1.45rem;
+  width: 5.7rem;
+  height: 1px;
+  transform: rotate(-35deg);
+  opacity: 0.6;
+  background: linear-gradient(90deg, transparent, var(--space-card-accent), transparent);
+}
+
+@keyframes spaceCardSweep {
+  0%, 68% { opacity: 0; transform: translate3d(-7rem, 0, 0) rotate(18deg); }
+  76% { opacity: 0.22; }
+  88%, 100% { opacity: 0; transform: translate3d(12rem, 0, 0) rotate(18deg); }
+}
+
+.space-card-sweep {
+  top: -2rem;
+  left: 0;
+  width: 1.8rem;
+  height: 10rem;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), transparent);
+  animation: spaceCardSweep 8s ease-in-out infinite;
+}
+
+.space-card-corner {
+  width: 0.8rem;
+  height: 0.8rem;
+  opacity: 0.46;
+}
+
+.space-card-corner-tl {
+  top: 0.55rem;
+  left: 0.55rem;
+  border-top: 1px solid var(--space-card-accent);
+  border-left: 1px solid var(--space-card-accent);
+}
+
+.space-card-corner-br {
+  right: 0.55rem;
+  bottom: 0.55rem;
+  border-right: 1px solid var(--space-card-accent);
+  border-bottom: 1px solid var(--space-card-accent);
+}
+
+@keyframes spaceCardSignal {
+  0%, 100% { opacity: 0.35; transform: scale(0.75); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.space-card-signal {
+  top: 0.7rem;
+  right: 0.75rem;
+  width: 3px;
+  height: 3px;
+  background: var(--space-card-accent);
+  box-shadow: 0 0 6px var(--space-card-accent);
+  animation: spaceCardSignal 2.4s ease-in-out infinite;
+}
+
+.space-card-icon {
+  border-color: color-mix(in srgb, var(--space-card-accent) 26%, transparent);
+  background: rgba(3, 6, 18, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 8px 22px rgba(0, 0, 0, 0.35),
+    0 0 15px color-mix(in srgb, var(--space-card-accent) 14%, transparent);
 }
 
 /* Card hover effects */
@@ -841,4 +1054,3 @@ input:focus, button:focus, select:focus {
 [data-motion="reduced"] [data-decorative][class*="blur"] {
   filter: none !important;
 }
-

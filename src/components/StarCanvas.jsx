@@ -14,9 +14,17 @@ const BASE_FPS = 60
 // faixa num único path. Sem isso seriam N chamadas de fill + N strings
 // `rgba(...)` alocadas por frame.
 const OPACITY_STEPS = 10
-const FILL_STYLES = Array.from(
-  { length: OPACITY_STEPS + 1 },
-  (_, i) => `rgba(200, 216, 255, ${(i / OPACITY_STEPS).toFixed(2)})`,
+const STAR_COLORS = [
+  [205, 220, 255],
+  [255, 255, 255],
+  [181, 194, 255],
+]
+
+const FILL_STYLES = STAR_COLORS.map(([r, g, b]) =>
+  Array.from(
+    { length: OPACITY_STEPS + 1 },
+    (_, i) => `rgba(${r}, ${g}, ${b}, ${(i / OPACITY_STEPS).toFixed(2)})`,
+  ),
 )
 
 const createStars = (width, height) => {
@@ -24,13 +32,15 @@ const createStars = (width, height) => {
   const stars = new Array(count)
 
   for (let i = 0; i < count; i++) {
+    const depth = Math.random()
     stars[i] = {
       x: Math.random() * width,
       y: Math.random() * height,
-      size: Math.random() * 2 + 0.5,
-      speed: Math.random() * 0.5 + 0.1,
-      opacity: Math.random(),
+      size: 0.35 + depth * 1.65,
+      speed: 0.05 + depth * 0.38,
+      opacity: 0.25 + Math.random() * 0.75,
       twinkleSpeed: Math.random() * 0.02 + 0.005,
+      color: Math.floor(Math.random() * STAR_COLORS.length),
     }
   }
 
@@ -65,13 +75,19 @@ export default function StarCanvas() {
     let width = 0
     let height = 0
 
-    const buckets = Array.from({ length: OPACITY_STEPS + 1 }, () => [])
+    const buckets = STAR_COLORS.map(() =>
+      Array.from({ length: OPACITY_STEPS + 1 }, () => []),
+    )
     bucketsRef.current = buckets
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height)
 
-      for (let i = 0; i <= OPACITY_STEPS; i++) buckets[i].length = 0
+      for (let color = 0; color < buckets.length; color++) {
+        for (let level = 0; level <= OPACITY_STEPS; level++) {
+          buckets[color][level].length = 0
+        }
+      }
 
       const stars = starsRef.current
       for (let i = 0; i < stars.length; i++) {
@@ -79,22 +95,24 @@ export default function StarCanvas() {
         let level = Math.round(star.opacity * OPACITY_STEPS)
         if (level < 0) level = 0
         else if (level > OPACITY_STEPS) level = OPACITY_STEPS
-        buckets[level].push(star)
+        buckets[star.color][level].push(star)
       }
 
-      // Um beginPath/fill por faixa de opacidade — no lugar de um por estrela.
-      for (let level = 1; level <= OPACITY_STEPS; level++) {
-        const bucket = buckets[level]
-        if (bucket.length === 0) continue
+      // Um fill por cor/faixa de opacidade, ainda bem menos que um por estrela.
+      for (let color = 0; color < buckets.length; color++) {
+        for (let level = 1; level <= OPACITY_STEPS; level++) {
+          const bucket = buckets[color][level]
+          if (bucket.length === 0) continue
 
-        ctx.fillStyle = FILL_STYLES[level]
-        ctx.beginPath()
-        for (let i = 0; i < bucket.length; i++) {
-          const star = bucket[i]
-          ctx.moveTo(star.x + star.size, star.y)
-          ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2)
+          ctx.fillStyle = FILL_STYLES[color][level]
+          ctx.beginPath()
+          for (let i = 0; i < bucket.length; i++) {
+            const star = bucket[i]
+            ctx.moveTo(star.x + star.size, star.y)
+            ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2)
+          }
+          ctx.fill()
         }
-        ctx.fill()
       }
     }
 
@@ -183,11 +201,16 @@ export default function StarCanvas() {
   if (!active) return null
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      aria-hidden="true"
-      style={{ opacity: 0.8 }}
-    />
+    <div className="space-backdrop fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+      <div className="space-nebula absolute inset-0" data-decorative />
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0"
+        style={{ opacity: 0.92 }}
+      />
+      <div className="space-planet absolute" data-decorative />
+      <div className="space-shooting-star space-shooting-star-one absolute gpu-layer" data-decorative />
+      <div className="space-shooting-star space-shooting-star-two absolute gpu-layer" data-decorative />
+    </div>
   )
 }
