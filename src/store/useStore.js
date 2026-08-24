@@ -10,7 +10,8 @@ import {
   resolveActiveWorkspace,
 } from "../utils/storage";
 import { FREQUENT_CATEGORY } from "../utils/frequent";
-import { applyTheme } from "../themes/themes";
+import { applyTheme, resolveTheme } from "../themes/themes";
+import { resolveCardLayout } from "../utils/cardLayout";
 import { applyMotion } from "../utils/motion";
 import { loadAgenda, rolloverAgenda } from "../utils/agenda";
 
@@ -82,11 +83,23 @@ const useStore = create((set, get) => ({
   // Dock panel aberto (efêmero — atalho `t` abre a agenda)
   dockPanel: null,
 
-  // Theme
-  theme: storage.get("theme") || "premium-dark",
+  // Theme — valores removidos (ex.: hacking) caem no default
+  theme: (() => {
+    const resolved = resolveTheme(storage.get("theme"));
+    if (resolved !== storage.get("theme")) {
+      storage.set("theme", resolved);
+    }
+    return resolved;
+  })(),
 
-  // Card Layout
-  cardLayout: storage.get("card_layout") || "wave-particle",
+  // Card Layout — valores removidos (ex.: bento) caem no Clássico
+  cardLayout: (() => {
+    const resolved = resolveCardLayout(storage.get("card_layout"));
+    if (resolved !== storage.get("card_layout")) {
+      storage.set("card_layout", resolved);
+    }
+    return resolved;
+  })(),
 
   // Motion / desempenho — 'auto' | 'full' | 'reduced'
   motionMode: storage.get("motion_mode") || "auto",
@@ -409,14 +422,16 @@ const useStore = create((set, get) => ({
 
   // Actions — Theme & Layout
   setTheme: (theme) => {
-    storage.set("theme", theme);
-    applyTheme(theme);
-    set({ theme });
+    const resolved = resolveTheme(theme);
+    storage.set("theme", resolved);
+    applyTheme(resolved);
+    set({ theme: resolved });
   },
 
   setCardLayout: (layout) => {
-    storage.set("card_layout", layout);
-    set({ cardLayout: layout });
+    const resolved = resolveCardLayout(layout);
+    storage.set("card_layout", resolved);
+    set({ cardLayout: resolved });
   },
 
   setMotionMode: (mode) => {
@@ -540,8 +555,20 @@ const useStore = create((set, get) => ({
         weatherLocation: storage.get("weather_location") || null,
         notes: storage.get("notes") || "",
         agenda: loadAgenda(),
-        theme: storage.get("theme") || "premium-dark",
-        cardLayout: storage.get("card_layout") || "wave-particle",
+        theme: (() => {
+          const resolved = resolveTheme(storage.get("theme"));
+          if (resolved !== storage.get("theme")) {
+            storage.set("theme", resolved);
+          }
+          return resolved;
+        })(),
+        cardLayout: (() => {
+          const resolved = resolveCardLayout(storage.get("card_layout"));
+          if (resolved !== storage.get("card_layout")) {
+            storage.set("card_layout", resolved);
+          }
+          return resolved;
+        })(),
         motionMode: storage.get("motion_mode") || "auto",
         searchProvider: storage.get("search_provider") || 0,
         newsProvider: (() => {

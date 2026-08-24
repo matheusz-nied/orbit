@@ -87,15 +87,6 @@ export default function SiteGrid() {
   }
 
   const gridClassName = useMemo(() => {
-    if (cardLayout === 'magazine') {
-      return 'grid grid-cols-[repeat(auto-fill,minmax(75px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(90px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(105px,1fr))] gap-3 sm:gap-4'
-    }
-    if (cardLayout === 'bento') {
-      return 'grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3 sm:gap-4'
-    }
-    if (cardLayout === 'terminal') {
-      return 'flex flex-col max-w-4xl mx-auto w-full border border-border/30 rounded-lg overflow-hidden bg-card/20'
-    }
     if (cardLayout === 'orbital' || cardLayout === 'orbital-glass' || cardLayout === 'singularity' || cardLayout === 'quantum-spin' || cardLayout === 'cyber') {
       return 'grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 justify-items-center py-4'
     }
@@ -114,9 +105,9 @@ export default function SiteGrid() {
       >
         <SortableContext items={filteredSites.map(s => s.id)} strategy={rectSortingStrategy}>
           <div className={gridClassName}>
-            {filteredSites.map((site, index) => (
+            {filteredSites.map((site) => (
               <div key={site.id} className="relative w-full flex justify-center">
-                {site.shortcut && cardLayout !== 'terminal' && (
+                {site.shortcut && (
                   <kbd
                     className="absolute top-0 left-1/2 -translate-x-[calc(50%+28px)] sm:-translate-x-[calc(50%+32px)] z-20 min-w-[1.25rem] px-1 py-0.5 text-[9px] font-mono font-bold text-center text-muted bg-card/90 border border-border rounded shadow-sm pointer-events-none uppercase"
                     title={`Atalho: ${site.shortcut}`}
@@ -124,7 +115,7 @@ export default function SiteGrid() {
                     {site.shortcut}
                   </kbd>
                 )}
-                <SiteCard site={site} index={index} />
+                <SiteCard site={site} />
               </div>
             ))}
           </div>

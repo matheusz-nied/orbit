@@ -89,7 +89,7 @@ export default function SearchBar() {
       }
 
       if (q === 'sudo rm -rf /') {
-        setTheme('hacking')
+        setTheme('crt')
         document.body.classList.add('animate-shake')
         setTimeout(() => document.body.classList.remove('animate-shake'), 1000)
         setLocalQuery('')

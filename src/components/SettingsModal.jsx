@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import {
   X, Palette, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
-  LayoutGrid, Rows, GalleryVerticalEnd, Terminal, Sparkles, Gem,
+  LayoutGrid, Sparkles, Gem,
   CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge, Layers, LayoutDashboard, Cpu
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
@@ -226,9 +226,6 @@ export default function SettingsModal() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {[
                     { id: 'classic', label: 'Clássico', Icon: LayoutGrid, desc: 'Ícones em grade' },
-                    { id: 'bento', label: 'Bento', Icon: Rows, desc: 'Lista horizontal' },
-                    { id: 'magazine', label: 'Magazine', Icon: GalleryVerticalEnd, desc: 'Capas verticais' },
-                    { id: 'terminal', label: 'Terminal', Icon: Terminal, desc: 'Lista estilo código' },
                     { id: 'orbital', label: 'Orbital', Icon: Sparkles, desc: 'Planetas flutuantes' },
                     { id: 'orbital-glass', label: 'Orbital Glass', Icon: Gem, desc: 'Planetas de vidro' },
                     { id: 'singularity', label: 'Singularidade', Icon: CircleDot, desc: 'Buraco negro' },

@@ -1,3 +1,5 @@
+export const DEFAULT_THEME = 'premium-dark'
+
 export const themes = {
   'minimal-light': {
     name: 'Minimal Light',
@@ -7,17 +9,6 @@ export const themes = {
     '--accent': '#6366f1',
     '--muted': '#6b7280',
     '--border': '#e5e5e5',
-    '--font': "'Inter', system-ui, sans-serif",
-    '--star': '0',
-  },
-  'minimal-dark': {
-    name: 'Minimal Dark',
-    '--bg': '#0f0f0f',
-    '--card': '#1a1a1a',
-    '--text': '#e8e8e8',
-    '--accent': '#e2e2e2',
-    '--muted': '#6b7280',
-    '--border': '#2d2d2d',
     '--font': "'Inter', system-ui, sans-serif",
     '--star': '0',
   },
@@ -42,28 +33,6 @@ export const themes = {
     '--border': '#1a1a3a',
     '--font': "'Inter', system-ui, sans-serif",
     '--star': '1',
-  },
-  'hacking': {
-    name: 'Hacking',
-    '--bg': '#000000',
-    '--card': '#0a0a0a',
-    '--text': '#00ff41',
-    '--accent': '#00ff41',
-    '--muted': '#006400',
-    '--border': '#003300',
-    '--font': "'JetBrains Mono', monospace",
-    '--star': '0',
-  },
-  'sunset': {
-    name: 'Sunset',
-    '--bg': '#1a0a0f',
-    '--card': '#2d1520',
-    '--text': '#ffcba4',
-    '--accent': '#ff6b6b',
-    '--muted': '#8b4557',
-    '--border': '#3d1f2a',
-    '--font': "'Inter', system-ui, sans-serif",
-    '--star': '0',
   },
   'cyberpunk': {
     name: 'Cyberpunk',
@@ -98,17 +67,6 @@ export const themes = {
     '--font': "'JetBrains Mono', monospace",
     '--star': '0',
   },
-  'event-horizon': {
-    name: 'Event Horizon',
-    '--bg': '#000000',
-    '--card': '#000000',
-    '--text': '#ff6600',
-    '--accent': '#ff9933',
-    '--muted': '#331100',
-    '--border': '#1a0a00',
-    '--font': "'Inter', system-ui, sans-serif",
-    '--star': '0',
-  },
   'nebula': {
     name: 'Nebula',
     '--bg': '#0a0014',
@@ -120,33 +78,15 @@ export const themes = {
     '--font': "'Inter', system-ui, sans-serif",
     '--star': '0',
   },
-  'supernova': {
-    name: 'Supernova',
-    '--bg': '#1a0500',
-    '--card': 'rgba(255, 200, 100, 0.08)',
-    '--text': '#fff8e7',
-    '--accent': '#ffd700',
-    '--muted': '#664422',
-    '--border': 'rgba(255, 165, 0, 0.18)',
-    '--font': "'Inter', system-ui, sans-serif",
-    '--star': '0',
-  },
-  'wormhole': {
-    name: 'Wormhole',
-    '--bg': '#001a1a',
-    '--card': 'rgba(0, 255, 200, 0.04)',
-    '--text': '#e6fffa',
-    '--accent': '#00ffaa',
-    '--muted': '#00b894',
-    '--border': 'rgba(0, 255, 200, 0.12)',
-    '--font': "'Inter', system-ui, sans-serif",
-    '--star': '0',
-  },
+}
+
+export function resolveTheme(themeName) {
+  return themes[themeName] ? themeName : DEFAULT_THEME
 }
 
 export const applyTheme = (themeName) => {
-  const theme = themes[themeName]
-  if (!theme) return
+  const resolved = resolveTheme(themeName)
+  const theme = themes[resolved]
 
   const root = document.documentElement
   Object.entries(theme).forEach(([key, value]) => {
@@ -154,8 +94,8 @@ export const applyTheme = (themeName) => {
       root.style.setProperty(key, value)
     }
   })
-  
-  root.setAttribute('data-theme', themeName)
+
+  root.setAttribute('data-theme', resolved)
 }
 
 export const themeList = Object.keys(themes).map(key => ({

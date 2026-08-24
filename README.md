@@ -80,37 +80,29 @@ Exibição em tempo real, sempre visível. Simples e elegante.
 - Atualização automática a cada 5 minutos
 - Sem API key necessária
 
-### 🎨 13 Temas de Cores
+### 🎨 7 Temas de Cores
 
 | Tema | Descrição |
 |------|-----------|
 | ☀️ Minimal Light | Clássico, limpo, profissional |
-| 🌑 Minimal Dark | Escuro elegante, ideal para programadores |
 | ⬛ Premium Dark | Preto puro, minimalismo absoluto |
 | 🌌 Space | Estrelas animadas no fundo |
-| 💚 Hacking | Matrix-inspired, verde neon em terminal |
-| 🌅 Sunset | Tons quentes de pôr do sol |
 | 💜 Cyberpunk | Neon vibrante, futurista |
 | 🍎 macOS | Inspirado no macOS — translúcido e sofisticado |
 | 📺 Retro CRT | Estética vintage de monitor CRT |
-| 🔥 Event Horizon | Laranja intenso, buraco negro estelar |
 | 🟣 Nebula | Nebulosa cósmica, pixéis de sonho |
-| 💛 Supernova | Dourado explosivo, energia estelar |
-| 🌊 Wormhole | Verde-ciano, viagem interdimensional |
 
-### 📐 9 Layouts de Cards
+### 📐 7 Layouts de Cards
 
 | Layout | Descrição |
 |--------|-----------|
 | 🔲 Clássico | Ícones em grade tradicional |
-| 📊 Bento | Lista horizontal estilo bento |
-| 📰 Magazine | Capas verticais estilo revista |
-| 💻 Terminal | Lista estilo linha de comando |
 | 🪐 Orbital | Planetas flutuantes |
 | 💎 Orbital Glass | Planetas de vidro translúcido |
 | 🕳️ Singularidade | Buraco negro cósmico |
 | 🌊 Dualidade | Onda-partícula quântica |
 | ⚛️ Spin | Spin quântico animado |
+| 🖥️ Cyber | Slot netrunner |
 
 ### 💾 Export/Import
 Exporte sites, espaços, widgets, tema e preferências em JSON. Importe em outro dispositivo e tenha tudo exatamente igual. Chaves de API ficam de fora por padrão (opção na exportação).
