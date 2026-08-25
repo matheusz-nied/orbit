@@ -22,6 +22,9 @@ const getHost = (url) => {
   }
 }
 
+// Código curto de catálogo: as três primeiras letras da categoria do site.
+const getClassCode = (category) => (category ? category.slice(0, 3).toUpperCase() : 'GEN')
+
 function SiteCardArchive({ site }) {
   const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
   const openAddSite = useStore((state) => state.openAddSite)
@@ -40,6 +43,7 @@ function SiteCardArchive({ site }) {
 
   const archiveNumber = useMemo(() => getArchiveNumber(site.name), [site.name])
   const host = useMemo(() => getHost(site.url), [site.url])
+  const classCode = useMemo(() => getClassCode(site.category), [site.category])
 
   const handleEdit = (event) => {
     event.stopPropagation()
@@ -63,12 +67,18 @@ function SiteCardArchive({ site }) {
     >
       <button
         type="button"
-        className="archive-site-plate relative w-full min-h-[172px] overflow-hidden text-left"
+        className="archive-site-plate relative w-full text-left"
         onClick={() => openSite(site, openInNewTab)}
         aria-label={`Abrir ${site.name}`}
       >
         <span className="archive-site-grid" aria-hidden />
-        <span className="archive-site-meta">NODE {archiveNumber} / OPEN</span>
+        <span className="archive-site-spine" aria-hidden />
+        <span className="archive-site-fold" aria-hidden />
+
+        <span className="archive-site-head">
+          <em>{archiveNumber}</em>
+          <i>{classCode}</i>
+        </span>
 
         <span className="archive-site-emblem" aria-hidden>
           <span className="archive-site-orbit" />
@@ -91,7 +101,6 @@ function SiteCardArchive({ site }) {
           <strong>{site.name}</strong>
           <small>{host}</small>
         </span>
-        <span className="archive-site-rule" aria-hidden />
       </button>
 
       {showActions && (

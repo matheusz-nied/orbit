@@ -1147,103 +1147,151 @@ input:focus, button:focus, select:focus {
   color: var(--archive-ink);
 }
 
-/* Layout Arquivo — cada link vira uma placa de catálogo científico. */
+/* Layout Arquivo — cada link vira uma ficha quadrada de catálogo:
+   lombada perfurada, canto recortado, carimbo de índice e emblema técnico.
+   Só transform/opacity animam (o drop-shadow é estático). */
 .archive-site-plate {
-  display: block;
-  border: 1px solid color-mix(in srgb, var(--archive-ink, var(--bg)) 48%, transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 1 / 1;
+  padding: 0.42rem 0.5rem 0.5rem 0.95rem;
+  border: 1px solid color-mix(in srgb, var(--archive-ink, var(--bg)) 55%, transparent);
   background: var(--archive-paper, var(--text));
   color: var(--archive-ink, var(--bg));
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.2);
-  transition: transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+  /* Canto superior direito cortado, como ficha de arquivo com orelha. */
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+  filter: drop-shadow(0 7px 12px rgba(0, 0, 0, 0.3));
+  transition: transform 200ms ease, background-color 200ms ease;
 }
 
 .archive-site:hover .archive-site-plate {
-  transform: translateY(-4px);
-  background: color-mix(in srgb, var(--archive-paper, var(--text)) 92%, white);
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.3);
-}
-
-.archive-site-plate::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 6px;
-  background: repeating-linear-gradient(
-    180deg,
-    var(--archive-ink, var(--bg)) 0 2px,
-    transparent 2px 5px
-  );
-  opacity: 0.72;
+  transform: translateY(-3px);
+  background: color-mix(in srgb, var(--archive-paper, var(--text)) 93%, white);
 }
 
 .archive-site-grid {
   position: absolute;
   inset: 0;
-  opacity: 0.1;
+  opacity: 0.11;
   background-image:
     linear-gradient(currentColor 1px, transparent 1px),
     linear-gradient(90deg, currentColor 1px, transparent 1px);
-  background-size: 22px 22px;
-  mask-image: linear-gradient(135deg, transparent 22%, black 100%);
+  background-size: 13px 13px;
+  mask-image: radial-gradient(circle at 50% 42%, black 12%, transparent 72%);
 }
 
-.archive-site-meta {
+/* Lombada picotada, imitando a borda de uma ficha destacável. */
+.archive-site-spine {
   position: absolute;
-  top: 0.72rem;
-  left: 1rem;
-  right: 0.8rem;
+  inset: 0 auto 0 0;
+  width: 0.72rem;
+  background-image: radial-gradient(circle, currentColor 0.9px, transparent 1.1px);
+  background-position: center;
+  background-size: 5px 7px;
+  opacity: 0.55;
+  border-right: 1px solid color-mix(in srgb, var(--archive-ink, var(--bg)) 32%, transparent);
+}
+
+/* Orelha do canto: sombra do dobrado + hairline diagonal. */
+.archive-site-fold {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 26px;
+  height: 26px;
+  background: linear-gradient(225deg, color-mix(in srgb, var(--archive-ink, var(--bg)) 16%, transparent) 0 54%, transparent 54%);
+}
+
+.archive-site-fold::before {
+  content: '';
+  position: absolute;
+  top: 6.5px;
+  right: -3px;
+  width: 21px;
+  height: 1px;
+  background: color-mix(in srgb, var(--archive-ink, var(--bg)) 60%, transparent);
+  transform: rotate(-45deg);
+}
+
+.archive-site-head {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.3rem;
+  padding: 0 0.6rem 0.26rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--archive-ink, var(--bg)) 26%, transparent);
   font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
-  font-size: 0.5rem;
-  font-weight: 500;
+  font-size: 0.44rem;
   letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.archive-site-head em {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.archive-site-head i {
+  overflow: hidden;
+  color: var(--archive-rust, currentColor);
+  font-style: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .archive-site-emblem {
-  position: absolute;
-  top: 2.5rem;
-  left: 50%;
-  width: 4.8rem;
-  height: 4.8rem;
-  transform: translateX(-50%);
-  border: 1px solid currentColor;
-  border-radius: 50%;
+  position: relative;
+  align-self: center;
+  width: 2.9rem;
+  height: 2.9rem;
   display: grid;
   place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
 }
 
+/* Retículas do instrumento: duas linhas finas cruzando o emblema. */
 .archive-site-emblem::before,
 .archive-site-emblem::after {
   content: '';
   position: absolute;
   background: currentColor;
-  opacity: 0.5;
+  opacity: 0.42;
 }
 
 .archive-site-emblem::before {
-  width: 118%;
+  width: 132%;
   height: 1px;
-  transform: rotate(-18deg);
+  transform: rotate(-16deg);
 }
 
 .archive-site-emblem::after {
   width: 1px;
-  height: 118%;
-  transform: rotate(24deg);
+  height: 132%;
+  transform: rotate(22deg);
 }
 
 .archive-site-orbit {
   position: absolute;
-  inset: 0.62rem -0.45rem;
+  inset: -0.28rem;
   border: 1px solid currentColor;
   border-radius: 50%;
-  transform: rotate(28deg) scaleY(0.38);
+  opacity: 0.6;
+  transform: rotate(-24deg) scaleY(0.42);
+  transition: transform 320ms ease;
+}
+
+.archive-site:hover .archive-site-orbit {
+  transform: rotate(-4deg) scaleY(0.42);
 }
 
 .archive-site-icon {
   position: relative;
   z-index: 1;
-  width: 2.7rem;
-  height: 2.7rem;
+  width: 1.85rem;
+  height: 1.85rem;
   display: grid;
   place-items: center;
   border: 1px solid currentColor;
@@ -1252,8 +1300,8 @@ input:focus, button:focus, select:focus {
 }
 
 .archive-site-icon img {
-  width: 1.65rem;
-  height: 1.65rem;
+  width: 1.05rem;
+  height: 1.05rem;
   object-fit: contain;
   filter: grayscale(1) contrast(1.18) sepia(0.22);
 }
@@ -1263,48 +1311,56 @@ input:focus, button:focus, select:focus {
   align-items: center;
   justify-content: center;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.45rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
 .archive-site-copy {
-  position: absolute;
-  right: 0.85rem;
-  bottom: 0.78rem;
-  left: 1rem;
+  position: relative;
+  display: block;
+  padding-right: 0.1rem;
 }
 
 .archive-site-copy strong {
   display: block;
   overflow: hidden;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.25rem;
+  font-size: 0.98rem;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.05;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .archive-site-copy small {
   display: block;
-  margin-top: 0.35rem;
+  margin-top: 0.16rem;
   overflow: hidden;
+  color: color-mix(in srgb, var(--archive-ink, var(--bg)) 62%, transparent);
   font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
-  font-size: 0.48rem;
-  letter-spacing: 0.08em;
+  font-size: 0.42rem;
+  letter-spacing: 0.1em;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-.archive-site-rule {
+/* Sublinha de "abrir": cresce da esquerda no hover. */
+.archive-site-copy::after {
+  content: '';
   position: absolute;
-  right: 0.8rem;
-  bottom: 3.7rem;
-  left: 1rem;
+  right: 0;
+  bottom: -0.22rem;
+  left: 0;
   height: 1px;
-  background: currentColor;
-  opacity: 0.28;
+  background: var(--archive-rust, currentColor);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms ease;
+}
+
+.archive-site:hover .archive-site-copy::after {
+  transform: scaleX(1);
 }
 
 @media (max-width: 640px) {
@@ -1338,8 +1394,9 @@ input:focus, button:focus, select:focus {
     font-size: clamp(4.2rem, 22vw, 6.2rem);
   }
 
-  .archive-site-plate {
-    min-height: 158px;
+  .archive-site-emblem {
+    width: 2.6rem;
+    height: 2.6rem;
   }
 }
 
