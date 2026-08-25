@@ -69,14 +69,14 @@ export const themes = {
   },
   'nebula': {
     name: 'Nebula',
-    '--bg': '#0a0014',
-    '--card': 'rgba(20, 0, 40, 0.55)',
-    '--text': '#ffb3ff',
-    '--accent': '#00ffff',
-    '--muted': '#664466',
-    '--border': 'rgba(255, 0, 255, 0.12)',
+    '--bg': '#070214',
+    '--card': 'rgba(24, 7, 46, 0.55)',
+    '--text': '#f2e8ff',
+    '--accent': '#c084fc',
+    '--muted': '#9d8ec2',
+    '--border': 'rgba(196, 132, 252, 0.2)',
     '--font': "'Inter', system-ui, sans-serif",
-    '--star': '0',
+    '--star': '1',
   },
 }
 

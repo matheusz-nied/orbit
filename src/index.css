@@ -821,67 +821,273 @@ input:focus, button:focus, select:focus {
 }
 
 /* =========================================================
-   TEMA NEBULA
+   TEMA NEBULA — Campo Profundo
+   Galáxia espiral ao longe, nuvens de gás ionizado (violeta,
+   magenta e ciano) à deriva, poeira estelar colorida em canvas
+   e cometas raros. As camadas animadas usam só transform/opacity
+   e não têm filter: as nuvens são gradientes radiais puros.
    ========================================================= */
+
+[data-theme="nebula"] {
+  --neb-violet: #a855f7;
+  --neb-magenta: #d946ef;
+  --neb-cyan: #67e8f9;
+}
 
 [data-theme="nebula"] body {
   background:
-    radial-gradient(ellipse at 20% 30%, rgba(120, 20, 180, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 70%, rgba(255, 50, 150, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(0, 200, 255, 0.08) 0%, transparent 60%),
-    #0a0014;
+    radial-gradient(ellipse 120% 70% at 50% -20%, rgba(76, 29, 149, 0.32), transparent 62%),
+    radial-gradient(ellipse 80% 50% at 85% 110%, rgba(112, 26, 117, 0.2), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 8% 85%, rgba(21, 94, 117, 0.15), transparent 55%),
+    radial-gradient(ellipse at center, transparent 52%, rgba(2, 0, 8, 0.5) 100%),
+    var(--bg);
   background-attachment: fixed;
 }
 
-/* Easter Egg: estrelas distantes piscando */
-[data-theme="nebula"]::after {
-  content: '';
-  position: fixed;
-  inset: 0;
+/* Céu profundo — base estática do cenário. */
+.nebula-sky {
+  background:
+    radial-gradient(circle at 76% 10%, rgba(233, 213, 255, 0.14), transparent 24%),
+    radial-gradient(ellipse 90% 55% at 70% 8%, rgba(124, 58, 237, 0.13), transparent 65%),
+    linear-gradient(200deg, #100428 0%, transparent 46%);
+}
+
+/* Galáxia espiral distante: conic-gradient girando devagar sob uma
+   máscara radial estática. O núcleo brilha por cima do conic. */
+.nebula-galaxy {
+  top: -17rem;
+  right: -15rem;
+  width: 48rem;
+  height: 48rem;
+  border-radius: 50%;
+  opacity: 0.85;
+  background:
+    radial-gradient(circle at center, rgba(237, 224, 255, 0.16), transparent 26%),
+    conic-gradient(from 210deg,
+      transparent 0deg,
+      rgba(196, 132, 252, 0.17) 35deg,
+      rgba(103, 232, 249, 0.08) 80deg,
+      transparent 130deg,
+      rgba(240, 171, 252, 0.12) 190deg,
+      transparent 250deg,
+      rgba(129, 140, 248, 0.1) 300deg,
+      transparent 350deg);
+  -webkit-mask-image: radial-gradient(circle at center, #000 0%, rgba(0, 0, 0, 0.55) 42%, transparent 66%);
+  mask-image: radial-gradient(circle at center, #000 0%, rgba(0, 0, 0, 0.55) 42%, transparent 66%);
+  animation: nebulaSpin 280s linear infinite;
+}
+
+/* Nuvens de gás ionizado — só gradientes radiais sobrepostos, sem blur. */
+.nebula-cloud {
+  will-change: transform;
+}
+
+.nebula-cloud-a {
+  top: -22vh;
+  left: -16vw;
+  width: 78vw;
+  height: 72vh;
+  background:
+    radial-gradient(ellipse 42% 36% at 36% 42%, rgba(147, 51, 234, 0.3), transparent 68%),
+    radial-gradient(ellipse 30% 26% at 60% 60%, rgba(67, 56, 202, 0.22), transparent 70%),
+    radial-gradient(ellipse 16% 12% at 30% 62%, rgba(217, 70, 239, 0.16), transparent 72%);
+  animation: nebulaDriftA 96s ease-in-out infinite alternate;
+}
+
+.nebula-cloud-b {
+  right: -20vw;
+  bottom: -26vh;
+  width: 70vw;
+  height: 66vh;
+  background:
+    radial-gradient(ellipse 40% 34% at 55% 45%, rgba(162, 28, 175, 0.24), transparent 68%),
+    radial-gradient(ellipse 26% 22% at 34% 34%, rgba(217, 70, 239, 0.16), transparent 70%),
+    radial-gradient(ellipse 20% 16% at 70% 30%, rgba(59, 130, 246, 0.14), transparent 72%);
+  animation: nebulaDriftB 128s ease-in-out infinite alternate;
+}
+
+.nebula-cloud-c {
+  left: -12vw;
+  bottom: -8vh;
+  width: 55vw;
+  height: 44vh;
+  opacity: 0.55;
+  background:
+    radial-gradient(ellipse 46% 30% at 50% 50%, rgba(103, 232, 249, 0.13), transparent 70%),
+    radial-gradient(ellipse 30% 18% at 30% 40%, rgba(45, 212, 191, 0.09), transparent 72%);
+  animation: nebulaDriftC 84s ease-in-out infinite alternate;
+}
+
+/* Poeira estelar fixa — micro cintilantes de fundo, duas malhas dessincronizadas. */
+.nebula-dust {
+  opacity: 0.5;
   background-image:
-    radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1.5px 1.5px at 80% 10%, rgba(0,255,255,0.7), transparent),
-    radial-gradient(2px 2px at 40% 80%, rgba(255,0,255,0.6), transparent),
-    radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.5), transparent),
-    radial-gradient(1.5px 1.5px at 30% 50%, rgba(0,255,255,0.5), transparent),
-    radial-gradient(2px 2px at 90% 90%, rgba(255,100,200,0.6), transparent);
-  background-size: 300px 300px;
-  background-repeat: repeat;
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform, opacity;
-  animation: nebulaStars 10s ease-in-out infinite alternate;
+    radial-gradient(circle, rgba(255, 255, 255, 0.7) 0 0.5px, transparent 1px),
+    radial-gradient(circle, rgba(216, 180, 254, 0.65) 0 0.6px, transparent 1.1px);
+  background-size: 53px 47px, 89px 83px;
+  background-position: 11px 7px, 31px 43px;
 }
 
-@keyframes nebulaStars {
-  0% { opacity: 0.4; transform: scale(1); }
-  100% { opacity: 0.9; transform: scale(1.02); }
+@keyframes nebulaSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
+@keyframes nebulaDriftA {
+  0% { transform: translate3d(-3%, -2%, 0) rotate(-5deg) scale(1); }
+  100% { transform: translate3d(3%, 2%, 0) rotate(6deg) scale(1.07); }
+}
+
+@keyframes nebulaDriftB {
+  0% { transform: translate3d(2%, 3%, 0) rotate(4deg) scale(1.05); }
+  100% { transform: translate3d(-3%, -2%, 0) rotate(-6deg) scale(1); }
+}
+
+@keyframes nebulaDriftC {
+  0% { transform: translate3d(-4%, 1%, 0) rotate(3deg) scale(1); }
+  100% { transform: translate3d(4%, -3%, 0) rotate(-4deg) scale(1.1); }
+}
+
+/* Cometas — rastros raros cruzando o campo (só translate + opacity). */
+@keyframes nebulaComet {
+  0%, 78% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-32deg) scaleX(0.3); }
+  81% { opacity: 0.9; }
+  92%, 100% { opacity: 0; transform: translate3d(-42vw, 27vw, 0) rotate(-32deg) scaleX(1); }
+}
+
+.nebula-comet {
+  width: 11rem;
+  height: 2px;
+  border-radius: 999px;
+  opacity: 0;
+  transform-origin: right center;
+  animation: nebulaComet 16s ease-in infinite;
+}
+
+.nebula-comet-one {
+  top: 18%;
+  right: 12%;
+  background: linear-gradient(90deg, transparent, rgba(216, 180, 254, 0.95));
+  box-shadow: 0 0 12px rgba(216, 180, 254, 0.5);
+}
+
+.nebula-comet-two {
+  top: 52%;
+  right: 38%;
+  background: linear-gradient(90deg, transparent, rgba(103, 232, 249, 0.85));
+  box-shadow: 0 0 12px rgba(103, 232, 249, 0.45);
+  animation-delay: -9s;
+  animation-duration: 23s;
+}
+
+@media (max-width: 640px) {
+  .nebula-comet-two {
+    display: none;
+  }
+
+  .nebula-cloud-b {
+    opacity: 0.7;
+  }
+}
+
+[data-theme="nebula"] .orbit-clock > div:first-child {
+  color: #faf5ff;
+  text-shadow:
+    0 0 18px rgba(192, 132, 252, 0.38),
+    0 0 60px rgba(217, 70, 239, 0.2);
+}
+
+[data-theme="nebula"] .orbit-clock > div:last-child {
+  color: #c4b5fd;
+}
+
+/* Vidro cósmico: base violeta translúcida com névoa no topo,
+   borda de plasma e brilho duplo violeta/magenta. */
 [data-theme="nebula"] .bg-card,
 [data-theme="nebula"] .group\/card .bg-card\/80 {
-  background: rgba(20, 0, 40, 0.45) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 1px solid rgba(0, 255, 255, 0.15) !important;
-  box-shadow: 0 8px 32px rgba(120, 0, 200, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
-  transition: transform 0.4s ease, box-shadow 0.4s ease,
-              border-color 0.4s ease, background-color 0.4s ease !important;
+  background:
+    linear-gradient(165deg, rgba(88, 28, 135, 0.18), transparent 55%),
+    rgba(24, 7, 46, 0.55) !important;
+  backdrop-filter: blur(18px) saturate(150%) !important;
+  border: 1px solid rgba(196, 132, 252, 0.16) !important;
+  box-shadow:
+    0 10px 36px rgba(3, 0, 12, 0.5),
+    0 0 22px rgba(147, 51, 234, 0.1),
+    inset 0 1px 0 rgba(233, 213, 255, 0.08) !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.35s ease !important;
 }
 
 [data-theme="nebula"] .group\/card:hover .bg-card\/80 {
-  background: rgba(30, 0, 60, 0.6) !important;
-  border: 1px solid rgba(0, 255, 255, 0.35) !important;
-  box-shadow: 0 12px 40px rgba(120, 0, 200, 0.25), 0 0 20px rgba(0, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  background:
+    linear-gradient(165deg, rgba(126, 34, 206, 0.28), transparent 60%),
+    rgba(33, 9, 63, 0.68) !important;
+  border-color: rgba(196, 132, 252, 0.42) !important;
+  box-shadow:
+    0 18px 48px rgba(3, 0, 12, 0.6),
+    0 0 30px rgba(147, 51, 234, 0.22),
+    0 0 54px rgba(217, 70, 239, 0.1),
+    inset 0 1px 0 rgba(233, 213, 255, 0.14) !important;
   transform: translateY(-4px) scale(1.02) !important;
 }
 
+[data-theme="nebula"] input,
+[data-theme="nebula"] textarea,
+[data-theme="nebula"] select {
+  border-color: rgba(196, 132, 252, 0.25);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+[data-theme="nebula"] input:focus,
+[data-theme="nebula"] textarea:focus,
+[data-theme="nebula"] select:focus {
+  border-color: rgba(192, 132, 252, 0.6);
+  box-shadow:
+    0 0 0 3px rgba(147, 51, 234, 0.14),
+    0 0 24px rgba(217, 70, 239, 0.12),
+    inset 0 1px 0 rgba(233, 213, 255, 0.08);
+}
+
+[data-theme="nebula"] .text-accent {
+  color: #d8b4fe !important;
+  text-shadow: 0 0 12px rgba(192, 132, 252, 0.4);
+}
+
+[data-theme="nebula"] .border-accent {
+  border-color: rgba(192, 132, 252, 0.55) !important;
+  box-shadow: 0 0 14px rgba(147, 51, 234, 0.18);
+}
+
+[data-theme="nebula"] .bg-accent {
+  background: linear-gradient(135deg, #c084fc, #818cf8) !important;
+  color: #160530 !important;
+  text-shadow: none;
+  box-shadow: 0 0 18px rgba(147, 51, 234, 0.45);
+}
+
+/* Aba/categoria selecionada — halo suave de plasma. */
+[data-theme="nebula"] .bg-accent\/10,
+[data-theme="nebula"] .bg-accent\/20 {
+  background: rgba(147, 51, 234, 0.1) !important;
+  border-color: rgba(192, 132, 252, 0.4) !important;
+  box-shadow:
+    inset 0 0 18px rgba(147, 51, 234, 0.08),
+    0 0 12px rgba(147, 51, 234, 0.1);
+}
+
 [data-theme="nebula"] .text-muted {
-  color: #664466 !important;
+  color: #9d8ec2 !important;
 }
 
 [data-theme="nebula"] ::selection {
-  background: rgba(0, 255, 255, 0.25);
+  background: rgba(147, 51, 234, 0.45);
   color: #ffffff;
+}
+
+[data-theme="nebula"] .modal-backdrop {
+  background: rgba(8, 2, 20, 0.7);
 }
 
 /* Quantum Physics Layout Animations */
@@ -1024,11 +1230,9 @@ input:focus, button:focus, select:focus {
   animation: spin 1s linear infinite !important;
 }
 
-/* Camadas decorativas de tela cheia dos temas: as mais caras de rasterizar. */
-[data-motion="reduced"][data-theme="nebula"]::after {
-  animation: none !important;
-  will-change: auto !important;
-}
+/* Camadas decorativas de tela cheia dos temas: as mais caras de rasterizar.
+   Nebula anima só transform/opacity em nós sem filter — o corte global
+   de [data-decorative] acima já desliga galáxia, nuvens e cometas. */
 
 [data-motion="reduced"][data-theme="cyberpunk"]::before,
 [data-motion="reduced"][data-theme="cyberpunk"]::after {

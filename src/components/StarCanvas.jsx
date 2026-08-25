@@ -14,20 +14,41 @@ const BASE_FPS = 60
 // faixa num único path. Sem isso seriam N chamadas de fill + N strings
 // `rgba(...)` alocadas por frame.
 const OPACITY_STEPS = 10
-const STAR_COLORS = [
-  [205, 220, 255],
-  [255, 255, 255],
-  [181, 194, 255],
-]
 
-const FILL_STYLES = STAR_COLORS.map(([r, g, b]) =>
-  Array.from(
-    { length: OPACITY_STEPS + 1 },
-    (_, i) => `rgba(${r}, ${g}, ${b}, ${(i / OPACITY_STEPS).toFixed(2)})`,
-  ),
-)
+const PALETTES = {
+  space: {
+    colors: [
+      [205, 220, 255],
+      [255, 255, 255],
+      [181, 194, 255],
+    ],
+    speedScale: 1,
+    twinkleScale: 1,
+    minOpacity: 0.2,
+  },
+  nebula: {
+    colors: [
+      [233, 213, 255],
+      [255, 255, 255],
+      [165, 228, 255],
+      [255, 178, 245],
+      [255, 226, 180],
+    ],
+    speedScale: 0.55,
+    twinkleScale: 1.7,
+    minOpacity: 0.1,
+  },
+}
 
-const createStars = (width, height) => {
+const fillStylesFor = (colors) =>
+  colors.map(([r, g, b]) =>
+    Array.from(
+      { length: OPACITY_STEPS + 1 },
+      (_, i) => `rgba(${r}, ${g}, ${b}, ${(i / OPACITY_STEPS).toFixed(2)})`,
+    ),
+  )
+
+const createStars = (width, height, pal) => {
   const count = Math.min(Math.floor((width * height) / AREA_PER_STAR), MAX_STARS)
   const stars = new Array(count)
 
@@ -37,10 +58,10 @@ const createStars = (width, height) => {
       x: Math.random() * width,
       y: Math.random() * height,
       size: 0.35 + depth * 1.65,
-      speed: 0.05 + depth * 0.38,
+      speed: (0.05 + depth * 0.38) * pal.speedScale,
       opacity: 0.25 + Math.random() * 0.75,
-      twinkleSpeed: Math.random() * 0.02 + 0.005,
-      color: Math.floor(Math.random() * STAR_COLORS.length),
+      twinkleSpeed: (Math.random() * 0.02 + 0.005) * pal.twinkleScale,
+      color: Math.floor(Math.random() * pal.colors.length),
     }
   }
 
@@ -56,7 +77,8 @@ export default function StarCanvas() {
   const starsRef = useRef([])
   const bucketsRef = useRef([])
 
-  const active = theme === 'space'
+  const isNebula = theme === 'nebula'
+  const active = theme === 'space' || isNebula
   const reduced = resolveMotion(motionMode) === 'reduced'
 
   useEffect(() => {
@@ -70,12 +92,15 @@ export default function StarCanvas() {
     const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true })
     if (!ctx) return
 
+    const pal = PALETTES[isNebula ? 'nebula' : 'space']
+    const fillStyles = fillStylesFor(pal.colors)
+
     // Estrelas não precisam de resolução de retina: renderizar em 1x custa
     // até 4x menos pixels num display HiDPI, e a diferença é imperceptível.
     let width = 0
     let height = 0
 
-    const buckets = STAR_COLORS.map(() =>
+    const buckets = pal.colors.map(() =>
       Array.from({ length: OPACITY_STEPS + 1 }, () => []),
     )
     bucketsRef.current = buckets
@@ -104,7 +129,7 @@ export default function StarCanvas() {
           const bucket = buckets[color][level]
           if (bucket.length === 0) continue
 
-          ctx.fillStyle = FILL_STYLES[color][level]
+          ctx.fillStyle = fillStyles[color][level]
           ctx.beginPath()
           for (let i = 0; i < bucket.length; i++) {
             const star = bucket[i]
@@ -122,9 +147,9 @@ export default function StarCanvas() {
         const star = stars[i]
 
         star.opacity += star.twinkleSpeed * delta
-        if (star.opacity > 1 || star.opacity < 0.2) {
+        if (star.opacity > 1 || star.opacity < pal.minOpacity) {
           star.twinkleSpeed *= -1
-          star.opacity = Math.min(1, Math.max(0.2, star.opacity))
+          star.opacity = Math.min(1, Math.max(pal.minOpacity, star.opacity))
         }
 
         star.y += star.speed * delta
@@ -146,7 +171,7 @@ export default function StarCanvas() {
       canvas.height = height
       canvas.style.width = `${width}px`
       canvas.style.height = `${height}px`
-      starsRef.current = createStars(width, height)
+      starsRef.current = createStars(width, height, pal)
       draw()
     }
 
@@ -196,9 +221,30 @@ export default function StarCanvas() {
       window.removeEventListener('resize', onResize)
       cancelAnimationFrame(frameRef.current)
     }
-  }, [active, reduced])
+  }, [active, reduced, isNebula])
 
   if (!active) return null
+
+  if (isNebula) {
+    return (
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+        <div className="nebula-sky absolute inset-0" />
+        <div className="nebula-galaxy absolute gpu-layer" data-decorative />
+        <div className="nebula-cloud nebula-cloud-a absolute gpu-layer" data-decorative />
+        <div className="nebula-cloud nebula-cloud-b absolute gpu-layer" data-decorative />
+        <div className="nebula-dust absolute inset-0" />
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0"
+          style={{ opacity: 0.95 }}
+        />
+        {/* Névoa à frente das estrelas cria profundidade de gás interestelar. */}
+        <div className="nebula-cloud nebula-cloud-c absolute gpu-layer" data-decorative />
+        <div className="nebula-comet nebula-comet-one absolute gpu-layer" data-decorative />
+        <div className="nebula-comet nebula-comet-two absolute gpu-layer" data-decorative />
+      </div>
+    )
+  }
 
   return (
     <div className="space-backdrop fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
