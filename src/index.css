@@ -201,6 +201,158 @@ body {
   animation: orbit-glow 3s ease-in-out infinite;
 }
 
+/* Orbital Glass — planeta translúcido com uma órbita em dois planos. Todas as
+   animações alteram apenas transform/opacity para manter o vidro no compositor. */
+@keyframes orbitalGlassFloat {
+  0%, 100% { transform: translateY(1px) rotate(-0.6deg); }
+  50% { transform: translateY(-6px) rotate(0.6deg); }
+}
+
+@keyframes orbitalGlassOrbit {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orbitalGlassAura {
+  0%, 100% { opacity: 0.28; transform: scale(0.92); }
+  50% { opacity: 0.5; transform: scale(1.06); }
+}
+
+@keyframes orbitalGlassSweep {
+  0%, 18% { opacity: 0; transform: translateX(-165%) rotate(18deg); }
+  38%, 50% { opacity: 0.7; }
+  68%, 100% { opacity: 0; transform: translateX(165%) rotate(18deg); }
+}
+
+.orbital-glass-scene {
+  animation: orbitalGlassFloat 5.2s ease-in-out infinite;
+  animation-delay: var(--glass-float-delay);
+}
+
+.orbital-glass-aura-motion {
+  inset: 8%;
+  animation: orbitalGlassAura 4.6s ease-in-out infinite;
+  animation-delay: var(--glass-float-delay);
+}
+
+.orbital-glass-aura {
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 34%, transparent) 0%, transparent 68%);
+  filter: blur(11px);
+}
+
+.orbital-glass-planet {
+  border: 1px solid color-mix(in srgb, white 34%, var(--accent) 18%);
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.18), transparent 31%),
+    color-mix(in srgb, var(--card) 70%, transparent);
+  box-shadow:
+    0 13px 30px rgba(0, 0, 0, 0.22),
+    0 0 24px color-mix(in srgb, var(--accent) 13%, transparent),
+    inset 0 1px 1px rgba(255, 255, 255, 0.26),
+    inset -9px -12px 22px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(12px) saturate(145%);
+  -webkit-backdrop-filter: blur(12px) saturate(145%);
+  transition: transform 0.38s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease;
+}
+
+.group:hover .orbital-glass-planet {
+  transform: translateY(-3px) scale(1.07);
+  border-color: color-mix(in srgb, white 52%, var(--accent) 26%);
+}
+
+.orbital-glass-depth {
+  background:
+    radial-gradient(circle at 67% 72%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 42%),
+    linear-gradient(145deg, transparent 42%, rgba(255, 255, 255, 0.035) 54%, transparent 66%);
+}
+
+.orbital-glass-reflection-motion {
+  top: -22%;
+  bottom: -22%;
+  left: 36%;
+  width: 24%;
+  animation: orbitalGlassSweep 6.8s ease-in-out infinite;
+  animation-delay: var(--glass-orbit-delay);
+}
+
+.orbital-glass-reflection {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+  filter: blur(2px);
+}
+
+.orbital-glass-bubble {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.12);
+}
+
+.orbital-glass-bubble-one {
+  width: 8px;
+  height: 8px;
+  right: 21%;
+  top: 20%;
+}
+
+.orbital-glass-bubble-two {
+  width: 4px;
+  height: 4px;
+  left: 22%;
+  bottom: 23%;
+}
+
+.orbital-glass-orbit {
+  inset: -1%;
+  transform: rotate(var(--glass-orbit-tilt)) scaleY(0.42);
+  pointer-events: none;
+}
+
+.orbital-glass-orbit-back {
+  z-index: 1;
+}
+
+.orbital-glass-orbit-front {
+  clip-path: inset(50% -10% -10% -10%);
+}
+
+.orbital-glass-track {
+  border: 1px solid color-mix(in srgb, var(--accent) 46%, rgba(255, 255, 255, 0.24));
+  box-shadow: 0 0 9px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.orbital-glass-spinner {
+  animation: orbitalGlassOrbit var(--glass-orbit-duration) linear infinite;
+  animation-delay: var(--glass-orbit-delay);
+  animation-direction: var(--glass-orbit-direction);
+}
+
+.orbital-glass-moon {
+  top: -3px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translateX(-50%) scaleY(2.38);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: color-mix(in srgb, var(--accent) 54%, white);
+  box-shadow:
+    0 0 8px color-mix(in srgb, var(--accent) 70%, transparent),
+    0 0 15px rgba(255, 255, 255, 0.28);
+}
+
+.orbital-glass-glint {
+  top: 24%;
+  left: 27%;
+  width: 7px;
+  height: 3px;
+  transform: rotate(-32deg);
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.46);
+  transition: transform 0.38s ease, opacity 0.3s ease;
+}
+
+.group:hover .orbital-glass-glint {
+  opacity: 1;
+  transform: translate(-2px, -2px) rotate(-32deg) scale(1.25);
+}
+
 /* Layout Space — uma pequena viewport para o cosmos. As camadas de cenário
    são estáticas; apenas o reflexo e o sinal usam transform/opacity. */
 .space-card {
@@ -1251,6 +1403,11 @@ input:focus, button:focus, select:focus {
 [data-motion="reduced"] .modal-backdrop {
   backdrop-filter: none !important;
   background: rgba(0, 0, 0, 0.75);
+}
+
+[data-motion="reduced"] .orbital-glass-planet {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* Blur em elemento animado obriga o navegador a refazer o blur a cada

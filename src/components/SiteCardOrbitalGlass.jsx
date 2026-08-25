@@ -6,21 +6,27 @@ import useStore from '../store/useStore'
 import { getFaviconUrl } from '../utils/favicon'
 import { openSite } from '../utils/navigation'
 
-const floatDelays = [0, 0.5, 1, 1.5, 2, 2.5]
-
-const getFloatDelay = (name) => {
+const getGlassMotion = (name) => {
   let hash = 0
   for (let i = 0; i < (name?.length || 0); i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
   }
-  return floatDelays[Math.abs(hash) % floatDelays.length]
+
+  const seed = Math.abs(hash)
+  return {
+    floatDelay: (seed % 6) * -0.45,
+    orbitDelay: (seed % 10) * -0.7,
+    orbitDuration: 8 + (seed % 5),
+    orbitTilt: -18 + (seed % 37),
+    orbitDirection: seed % 2 === 0 ? 'normal' : 'reverse',
+  }
 }
 
 function SiteCardOrbitalGlass({ site }) {
-    const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
-    const openAddSite = useStore((state) => state.openAddSite)
-    const setEditingSite = useStore((state) => state.setEditingSite)
-    const openInNewTab = useStore((state) => state.openInNewTab)
+  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+  const openAddSite = useStore((state) => state.openAddSite)
+  const setEditingSite = useStore((state) => state.setEditingSite)
+  const openInNewTab = useStore((state) => state.openInNewTab)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -32,11 +38,18 @@ function SiteCardOrbitalGlass({ site }) {
     zIndex: isDragging ? 50 : (showActions ? 20 : 1),
   }
 
-  const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
-  const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-    const handleClick = () => openSite(site, openInNewTab)
+  const handleEdit = (event) => { event.stopPropagation(); setEditingSite(site); openAddSite() }
+  const handleDelete = (event) => { event.stopPropagation(); confirmDeleteSite(site.id) }
+  const handleClick = () => openSite(site, openInNewTab)
 
-  const floatDelay = useMemo(() => getFloatDelay(site.name), [site.name])
+  const motion = useMemo(() => getGlassMotion(site.name), [site.name])
+  const glassStyle = {
+    '--glass-float-delay': `${motion.floatDelay}s`,
+    '--glass-orbit-delay': `${motion.orbitDelay}s`,
+    '--glass-orbit-duration': `${motion.orbitDuration}s`,
+    '--glass-orbit-tilt': `${motion.orbitTilt}deg`,
+    '--glass-orbit-direction': motion.orbitDirection,
+  }
 
   return (
     <div
@@ -51,97 +64,71 @@ function SiteCardOrbitalGlass({ site }) {
       <div
         onClick={handleClick}
         data-decorative
-        className="relative cursor-pointer w-20 h-20 sm:w-24 sm:h-24 mb-3 animate-float gpu-layer"
-        style={{ animationDelay: `${floatDelay}s` }}
+        className="orbital-glass-scene relative cursor-pointer w-24 h-24 sm:w-28 sm:h-28 mb-3 gpu-layer"
+        style={glassStyle}
       >
-        {/* Outer glass ring */}
-        <div
-          className="absolute inset-[-4px] rounded-full border opacity-40 group-hover:opacity-70 transition-opacity"
-          style={{
-            borderColor: 'rgba(255,255,255,0.35)',
-            boxShadow: '0 0 12px rgba(255,255,255,0.08), inset 0 0 8px rgba(255,255,255,0.05)',
-          }}
-        />
-
-        {/* Soft white glow */}
-        <div
-          className="absolute inset-[-10px] rounded-full opacity-15 group-hover:opacity-30 transition-opacity blur-lg"
-          style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%)' }}
-        />
-
-        {/* Main glass planet */}
-        <div
-          className="relative w-full h-full rounded-full flex items-center justify-center overflow-hidden border transition-all duration-300 group-hover:scale-110"
-          style={{
-            background: 'rgba(255,255,255,0.06)',
-            backdropFilter: 'blur(12px) saturate(150%)',
-            WebkitBackdropFilter: 'blur(12px) saturate(150%)',
-            borderColor: 'rgba(255,255,255,0.18)',
-            boxShadow: '0 0 20px rgba(255,255,255,0.06), inset 0 0 24px rgba(255,255,255,0.04), inset 0 1px 1px rgba(255,255,255,0.12)',
-          }}
-        >
-          {/* Inner glass highlight */}
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: 'radial-gradient(circle at 35% 25%, rgba(255,255,255,0.15) 0%, transparent 55%)',
-            }}
-          />
-
-          {/* Bottom inner shadow for 3D depth */}
-          <div
-            className="absolute inset-0 rounded-full opacity-40"
-            style={{
-              background: 'radial-gradient(circle at 70% 75%, rgba(0,0,0,0.15) 0%, transparent 50%)',
-            }}
-          />
-
-          <img
-            src={getFaviconUrl(site.url)}
-            alt={site.name}
-            loading="lazy"
-            decoding="async"
-            className="relative z-10 w-9 h-9 sm:w-11 sm:h-11 object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.4)] transition-transform duration-300 group-hover:scale-110"
-            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
-          />
-          <span className="relative z-10 hidden w-9 h-9 sm:w-11 sm:h-11 items-center justify-center text-lg sm:text-xl font-bold text-white/90">
-            {site.name?.[0]?.toUpperCase()}
-          </span>
+        <div data-decorative className="orbital-glass-aura-motion absolute gpu-layer">
+          <div className="orbital-glass-aura absolute inset-0 rounded-full" />
         </div>
 
-        {/* Orbiting glass dot */}
-        <div
-          data-decorative
-          className="absolute inset-[-14px] rounded-full animate-spin gpu-layer"
-          style={{ animationDuration: '10s' }}
-        >
-          <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full"
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.8)',
-              boxShadow: '0 0 8px rgba(255,255,255,0.6), 0 0 16px rgba(255,255,255,0.2)',
-            }}
-          />
+        {/* A metade traseira da órbita desaparece naturalmente atrás do planeta. */}
+        <div data-decorative className="orbital-glass-orbit orbital-glass-orbit-back absolute gpu-layer">
+          <div className="orbital-glass-track absolute inset-0 rounded-full" />
+          <div className="orbital-glass-spinner absolute inset-0 rounded-full gpu-layer">
+            <span className="orbital-glass-moon absolute rounded-full" />
+          </div>
         </div>
+
+        <div className="orbital-glass-planet absolute inset-3 sm:inset-3.5 z-10 rounded-full overflow-hidden flex items-center justify-center gpu-layer">
+          <div className="orbital-glass-depth absolute inset-0 rounded-full" />
+          <div data-decorative className="orbital-glass-reflection-motion absolute gpu-layer">
+            <div className="orbital-glass-reflection absolute inset-0" />
+          </div>
+          <span className="orbital-glass-bubble orbital-glass-bubble-one absolute rounded-full" />
+          <span className="orbital-glass-bubble orbital-glass-bubble-two absolute rounded-full" />
+
+          <div className="relative z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
+            <img
+              src={getFaviconUrl(site.url)}
+              alt={site.name}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.45)] transition-transform duration-300 group-hover:scale-110"
+              onError={(event) => { event.target.style.display = 'none'; event.target.nextSibling.style.display = 'flex' }}
+            />
+            <span className="hidden w-full h-full items-center justify-center text-xl font-bold text-text">
+              {site.name?.[0]?.toUpperCase()}
+            </span>
+          </div>
+        </div>
+
+        {/* Recorte frontal duplica apenas o satélite que cruza a face do planeta. */}
+        <div data-decorative className="orbital-glass-orbit orbital-glass-orbit-front absolute z-20 gpu-layer">
+          <div className="orbital-glass-spinner absolute inset-0 rounded-full gpu-layer">
+            <span className="orbital-glass-moon absolute rounded-full" />
+          </div>
+        </div>
+
+        <span className="orbital-glass-glint absolute z-30 rounded-full" />
       </div>
 
-      {/* Label */}
-      <h3 className="text-[10px] sm:text-xs font-medium text-center truncate w-24 sm:w-28 text-white/70 group-hover:text-white transition-colors">
+      <h3 className="text-[10px] sm:text-xs font-medium tracking-wide text-center truncate w-24 sm:w-28 text-muted group-hover:text-text transition-colors">
         {site.name}
       </h3>
 
-      {/* Actions */}
       {showActions && (
         <div className="absolute -top-2 -right-2 flex flex-col gap-1.5 animate-slideIn z-30">
           <button
             onClick={handleEdit}
-            className="p-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white/70 hover:text-white hover:border-white/40 hover:bg-white/20 transition-all hover:scale-110 shadow-lg"
+            className="p-1.5 bg-card/90 backdrop-blur-sm border border-border rounded-full text-muted hover:text-accent hover:border-accent transition-[color,border-color,background-color,transform] hover:scale-110 shadow-lg"
+            aria-label={`Editar ${site.name}`}
           >
             <Pencil size={12} />
           </button>
           <button
             onClick={handleDelete}
-            className="p-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white/70 hover:text-red-300 hover:border-red-300/40 hover:bg-red-500/10 transition-all hover:scale-110 shadow-lg"
+            className="p-1.5 bg-card/90 backdrop-blur-sm border border-border rounded-full text-muted hover:text-red-500 hover:border-red-500 hover:bg-red-500/10 transition-[color,border-color,background-color,transform] hover:scale-110 shadow-lg"
+            aria-label={`Excluir ${site.name}`}
           >
             <Trash2 size={12} />
           </button>
