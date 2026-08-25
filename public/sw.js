@@ -1,6 +1,6 @@
 // Service worker do Orbit — escrito à mão para não trazer uma dependência de
 // build só por causa disso. Bump em VERSION invalida todos os caches.
-const VERSION = 'v2'
+const VERSION = 'v3'
 const SHELL_CACHE = `orbit-shell-${VERSION}`
 const ASSET_CACHE = `orbit-assets-${VERSION}`
 const FAVICON_CACHE = `orbit-favicons-${VERSION}`
@@ -11,7 +11,7 @@ const CURRENT_CACHES = [SHELL_CACHE, ASSET_CACHE, FAVICON_CACHE, FONT_CACHE]
 // Só o essencial para a página abrir offline. Os bundles com hash entram no
 // cache sozinhos no primeiro acesso (não dá para listá-los aqui: os nomes
 // mudam a cada build).
-const SHELL = ['/', '/index.html', '/favicon.svg', '/manifest.webmanifest']
+const SHELL = ['/', '/index.html', '/favicon.svg', '/manifest.webmanifest', '/orbit-archive-bg.webp']
 
 const FAVICON_HOSTS = ['www.google.com', 'icons.duckduckgo.com']
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com']

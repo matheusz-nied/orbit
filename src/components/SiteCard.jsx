@@ -8,6 +8,7 @@ import SiteCardSingularity from './SiteCardSingularity'
 import SiteCardWaveParticle from './SiteCardWaveParticle'
 import SiteCardQuantumSpin from './SiteCardQuantumSpin'
 import SiteCardCyberpunk from './SiteCardCyberpunk'
+import SiteCardArchive from './SiteCardArchive'
 
 function SiteCard({ site }) {
   const cardLayout = useStore((state) => state.cardLayout)
@@ -18,6 +19,7 @@ function SiteCard({ site }) {
   if (cardLayout === 'wave-particle') return <SiteCardWaveParticle site={site} />
   if (cardLayout === 'quantum-spin') return <SiteCardQuantumSpin site={site} />
   if (cardLayout === 'cyber') return <SiteCardCyberpunk site={site} />
+  if (cardLayout === 'archive') return <SiteCardArchive site={site} />
 
   return <SiteCardClassic site={site} />
 }

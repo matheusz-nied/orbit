@@ -133,7 +133,7 @@ export default function SearchBar() {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 mb-8 animate-fadeIn">
+    <div className="orbit-search-section w-full max-w-2xl mx-auto px-4 mb-8 animate-fadeIn">
       <div className="flex items-center justify-center gap-2 mb-3 mr-7">
         <div
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer hover:scale-105 transition-transform"

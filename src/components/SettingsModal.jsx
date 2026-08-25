@@ -3,7 +3,7 @@ import {
   X, Palette, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
   LayoutGrid, Sparkles, Gem,
-  CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge, Layers, LayoutDashboard, Cpu
+  CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge, Layers, LayoutDashboard, Cpu, BookOpen
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
@@ -232,6 +232,7 @@ export default function SettingsModal() {
                     { id: 'wave-particle', label: 'Dualidade', Icon: Waves, desc: 'Onda-partícula' },
                     { id: 'quantum-spin', label: 'Spin', Icon: Atom, desc: 'Spin quântico' },
                     { id: 'cyber', label: 'Cyber', Icon: Cpu, desc: 'Slot netrunner' },
+                    { id: 'archive', label: 'Arquivo', Icon: BookOpen, desc: 'Placas editoriais' },
                   ].map(({ id, label, Icon, desc }) => (
                     <button
                       key={id}

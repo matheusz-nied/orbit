@@ -87,6 +87,9 @@ export default function SiteGrid() {
   }
 
   const gridClassName = useMemo(() => {
+    if (cardLayout === 'archive') {
+      return 'grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3 sm:gap-4 py-4'
+    }
     if (cardLayout === 'space' || cardLayout === 'orbital-glass' || cardLayout === 'singularity' || cardLayout === 'quantum-spin' || cardLayout === 'cyber') {
       return 'grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 justify-items-center py-4'
     }
@@ -109,7 +112,11 @@ export default function SiteGrid() {
               <div key={site.id} className="relative w-full flex justify-center">
                 {site.shortcut && (
                   <kbd
-                    className="absolute top-0 left-1/2 -translate-x-[calc(50%+28px)] sm:-translate-x-[calc(50%+32px)] z-20 min-w-[1.25rem] px-1 py-0.5 text-[9px] font-mono font-bold text-center text-muted bg-card/90 border border-border rounded shadow-sm pointer-events-none uppercase"
+                    className={`absolute z-20 min-w-[1.25rem] px-1 py-0.5 text-[9px] font-mono font-bold text-center text-muted bg-card/90 border border-border rounded shadow-sm pointer-events-none uppercase ${
+                      cardLayout === 'archive'
+                        ? 'top-3 left-3'
+                        : 'top-0 left-1/2 -translate-x-[calc(50%+28px)] sm:-translate-x-[calc(50%+32px)]'
+                    }`}
                     title={`Atalho: ${site.shortcut}`}
                   >
                     {site.shortcut}

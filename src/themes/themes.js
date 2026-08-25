@@ -78,6 +78,20 @@ export const themes = {
     '--font': "'Inter', system-ui, sans-serif",
     '--star': '1',
   },
+  'nous-archive': {
+    name: 'Arquivo Noûs',
+    '--bg': '#181d1c',
+    '--card': 'rgba(25, 30, 29, 0.92)',
+    '--text': '#e8dec7',
+    '--accent': '#c39a5a',
+    '--muted': '#a49a85',
+    '--border': 'rgba(232, 222, 199, 0.24)',
+    '--font': "'IBM Plex Mono', 'JetBrains Mono', monospace",
+    '--star': '0',
+    '--archive-paper': '#e8dec7',
+    '--archive-ink': '#1c2221',
+    '--archive-rust': '#9f7440',
+  },
 }
 
 export function resolveTheme(themeName) {

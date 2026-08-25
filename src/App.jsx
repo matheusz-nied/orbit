@@ -54,7 +54,7 @@ export default function App() {
   }, [theme, searchProvider])
 
   return (
-    <div className="min-h-screen relative">
+    <div className={`min-h-screen relative orbit-shell ${theme === 'nous-archive' ? 'archive-theme-shell' : ''}`}>
       {/* Star canvas for space theme */}
       <StarCanvas />
 
@@ -72,6 +72,13 @@ export default function App() {
         {/* Main layout */}
         <div className="container mx-auto px-4 flex flex-col min-h-[85vh]">
           <div className="flex-1 flex flex-col pt-">
+            {theme === 'nous-archive' && (
+              <header className="archive-masthead" aria-label="Orbit Archive">
+                <span>ORBIT / 08</span>
+                <strong>ORBIT<br />ARCHIVE</strong>
+                <span>LOCAL FIRST · PRIVATE BY DESIGN</span>
+              </header>
+            )}
             <Clock />
             <WeatherWidget />
             <SearchBar />

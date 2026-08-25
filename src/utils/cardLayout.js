@@ -9,6 +9,7 @@ export const cardLayoutIds = [
   'wave-particle',
   'quantum-spin',
   'cyber',
+  'archive',
 ]
 
 export function resolveCardLayout(layout) {
