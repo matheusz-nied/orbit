@@ -30,14 +30,18 @@ const getSpinParams = (name) => {
   const dir2 = dir1 === 'normal' ? 'reverse' : 'normal'
   const spd1 = 5 + (Math.abs(hash >> 2) % 6)
   const spd2 = 7 + (Math.abs(hash >> 6) % 5)
-  return { ax1, ax2, dir1, dir2, spd1, spd2 }
+  // Precessão: o giroscópio inteiro tomba lentamente em torno do eixo Z.
+  const precessDur = 18 + (Math.abs(hash >> 8) % 13)
+  const precessDir = Math.abs(hash >> 10) % 2 === 0 ? 'normal' : 'reverse'
+  const floatDelay = (Math.abs(hash >> 3) % 7) * -0.5
+  return { ax1, ax2, dir1, dir2, spd1, spd2, precessDur, precessDir, floatDelay }
 }
 
 function SiteCardQuantumSpin({ site }) {
-    const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
-    const openAddSite = useStore((state) => state.openAddSite)
-    const setEditingSite = useStore((state) => state.setEditingSite)
-    const openInNewTab = useStore((state) => state.openInNewTab)
+  const confirmDeleteSite = useStore((state) => state.confirmDeleteSite)
+  const openAddSite = useStore((state) => state.openAddSite)
+  const setEditingSite = useStore((state) => state.setEditingSite)
+  const openInNewTab = useStore((state) => state.openInNewTab)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -51,10 +55,23 @@ function SiteCardQuantumSpin({ site }) {
 
   const handleEdit = (e) => { e.stopPropagation(); setEditingSite(site); openAddSite() }
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
-    const handleClick = () => openSite(site, openInNewTab)
+  const handleClick = () => openSite(site, openInNewTab)
 
+  const p = useMemo(() => getSpinParams(site.name), [site.name])
   const spinColor = useMemo(() => getSpinColor(site.name), [site.name])
-  const { ax1, ax2, dir1, dir2, spd1, spd2 } = useMemo(() => getSpinParams(site.name), [site.name])
+
+  const sceneVars = {
+    '--qs-color': spinColor,
+    '--qs-tilt-x': `${p.ax1}deg`,
+    '--qs-tilt-y': `${p.ax2}deg`,
+    '--qs-speed-x': `${p.spd1}s`,
+    '--qs-speed-y': `${p.spd2}s`,
+    '--qs-dir-x': p.dir1,
+    '--qs-dir-y': p.dir2,
+    '--qs-precess-duration': `${p.precessDur}s`,
+    '--qs-precess-direction': p.precessDir,
+    '--qs-float-delay': `${p.floatDelay}s`,
+  }
 
   return (
     <div
@@ -68,114 +85,84 @@ function SiteCardQuantumSpin({ site }) {
     >
       <div
         onClick={handleClick}
-        className="relative cursor-pointer w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] mb-3"
+        className="qs-scene relative cursor-pointer w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] mb-3 transition-transform duration-300 group-hover:scale-105"
+        style={sceneVars}
       >
-        {/* Outer glow field */}
-        <div
-          className="absolute inset-[-8px] rounded-full opacity-30 blur-md"
-          style={{ backgroundColor: spinColor }}
-        />
-
-        {/* Spin ring 1 — tilted X axis */}
-        <div
-          data-decorative
-          className="absolute inset-0 rounded-full border-[1.5px] opacity-60 gpu-layer group-hover:opacity-90 transition-opacity"
-          style={{
-            borderColor: `${spinColor}88`,
-            transform: `rotateX(${ax1}deg) rotateY(0deg)`,
-            animation: `spin3dX ${spd1}s linear infinite ${dir1}`,
-            boxShadow: `0 0 10px ${spinColor}33`,
-          }}
-        />
-
-        {/* Spin ring 2 — tilted Y axis */}
-        <div
-          data-decorative
-          className="absolute inset-[4px] rounded-full border opacity-40 gpu-layer group-hover:opacity-70 transition-opacity"
-          style={{
-            borderColor: `${spinColor}66`,
-            transform: `rotateX(0deg) rotateY(${ax2}deg)`,
-            animation: `spin3dY ${spd2}s linear infinite ${dir2}`,
-            boxShadow: `0 0 8px ${spinColor}22`,
-          }}
-        />
-
-        {/* Equatorial ring */}
-        <div
-          data-decorative
-          className="absolute inset-[8px] rounded-full border-[1.5px] border-dashed opacity-50 gpu-layer"
-          style={{
-            borderColor: `${spinColor}99`,
-            animation: 'spin 4s linear infinite',
-          }}
-        />
-
-        {/* Nucleus / Core */}
-        <div
-          className="absolute inset-[14px] rounded-full flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:scale-105"
-          style={{
-            background: `radial-gradient(circle at 35% 30%, ${spinColor}44, ${spinColor}18 50%, transparent 80%)`,
-            border: `1px solid ${spinColor}55`,
-            boxShadow: `0 0 16px ${spinColor}33, inset 0 0 12px ${spinColor}22`,
-          }}
-        >
-          {/* Inner energy pulse */}
-          <div
-            data-decorative
-            className="absolute inset-0 rounded-full opacity-50 gpu-layer"
-            style={{
-              background: `radial-gradient(circle, ${spinColor}66 0%, transparent 60%)`,
-              animation: 'pulseGlow 2.5s ease-in-out infinite',
-            }}
-          />
-
-          <div className="relative z-10 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center">
-            <img
-              src={getFaviconUrl(site.url)}
-              alt={site.name}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
-              onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
-            />
-            <span className="hidden w-full h-full items-center justify-center text-base sm:text-lg font-bold text-white/90">
-              {site.name?.[0]?.toUpperCase()}
-            </span>
+        {/* Flutuação de corpo inteiro — o átomo "levita" no grid. */}
+        <div data-decorative className="qs-float absolute inset-0 gpu-layer">
+          {/* Campo de energia: o wrapper pulsa (transform/opacity), o blur fica estático. */}
+          <div data-decorative className="qs-glow-motion absolute inset-[-8px] gpu-layer">
+            <div className="qs-glow absolute inset-0 rounded-full" />
           </div>
-        </div>
 
-        {/* Spin axis indicator dots */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full" style={{ backgroundColor: spinColor, boxShadow: `0 0 5px ${spinColor}` }} />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full" style={{ backgroundColor: spinColor, boxShadow: `0 0 5px ${spinColor}` }} />
+          {/* Precessão — todo o sistema orbital tomba como um giroscópio. */}
+          <div data-decorative className="qs-precess absolute inset-0 gpu-layer">
+            {/* Spin ring X */}
+            <div
+              data-decorative
+              className="qs-ring qs-ring-x absolute inset-0 rounded-full gpu-layer"
+            >
+              <span className="qs-trail absolute rounded-full" />
+            </div>
 
-        {/* Orbiting electron 1 */}
-        <div
-          data-decorative
-          className="absolute inset-[-6px] rounded-full gpu-layer"
-          style={{
-            animation: `spin3dX ${spd1 * 0.8}s linear infinite ${dir1}`,
-            transform: `rotateX(${ax1}deg)`,
-          }}
-        >
-          <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-[4px] h-[4px] rounded-full"
-            style={{ backgroundColor: spinColor, boxShadow: `0 0 8px ${spinColor}, 0 0 16px ${spinColor}66` }}
-          />
-        </div>
+            {/* Spin ring Y */}
+            <div
+              data-decorative
+              className="qs-ring qs-ring-y absolute inset-[4px] rounded-full gpu-layer"
+            />
 
-        {/* Orbiting electron 2 */}
-        <div
-          data-decorative
-          className="absolute inset-[-6px] rounded-full gpu-layer"
-          style={{
-            animation: `spin3dY ${spd2 * 0.7}s linear infinite ${dir2}`,
-            transform: `rotateY(${ax2}deg)`,
-          }}
-        >
-          <div
-            className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full"
-            style={{ backgroundColor: `${spinColor}cc`, boxShadow: `0 0 6px ${spinColor}` }}
-          />
+            {/* Anel equatorial tracejado */}
+            <div
+              data-decorative
+              className="qs-ring-eq absolute inset-[8px] rounded-full gpu-layer"
+            />
+
+            {/* Polos do eixo de spin */}
+            <span data-decorative className="qs-pole qs-pole-top absolute top-0 left-1/2 -translate-x-1/2 rounded-full" />
+            <span data-decorative className="qs-pole qs-pole-bottom absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full" />
+
+            {/* Elétron 1 */}
+            <div
+              data-decorative
+              className="qs-orbiter qs-orbiter-x absolute inset-[-6px] rounded-full gpu-layer"
+            >
+              <span className="qs-electron qs-electron-a absolute top-0 left-1/2 -translate-x-1/2 rounded-full" />
+            </div>
+
+            {/* Elétron 2 */}
+            <div
+              data-decorative
+              className="qs-orbiter qs-orbiter-y absolute inset-[-6px] rounded-full gpu-layer"
+            >
+              <span className="qs-electron qs-electron-b absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full" />
+            </div>
+          </div>
+
+          {/* Ondas de choque do estado excitado — só correm com hover. */}
+          <span data-decorative className="qs-ripple qs-ripple-one absolute inset-0 rounded-full gpu-layer" />
+          <span data-decorative className="qs-ripple qs-ripple-two absolute inset-0 rounded-full gpu-layer" />
+
+          {/* Núcleo */}
+          <div className="qs-core absolute inset-[14px] rounded-full flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-110">
+            <div
+              data-decorative
+              className="qs-core-pulse absolute inset-0 rounded-full gpu-layer"
+            />
+
+            <div className="relative z-10 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center">
+              <img
+                src={getFaviconUrl(site.url)}
+                alt={site.name}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
+                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
+              />
+              <span className="hidden w-full h-full items-center justify-center text-base sm:text-lg font-bold text-white/90">
+                {site.name?.[0]?.toUpperCase()}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -1283,19 +1283,200 @@ input:focus, button:focus, select:focus {
   50% { transform: scale(1.2); opacity: 0.55; }
 }
 
+/* Inclinação vem de var(--qs-tilt-x/y) — cada site tem seu próprio
+   ângulo de giroscópio (fallback 60deg preserva quem não define). */
 @keyframes spin3dX {
-  0% { transform: rotateX(60deg) rotateZ(0deg); }
-  100% { transform: rotateX(60deg) rotateZ(360deg); }
+  0% { transform: rotateX(var(--qs-tilt-x, 60deg)) rotateZ(0deg); }
+  100% { transform: rotateX(var(--qs-tilt-x, 60deg)) rotateZ(360deg); }
 }
 
 @keyframes spin3dY {
-  0% { transform: rotateY(60deg) rotateZ(0deg); }
-  100% { transform: rotateY(60deg) rotateZ(360deg); }
+  0% { transform: rotateY(var(--qs-tilt-y, 60deg)) rotateZ(0deg); }
+  100% { transform: rotateY(var(--qs-tilt-y, 60deg)) rotateZ(360deg); }
 }
 
 @keyframes pulseGlow {
   0%, 100% { transform: scale(0.9); opacity: 0.4; }
   50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+/* Rotação plana genérica. `from` explícito: sem ele, elementos com
+   gpu-layer congelam (rotate(360deg) ≡ identidade na interpolação). */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* =========================================================
+   LAYOUT QUANTUM SPIN — giroscópio quântico
+   Cor, inclinação, velocidade e precessão vêm das vars --qs-*
+   definidas por site no JSX. Toda animação é transform/opacity
+   em camadas data-decorative + gpu-layer.
+   ========================================================= */
+
+.qs-float {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: var(--qs-float-delay, 0s);
+}
+
+/* Campo de energia: wrapper pulsa por scale, blur do filho é estático. */
+.qs-glow {
+  background: var(--qs-color);
+  opacity: 0.3;
+  filter: blur(12px);
+  transition: opacity 0.3s ease;
+}
+
+.qs-glow-motion {
+  opacity: 0.75;
+  animation: qsGlowBreath 4.5s ease-in-out infinite;
+}
+
+.group:hover .qs-glow-motion {
+  opacity: 1;
+}
+
+.group:hover .qs-glow {
+  opacity: 0.45;
+}
+
+@keyframes qsGlowBreath {
+  0%, 100% { transform: scale(0.96); }
+  50% { transform: scale(1.05); }
+}
+
+/* Precessão — o plano orbital inteiro tomba em torno do eixo Z. */
+.qs-precess {
+  animation: qsPrecess var(--qs-precess-duration, 24s) linear infinite;
+  animation-direction: var(--qs-precess-direction, normal);
+}
+
+@keyframes qsPrecess {
+  from { transform: rotateZ(0deg); }
+  to { transform: rotateZ(360deg); }
+}
+
+.qs-ring-x {
+  border: 1.5px solid color-mix(in srgb, var(--qs-color) 53%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--qs-color) 20%, transparent);
+  transform: rotateX(var(--qs-tilt-x, 60deg));
+  animation: spin3dX var(--qs-speed-x, 8s) linear infinite var(--qs-dir-x, normal);
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.qs-ring-y {
+  border: 1px solid color-mix(in srgb, var(--qs-color) 40%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--qs-color) 13%, transparent);
+  transform: rotateY(var(--qs-tilt-y, 60deg));
+  animation: spin3dY var(--qs-speed-y, 9s) linear infinite var(--qs-dir-y, normal);
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.group:hover .qs-ring-x {
+  opacity: 0.95;
+}
+
+.group:hover .qs-ring-y {
+  opacity: 0.7;
+}
+
+/* Arco brilhante que cavalga o anel X — leitura de rastro/momentum. */
+.qs-trail {
+  top: -2px;
+  left: 30%;
+  width: 40%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--qs-color), transparent);
+  opacity: 0.85;
+}
+
+.qs-ring-eq {
+  border: 1.5px dashed color-mix(in srgb, var(--qs-color) 60%, transparent);
+  animation: spin 4s linear infinite;
+  opacity: 0.5;
+}
+
+/* Polos do eixo de spin — agora vivos, pulsando em contrafase. */
+.qs-pole {
+  width: 3px;
+  height: 3px;
+  background: var(--qs-color);
+  box-shadow: 0 0 5px var(--qs-color);
+  animation: cyberPulse 2.6s ease-in-out infinite;
+}
+
+.qs-pole-bottom {
+  animation-delay: -1.3s;
+}
+
+.qs-orbiter-x {
+  transform: rotateX(var(--qs-tilt-x, 60deg));
+  animation: spin3dX calc(var(--qs-speed-x, 8s) * 0.8) linear infinite var(--qs-dir-x, normal);
+}
+
+.qs-orbiter-y {
+  transform: rotateY(var(--qs-tilt-y, 60deg));
+  animation: spin3dY calc(var(--qs-speed-y, 9s) * 0.7) linear infinite var(--qs-dir-y, normal);
+}
+
+.qs-electron-a {
+  width: 4px;
+  height: 4px;
+  background: var(--qs-color);
+  box-shadow:
+    0 0 8px var(--qs-color),
+    0 0 16px color-mix(in srgb, var(--qs-color) 40%, transparent);
+}
+
+.qs-electron-b {
+  width: 3px;
+  height: 3px;
+  background: color-mix(in srgb, var(--qs-color) 80%, white);
+  box-shadow: 0 0 6px var(--qs-color);
+}
+
+/* Ondas de choque do estado excitado: pausadas no primeiro frame
+   (opacity 0) até o hover dar play — excitação do átomo. */
+.qs-ripple {
+  border: 1.5px solid color-mix(in srgb, var(--qs-color) 55%, transparent);
+  opacity: 0;
+  animation: qsRipple 2.4s cubic-bezier(0.2, 0.6, 0.35, 1) infinite;
+  animation-play-state: paused;
+}
+
+.qs-ripple-two {
+  animation-delay: 1.2s;
+}
+
+.group:hover .qs-ripple {
+  animation-play-state: running;
+}
+
+@keyframes qsRipple {
+  0% { opacity: 0; transform: scale(0.72); }
+  14% { opacity: 0.5; }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+.qs-core {
+  background: radial-gradient(circle at 35% 30%,
+    color-mix(in srgb, var(--qs-color) 27%, transparent),
+    color-mix(in srgb, var(--qs-color) 9%, transparent) 50%,
+    transparent 80%);
+  border: 1px solid color-mix(in srgb, var(--qs-color) 33%, transparent);
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--qs-color) 20%, transparent),
+    inset 0 0 12px color-mix(in srgb, var(--qs-color) 13%, transparent);
+}
+
+.qs-core-pulse {
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--qs-color) 40%, transparent) 0%,
+    transparent 60%);
+  opacity: 0.5;
+  animation: pulseGlow 2.5s ease-in-out infinite;
 }
 
 /* Layout Cyber — scan / glitch / LED (só transform + opacity). */
