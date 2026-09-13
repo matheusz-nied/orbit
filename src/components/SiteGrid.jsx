@@ -88,7 +88,7 @@ export default function SiteGrid() {
 
   const gridClassName = useMemo(() => {
     if (cardLayout === 'archive') {
-      return 'grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(118px,1fr))] gap-2.5 sm:gap-3 py-4'
+      return 'grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-2 sm:gap-2.5 py-4'
     }
     if (cardLayout === 'space' || cardLayout === 'orbital-glass' || cardLayout === 'singularity' || cardLayout === 'quantum-spin' || cardLayout === 'cyber') {
       return 'grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 justify-items-center py-4'

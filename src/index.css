@@ -1155,7 +1155,7 @@ input:focus, button:focus, select:focus {
   flex-direction: column;
   justify-content: space-between;
   aspect-ratio: 1 / 1;
-  padding: 0.42rem 0.5rem 0.5rem 0.95rem;
+  padding: 0.36rem 0.45rem 0.45rem 0.85rem;
   border: 1px solid color-mix(in srgb, var(--archive-ink, var(--bg)) 55%, transparent);
   background: var(--archive-paper, var(--text));
   color: var(--archive-ink, var(--bg));
@@ -1220,10 +1220,10 @@ input:focus, button:focus, select:focus {
   align-items: baseline;
   justify-content: space-between;
   gap: 0.3rem;
-  padding: 0 0.6rem 0.26rem 0;
+  padding: 0 0.5rem 0.2rem 0;
   border-bottom: 1px solid color-mix(in srgb, var(--archive-ink, var(--bg)) 26%, transparent);
   font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
-  font-size: 0.44rem;
+  font-size: 0.42rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -1244,8 +1244,8 @@ input:focus, button:focus, select:focus {
 .archive-site-emblem {
   position: relative;
   align-self: center;
-  width: 2.9rem;
-  height: 2.9rem;
+  width: 2.7rem;
+  height: 2.7rem;
   display: grid;
   place-items: center;
   border: 1px solid currentColor;
@@ -1275,7 +1275,7 @@ input:focus, button:focus, select:focus {
 
 .archive-site-orbit {
   position: absolute;
-  inset: -0.28rem;
+  inset: -0.22rem;
   border: 1px solid currentColor;
   border-radius: 50%;
   opacity: 0.6;
@@ -1290,20 +1290,20 @@ input:focus, button:focus, select:focus {
 .archive-site-icon {
   position: relative;
   z-index: 1;
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 2rem;
+  height: 2rem;
   display: grid;
   place-items: center;
   border: 1px solid currentColor;
   border-radius: 50%;
-  background: var(--archive-paper, var(--text));
+  /* Selo mais claro que a ficha: o favicon colorido "salta" do papel. */
+  background: color-mix(in srgb, var(--archive-paper, var(--text)) 42%, white);
 }
 
 .archive-site-icon img {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 1.35rem;
+  height: 1.35rem;
   object-fit: contain;
-  filter: grayscale(1) contrast(1.18) sepia(0.22);
 }
 
 .archive-site-icon > span {
@@ -1311,7 +1311,7 @@ input:focus, button:focus, select:focus {
   align-items: center;
   justify-content: center;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 600;
 }
 
@@ -1325,7 +1325,7 @@ input:focus, button:focus, select:focus {
   display: block;
   overflow: hidden;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 0.98rem;
+  font-size: 0.88rem;
   font-weight: 600;
   line-height: 1.05;
   text-overflow: ellipsis;
@@ -1334,11 +1334,11 @@ input:focus, button:focus, select:focus {
 
 .archive-site-copy small {
   display: block;
-  margin-top: 0.16rem;
+  margin-top: 0.12rem;
   overflow: hidden;
   color: color-mix(in srgb, var(--archive-ink, var(--bg)) 62%, transparent);
   font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
-  font-size: 0.42rem;
+  font-size: 0.4rem;
   letter-spacing: 0.1em;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -1350,7 +1350,7 @@ input:focus, button:focus, select:focus {
   content: '';
   position: absolute;
   right: 0;
-  bottom: -0.22rem;
+  bottom: -0.18rem;
   left: 0;
   height: 1px;
   background: var(--archive-rust, currentColor);
@@ -1392,11 +1392,6 @@ input:focus, button:focus, select:focus {
 
   [data-theme="nous-archive"] .orbit-clock > div:first-child {
     font-size: clamp(4.2rem, 22vw, 6.2rem);
-  }
-
-  .archive-site-emblem {
-    width: 2.6rem;
-    height: 2.6rem;
   }
 }
 
