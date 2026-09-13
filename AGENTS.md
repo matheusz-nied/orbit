@@ -140,7 +140,7 @@ A página tem muitas animações decorativas infinitas. Regras para não regredi
 
 | Serviço | URL | Uso |
 |---------|-----|-----|
-| Google Favicons | `https://www.google.com/s2/favicons?domain=<domain>&sz=64` | Ícone de site (fallback: primeira letra) |
+| Google Favicons | `https://www.google.com/s2/favicons?domain=<domain>&sz=128` | Ícone de site (fallback: primeira letra/ícone `Globe` via `SiteIcon`) |
 | TabNews | `https://www.tabnews.com.br/api/v1/contents` | Feed de notícias |
 | Open-Meteo | `https://api.open-meteo.com` / geocoding | Clima (sem API key) |
 | DeepSeek | API chat (opcional) | Chat IA — chave em `localStorage` |

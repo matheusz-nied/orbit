@@ -3,8 +3,8 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
-import { getFaviconUrl } from '../utils/favicon'
 import { openSite } from '../utils/navigation'
+import SiteIcon from './SiteIcon'
 
 const getArchiveNumber = (name) => {
   let hash = 0
@@ -83,17 +83,7 @@ function SiteCardArchive({ site }) {
         <span className="archive-site-emblem" aria-hidden>
           <span className="archive-site-orbit" />
           <span className="archive-site-icon">
-            <img
-              src={getFaviconUrl(site.url)}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              onError={(event) => {
-                event.target.style.display = 'none'
-                event.target.nextSibling.style.display = 'flex'
-              }}
-            />
-            <span>{site.name?.[0]?.toUpperCase()}</span>
+            <SiteIcon name={site.name} url={site.url} alt="" />
           </span>
         </span>
 

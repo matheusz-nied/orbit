@@ -3,7 +3,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
-import { getFaviconUrl } from '../utils/favicon'
+import SiteIcon from './SiteIcon'
 import { openSite } from '../utils/navigation'
 
 const getGlassMotion = (name) => {
@@ -88,17 +88,12 @@ function SiteCardOrbitalGlass({ site }) {
           <span className="orbital-glass-bubble orbital-glass-bubble-two absolute rounded-full" />
 
           <div className="relative z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
-            <img
-              src={getFaviconUrl(site.url)}
-              alt={site.name}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.45)] transition-transform duration-300 group-hover:scale-110"
-              onError={(event) => { event.target.style.display = 'none'; event.target.nextSibling.style.display = 'flex' }}
+            <SiteIcon
+              name={site.name}
+              url={site.url}
+              imgClassName="w-full h-full object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.45)] transition-transform duration-300 group-hover:scale-110"
+              fallbackClassName="w-full h-full text-xl font-bold text-text"
             />
-            <span className="hidden w-full h-full items-center justify-center text-xl font-bold text-text">
-              {site.name?.[0]?.toUpperCase()}
-            </span>
           </div>
         </div>
 

@@ -3,8 +3,8 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
-import { getFaviconUrl } from '../utils/favicon'
 import { openSite } from '../utils/navigation'
+import SiteIcon from './SiteIcon'
 
 const avatarColors = [
     'from-red-400 to-red-600',
@@ -62,17 +62,12 @@ function SiteCardClassic({ site }) {
             >
                 <div className="absolute inset-0 bg-accent/20 rounded-2xl blur-xl opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
                 <div className="relative w-full h-full bg-card/80 backdrop-blur-md border border-border/50 group-hover/card:border-accent/50 rounded-2xl flex items-center justify-center shadow-sm group-hover/card:shadow-md transition-all duration-300 group-hover/card:-translate-y-1 overflow-hidden">
-                    <img
-                        src={getFaviconUrl(site.url)}
-                        alt={site.name}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-10 h-10 sm:w-12 sm:h-12 object-contain transition-transform duration-300 group-hover/card:scale-110 drop-shadow-md"
-                        onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
+                    <SiteIcon
+                        name={site.name}
+                        url={site.url}
+                        imgClassName="w-10 h-10 sm:w-12 sm:h-12 object-contain transition-transform duration-300 group-hover/card:scale-110 drop-shadow-md"
+                        fallbackClassName={`w-10 h-10 sm:w-12 sm:h-12 text-xl sm:text-2xl font-bold bg-gradient-to-br ${getAvatarColor(site.name)} rounded-xl text-white shadow-inner`}
                     />
-                    <span className={`hidden w-10 h-10 sm:w-12 sm:h-12 items-center justify-center text-xl sm:text-2xl font-bold bg-gradient-to-br ${getAvatarColor(site.name)} rounded-xl text-white shadow-inner`}>
-                        {site.name?.[0]?.toUpperCase()}
-                    </span>
                 </div>
             </div>
 

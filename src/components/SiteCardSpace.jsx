@@ -3,8 +3,8 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
-import { getFaviconUrl } from '../utils/favicon'
 import { openSite } from '../utils/navigation'
+import SiteIcon from './SiteIcon'
 
 const spaceColors = [
   '#79a7ff', '#9b8cff', '#62d9ff', '#b48cff', '#4fbcff',
@@ -72,20 +72,13 @@ function SiteCardSpace({ site }) {
 
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           <div className="space-card-icon w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center border transition-transform duration-300 group-hover:scale-105">
-            <img
-              src={getFaviconUrl(site.url)}
-              alt={site.name}
-              loading="lazy"
-              decoding="async"
-              className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
-              onError={(event) => { event.target.style.display = 'none'; event.target.nextSibling.style.display = 'flex' }}
+            <SiteIcon
+              name={site.name}
+              url={site.url}
+              imgClassName="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
+              fallbackClassName="w-8 h-8 sm:w-9 sm:h-9 text-lg font-semibold"
+              fallbackStyle={{ color: accent, textShadow: `0 0 10px ${accent}` }}
             />
-            <span
-              className="hidden w-8 h-8 sm:w-9 sm:h-9 items-center justify-center text-lg font-semibold text-white"
-              style={{ textShadow: `0 0 10px ${accent}` }}
-            >
-              {site.name?.[0]?.toUpperCase()}
-            </span>
           </div>
         </div>
 

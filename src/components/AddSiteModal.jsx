@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { X, Plus, Pencil } from 'lucide-react'
 import useStore from '../store/useStore'
-import { getFaviconUrl } from '../utils/favicon'
+import { getDomain } from '../utils/favicon'
+import SiteIcon from './SiteIcon'
 import { isSafeHttpUrl, normalizeHttpUrl } from '../utils/url'
 import { findShortcutConflict, normalizeShortcutKey } from '../utils/shortcuts'
 
@@ -170,10 +171,12 @@ export default function AddSiteModal() {
 
           {canPreview && (
             <div className="flex items-center gap-3 p-3 bg-bg border border-border rounded-xl">
-              <img
-                src={getFaviconUrl(previewUrl)}
+              <SiteIcon
+                name={name.trim() || getDomain(previewUrl)}
+                url={previewUrl}
                 alt=""
-                className="w-8 h-8 object-contain"
+                imgClassName="w-8 h-8 object-contain"
+                fallbackClassName="w-8 h-8 text-base font-bold bg-accent/15 text-accent rounded-lg"
               />
               <div className="min-w-0">
                 <p className="text-sm text-text font-medium line-clamp-1">{name.trim() || 'Prévia do site'}</p>

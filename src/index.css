@@ -1306,10 +1306,9 @@ input:focus, button:focus, select:focus {
   object-fit: contain;
 }
 
+/* O fallback de letra só existe no DOM quando o favicon falha (SiteIcon
+   renderiza um ou outro) — por isso não há display:none aqui. */
 .archive-site-icon > span {
-  display: none;
-  align-items: center;
-  justify-content: center;
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 1.05rem;
   font-weight: 600;

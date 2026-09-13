@@ -3,7 +3,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
-import { getFaviconUrl } from '../utils/favicon'
+import SiteIcon from './SiteIcon'
 import { openSite } from '../utils/navigation'
 
 /* Paleta Night City: vermelho neon ↔ ciano (seleção HUD). */
@@ -153,20 +153,13 @@ function SiteCardCyberpunk({ site }) {
                 background: `radial-gradient(circle at 40% 35%, ${primary}22, transparent 65%)`,
               }}
             >
-              <img
-                src={getFaviconUrl(site.url)}
-                alt={site.name}
-                loading="lazy"
-                decoding="async"
-                className="w-7 h-7 sm:w-8 sm:h-8 object-contain drop-shadow-[0_0_6px_rgba(0,0,0,0.8)]"
-                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
+              <SiteIcon
+                name={site.name}
+                url={site.url}
+                imgClassName="w-7 h-7 sm:w-8 sm:h-8 object-contain drop-shadow-[0_0_6px_rgba(0,0,0,0.8)]"
+                fallbackClassName="w-full h-full text-base font-bold"
+                fallbackStyle={{ color: primary }}
               />
-              <span
-                className="hidden w-full h-full items-center justify-center text-base font-bold"
-                style={{ color: primary }}
-              >
-                {site.name?.[0]?.toUpperCase()}
-              </span>
             </div>
           </div>
 

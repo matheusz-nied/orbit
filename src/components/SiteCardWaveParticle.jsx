@@ -3,7 +3,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
-import { getFaviconUrl } from '../utils/favicon'
+import SiteIcon from './SiteIcon'
 import { openSite } from '../utils/navigation'
 
 const waveColors = [
@@ -170,19 +170,13 @@ function SiteCardWaveParticle({ site }) {
         {/* Favicon — fora das camadas animadas. */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="relative z-10 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center">
-            <img
-              src={getFaviconUrl(site.url)}
-              alt={site.name}
-              loading="lazy"
-              decoding="async"
-              width="40"
-              height="40"
-              className="w-full h-full object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
-              onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
+            <SiteIcon
+              name={site.name}
+              url={site.url}
+              imgClassName="w-full h-full object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
+              fallbackClassName="w-full h-full text-lg font-bold"
+              fallbackStyle={{ color: waveColor }}
             />
-            <span className="hidden w-full h-full items-center justify-center text-lg font-bold" style={{ color: waveColor }}>
-              {site.name?.[0]?.toUpperCase()}
-            </span>
           </div>
         </div>
 

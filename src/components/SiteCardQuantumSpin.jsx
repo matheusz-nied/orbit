@@ -3,8 +3,8 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Pencil, Trash2 } from 'lucide-react'
 import useStore from '../store/useStore'
-import { getFaviconUrl } from '../utils/favicon'
 import { openSite } from '../utils/navigation'
+import SiteIcon from './SiteIcon'
 
 const spinColors = [
   '#ff2a6d', '#05d9e8', '#d1f7ff', '#7700ff', '#00ff9f',
@@ -150,17 +150,13 @@ function SiteCardQuantumSpin({ site }) {
             />
 
             <div className="relative z-10 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center">
-              <img
-                src={getFaviconUrl(site.url)}
-                alt={site.name}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
-                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
+              <SiteIcon
+                name={site.name}
+                url={site.url}
+                imgClassName="w-full h-full object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-110"
+                fallbackClassName="w-full h-full text-base sm:text-lg font-bold"
+                fallbackStyle={{ color: spinColor, textShadow: `0 0 8px ${spinColor}` }}
               />
-              <span className="hidden w-full h-full items-center justify-center text-base sm:text-lg font-bold text-white/90">
-                {site.name?.[0]?.toUpperCase()}
-              </span>
             </div>
           </div>
         </div>
