@@ -3,7 +3,7 @@ import {
   X, Palette, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
   LayoutGrid, Sparkles, Gem,
-  CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge, Layers, LayoutDashboard, Cpu, BookOpen
+  CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
@@ -233,6 +233,7 @@ export default function SettingsModal() {
                     { id: 'quantum-spin', label: 'Spin', Icon: Atom, desc: 'Spin quântico' },
                     { id: 'cyber', label: 'Cyber', Icon: Cpu, desc: 'Slot netrunner' },
                     { id: 'archive', label: 'Arquivo', Icon: BookOpen, desc: 'Placas editoriais' },
+                    { id: 'android', label: 'Android', Icon: ScanEye, desc: 'Scan RK800' },
                   ].map(({ id, label, Icon, desc }) => (
                     <button
                       key={id}

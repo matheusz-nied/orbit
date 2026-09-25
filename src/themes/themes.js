@@ -92,6 +92,21 @@ export const themes = {
     '--archive-ink': '#1c2221',
     '--archive-rust': '#9f7440',
   },
+  'detroit': {
+    name: 'Detroit',
+    '--bg': '#060a0f',
+    '--card': 'rgba(9, 16, 25, 0.86)',
+    '--text': '#e6f1f8',
+    '--accent': '#38b6ff',
+    '--muted': '#7d93a6',
+    '--border': 'rgba(56, 182, 255, 0.2)',
+    '--font': "'Titillium Web', 'Inter', system-ui, sans-serif",
+    '--star': '0',
+    // Cores do LED de têmpora: estável, processando, instável.
+    '--dbh-led': '#38b6ff',
+    '--dbh-warn': '#f5b62a',
+    '--dbh-alert': '#ff3b3b',
+  },
 }
 
 export function resolveTheme(themeName) {

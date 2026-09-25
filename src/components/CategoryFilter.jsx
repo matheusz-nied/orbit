@@ -25,7 +25,7 @@ export default function CategoryFilter() {
   const allCategories = ['all', ...categories]
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 mb-6 animate-fadeIn">
+    <div className="orbit-category-filter w-full max-w-6xl mx-auto px-4 mb-6 animate-fadeIn">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 overflow-x-auto py-2 scrollbar-hide flex-1">
           <Filter size={18} className="text-muted flex-shrink-0" />

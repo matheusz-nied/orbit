@@ -45,7 +45,8 @@ src/
 - Exporta também o array `searchProviders` (Google, DuckDuckGo, YouTube, Ecosia, AI Chat).
 
 ### Temas
-- 7 temas: `minimal-light`, `premium-dark`, `space`, `cyberpunk`, `macos`, `crt`, `nebula`.
+- 9 temas: `minimal-light`, `premium-dark`, `space`, `cyberpunk`, `macos`, `crt`, `nebula`, `nous-archive`, `detroit`.
+- Temas com variáveis próprias (`--archive-*`, `--dbh-*`) só as definem no próprio tema — o CSS que as usa sempre tem fallback.
 - `resolveTheme()` em `themes.js` corrige id órfão no boot e no import (cai para `premium-dark`).
 - Temas são **CSS custom properties** aplicadas via `document.documentElement.style.setProperty()` (não classes).
 - Tailwind referencia variáveis: `bg-[var(--bg)]`, etc. (configurado em `tailwind.config.js` com tokens `bg`, `card`, `text`, `accent`, `muted`, `border`, `font-theme`).
@@ -103,7 +104,7 @@ src/
 - `WorkspaceSwitcher` / `WorkspaceManager` — troca e CRUD de espaços.
 - `CategoryFilter` — abas de filtro + Frequentes + botão "Adicionar Site".
 - `SiteGrid` — grid sortable com `DndContext > SortableContext`, usa `rectSortingStrategy`.
-- `SiteCard` — facade dos 7 layouts (`classic`, `orbital`, `orbital-glass`, `singularity`, `wave-particle`, `quantum-spin`, `cyber`).
+- `SiteCard` — facade dos 9 layouts (`classic`, `space`, `orbital-glass`, `singularity`, `wave-particle`, `quantum-spin`, `cyber`, `archive`, `android`).
 - `resolveCardLayout()` em `utils/cardLayout.js` corrige id órfão no boot e no import (cai para `classic`).
 - `WidgetDock` / `NotesPanel` / `PomodoroPanel` / `AgendaPanel` — dock inferior.
 - `NewsFeed` — TabNews (relevantes/recentes), auto-refresh 5min com aba visível.
@@ -156,7 +157,7 @@ npm run preview  # Preview do build
 ## Checklist ao Alterar Código
 
 1. **Persistência**: Se alterar estado que precisa sobreviver a reload, chame `storage.set()` na ação do Zustand.
-2. **Temas**: Novas cores/props devem ser adicionadas em **todos** os 7 temas em `src/themes/themes.js`.
+2. **Temas**: Novas cores/props devem ser adicionadas em **todos** os 9 temas em `src/themes/themes.js`.
 3. **Componentes novos**: Colocar em `src/components/`, um por arquivo, default export.
 4. **Estilo**: Usar classes Tailwind com tokens temáticos (`bg-card`, `text-text`, `border-border`, etc.), não cores hardcoded.
 5. **URLs**: Usar `normalizeHttpUrl` / `isSafeHttpUrl` — nunca aceitar schemes além de http(s).

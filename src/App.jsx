@@ -54,7 +54,7 @@ export default function App() {
   }, [theme, searchProvider])
 
   return (
-    <div className={`min-h-screen relative orbit-shell ${theme === 'nous-archive' ? 'archive-theme-shell' : ''}`}>
+    <div className={`min-h-screen relative orbit-shell ${theme === 'nous-archive' ? 'archive-theme-shell' : ''} ${theme === 'detroit' ? 'dbh-theme-shell' : ''}`}>
       {/* Star canvas for space theme */}
       <StarCanvas />
 
@@ -77,6 +77,13 @@ export default function App() {
                 <span>ORBIT / 08</span>
                 <strong>ORBIT<br />ARCHIVE</strong>
                 <span>LOCAL FIRST · PRIVATE BY DESIGN</span>
+              </header>
+            )}
+            {theme === 'detroit' && (
+              <header className="dbh-masthead" aria-label="Status do android">
+                <span>RK800 · #313 248 317 — 51</span>
+                <strong><i className="dbh-led gpu-layer" data-decorative aria-hidden /> Android online</strong>
+                <span>Instabilidade de software <b>▲</b></span>
               </header>
             )}
             <Clock />

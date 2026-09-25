@@ -10,6 +10,7 @@ export const cardLayoutIds = [
   'quantum-spin',
   'cyber',
   'archive',
+  'android',
 ]
 
 export function resolveCardLayout(layout) {
