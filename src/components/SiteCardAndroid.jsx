@@ -80,7 +80,7 @@ function SiteCardAndroid({ site }) {
 
         <span className="dbh-site-head">
           <em><span className="dbh-site-tri" aria-hidden />{model}</em>
-          <i className="dbh-site-led" aria-hidden />
+          <i className="dbh-site-led" style={{ '--dbh-delay': `-${(hash % 32) / 10}s` }} aria-hidden />
         </span>
 
         <span className="dbh-site-icon" aria-hidden>

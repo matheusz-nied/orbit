@@ -17,6 +17,8 @@ import StarCanvas from './components/StarCanvas'
 import { useEasterEggs } from './hooks/useEasterEggs'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import Toast from './components/Toast'
+import DetroitBoot from './components/DetroitBoot'
+import DetroitHud from './components/DetroitHud'
 
 const SettingsModal = lazy(() => import('./components/SettingsModal'))
 const AddSiteModal = lazy(() => import('./components/AddSiteModal'))
@@ -57,6 +59,9 @@ export default function App() {
     <div className={`min-h-screen relative orbit-shell ${theme === 'nous-archive' ? 'archive-theme-shell' : ''} ${theme === 'detroit' ? 'dbh-theme-shell' : ''}`}>
       {/* Star canvas for space theme */}
       <StarCanvas />
+      {/* Varredura de análise do tema Detroit — em sincronia com o LED do cabeçalho. */}
+      {theme === 'detroit' && <div className="dbh-sweep gpu-layer" data-decorative aria-hidden />}
+      {theme === 'detroit' && <DetroitHud />}
 
       {/* Main content */}
       <div className="relative z-10">
@@ -114,6 +119,7 @@ export default function App() {
       </Suspense>
       <WidgetDock />
       <Toast />
+      <DetroitBoot />
     </div>
   )
 }

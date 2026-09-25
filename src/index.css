@@ -2036,10 +2036,399 @@ input:focus, button:focus, select:focus {
   50% { opacity: 0.45; }
 }
 
+/* Anel amarelo sobreposto: o LED "processa" enquanto a varredura passa.
+   Mesmo ciclo de 14s do .dbh-sweep — os dois montam juntos com o tema. */
+.dbh-led {
+  position: relative;
+}
+
+.dbh-led::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--dbh-warn, #f5b62a);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--dbh-warn, #f5b62a);
+  opacity: 0;
+  animation: dbhLedProcess 14s ease-in-out infinite;
+}
+
+@keyframes dbhLedProcess {
+  0%, 100% { opacity: 0; }
+  3%, 30% { opacity: 1; }
+  36% { opacity: 0; }
+}
+
+[data-motion="reduced"] .dbh-led::after {
+  animation: none;
+}
+
+/* Varredura de análise: uma faixa com borda de luz desce pela página
+   a cada 14s. Só transform/opacity, camada fixa no compositor. */
+.dbh-sweep {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 15;
+  height: 22vh;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0,
+    rgba(56, 182, 255, 0.045) 70%,
+    rgba(56, 182, 255, 0.14) calc(100% - 2px),
+    rgba(160, 225, 255, 0.75) calc(100% - 1px)
+  );
+  opacity: 0;
+  transform: translateY(-100%);
+  animation: dbhSweep 14s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes dbhSweep {
+  0% { opacity: 0; transform: translateY(-100%); }
+  3% { opacity: 1; }
+  28% { opacity: 1; }
+  32% { opacity: 0; transform: translateY(100vh); }
+  100% { opacity: 0; transform: translateY(100vh); }
+}
+
+/* Periferia do HUD: colchetes nos cantos + fluxo de memória, bomba de
+   Thirium e medidor de estabilidade nas margens. Só existe onde sobra
+   margem lateral (≥1280px); abaixo disso cobriria o conteúdo. */
+.dbh-hud {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .dbh-hud {
+    display: block;
+  }
+}
+
+.dbh-hud-corner {
+  position: fixed;
+  z-index: 5;
+  width: 26px;
+  height: 26px;
+  pointer-events: none;
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  border-style: solid;
+  border-width: 0;
+}
+
+.dbh-hud-corner--tl { top: 8px; left: 8px; border-top-width: 1px; border-left-width: 1px; }
+.dbh-hud-corner--tr { top: 8px; right: 8px; border-top-width: 1px; border-right-width: 1px; }
+.dbh-hud-corner--bl { bottom: 8px; left: 8px; border-bottom-width: 1px; border-left-width: 1px; }
+.dbh-hud-corner--br { right: 8px; bottom: 8px; border-right-width: 1px; border-bottom-width: 1px; }
+
+.dbh-hud-stream,
+.dbh-hud-pump,
+.dbh-hud-gauge {
+  position: fixed;
+  z-index: 5;
+  pointer-events: none;
+  color: var(--muted);
+}
+
+.dbh-hud-label {
+  margin-bottom: 0.4rem;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.dbh-hud-label b {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.dbh-hud-stream {
+  top: 88px;
+  left: 24px;
+  width: 92px;
+}
+
+/* Janela com fade em cima/embaixo; a lista duplicada sobe 50% e reinicia. */
+.dbh-hud-stream-window {
+  height: 170px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+}
+
+.dbh-hud-stream-list {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.56rem;
+  line-height: 1.7;
+  opacity: 0.65;
+  animation: dbhStream 24s linear infinite;
+}
+
+.dbh-hud-stream-list li:nth-child(5n + 4) {
+  color: var(--accent);
+}
+
+@keyframes dbhStream {
+  to { transform: translateY(-50%); }
+}
+
+.dbh-hud-pump {
+  bottom: 28px;
+  left: 24px;
+  width: 120px;
+}
+
+.dbh-hud-pump-window {
+  height: 30px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 90%, transparent);
+}
+
+.dbh-hud-pump-trace {
+  display: block;
+  width: 200%;
+  height: 100%;
+  overflow: visible;
+  /* 2 batimentos por ciclo → 1.67s = 72 bpm, igual ao rótulo. */
+  animation: dbhPump 1.67s linear infinite;
+}
+
+@keyframes dbhPump {
+  to { transform: translateX(-50%); }
+}
+
+/* Brilho = traço largo translúcido por baixo, em vez de filter (que seria
+   refeito a cada frame da animação). */
+.dbh-hud-pump-glow,
+.dbh-hud-pump-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.dbh-hud-pump-glow {
+  stroke-width: 5;
+  opacity: 0.25;
+}
+
+.dbh-hud-pump-line {
+  stroke: #a0e1ff;
+  stroke-width: 1.5;
+}
+
+.dbh-hud-gauge {
+  top: 50%;
+  right: 22px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transform: translateY(-50%);
+}
+
+.dbh-hud-label--vertical {
+  margin: 0;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* Trilho com marcações; marcador oscila na faixa "estável" (azul),
+   de vez em quando encostando no amarelo. */
+.dbh-hud-gauge-track {
+  position: relative;
+  width: 10px;
+  height: 180px;
+  border-right: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, var(--dbh-alert, #ff3b3b) 0 12%, var(--dbh-warn, #f5b62a) 12% 32%, transparent 32%) right / 2px 100% no-repeat,
+    repeating-linear-gradient(180deg, color-mix(in srgb, var(--accent) 45%, transparent) 0 1px, transparent 1px 12px) left / 6px 100% no-repeat;
+}
+
+.dbh-hud-gauge-marker {
+  position: absolute;
+  top: 0;
+  right: -1px;
+  width: 16px;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  animation: dbhGauge 9s ease-in-out infinite alternate;
+}
+
+@keyframes dbhGauge {
+  0% { transform: translateY(140px); }
+  45% { transform: translateY(95px); }
+  70% { transform: translateY(118px); }
+  100% { transform: translateY(62px); }
+}
+
+/* Boot do android ao ativar o tema. O overlay some sozinho (fade no fim)
+   e não bloqueia cliques; o componente desmonta após BOOT_MS. */
+.dbh-boot {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(56, 182, 255, 0.12), transparent 70%),
+    rgba(4, 8, 13, 0.94);
+  animation: dbhBootOut 2.8s ease forwards;
+}
+
+@keyframes dbhBootOut {
+  0%, 82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.dbh-boot-core {
+  width: min(20rem, calc(100vw - 2rem));
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* LED grande: começa amarelo girando (carregando) e assenta no azul. */
+.dbh-boot-led {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1.4rem;
+  border: 3px solid var(--dbh-warn, #f5b62a);
+  border-top-color: transparent;
+  border-radius: 50%;
+  box-shadow: 0 0 18px rgba(245, 182, 42, 0.45);
+  animation: spin 0.9s linear 2, dbhBootLed 0.3s ease 1.8s forwards;
+}
+
+@keyframes dbhBootLed {
+  to {
+    border-color: var(--dbh-led, #38b6ff);
+    box-shadow: 0 0 22px rgba(56, 182, 255, 0.6);
+  }
+}
+
+.dbh-boot-brand {
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5em;
+  text-align: center;
+}
+
+.dbh-boot-model {
+  margin: 0.35rem 0 1.2rem;
+  text-align: center;
+}
+
+.dbh-boot-lines li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border);
+  opacity: 0;
+  transform: translateX(-6px);
+  animation: dbhBootLine 0.25s ease forwards;
+  animation-delay: calc(0.35s + var(--i) * 0.28s);
+}
+
+.dbh-boot-lines b {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@keyframes dbhBootLine {
+  to { opacity: 1; transform: none; }
+}
+
+.dbh-boot-status {
+  margin-top: 1.2rem;
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-align: center;
+  text-shadow: 0 0 12px rgba(56, 182, 255, 0.8);
+  opacity: 0;
+  animation: dbhBootLine 0.3s ease 1.9s forwards;
+}
+
 [data-theme="detroit"] .orbit-clock > div:first-child {
   font-weight: 300;
   letter-spacing: 0.06em;
   text-shadow: 0 0 28px rgba(56, 182, 255, 0.25);
+}
+
+/* Retícula de análise em volta das horas: arcos segmentados girando num
+   sentido e régua de marcações no outro. Pseudo-elementos atrás do texto
+   (isolation cria o contexto para o z-index -1); só rotate anima. */
+[data-theme="detroit"] .orbit-clock > div:first-child {
+  position: relative;
+  isolation: isolate;
+}
+
+[data-theme="detroit"] .orbit-clock > div:first-child::before,
+[data-theme="detroit"] .orbit-clock > div:first-child::after {
+  --size: 10.5rem;
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: -1;
+  width: var(--size);
+  height: var(--size);
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+  animation: spin 28s linear infinite;
+}
+
+/* Arcos: segmentos de anel recortados por máscara radial. */
+[data-theme="detroit"] .orbit-clock > div:first-child::before {
+  background: conic-gradient(
+    var(--accent) 0 58deg, transparent 58deg 96deg,
+    var(--accent) 96deg 112deg, transparent 112deg 180deg,
+    var(--accent) 180deg 250deg, transparent 250deg 282deg,
+    var(--accent) 282deg 292deg, transparent 292deg
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+  opacity: 0.45;
+}
+
+/* Régua: marcações a cada 6°, numa faixa um pouco maior, girando ao contrário. */
+[data-theme="detroit"] .orbit-clock > div:first-child::after {
+  --size: 12.5rem;
+  background: repeating-conic-gradient(var(--accent) 0 0.8deg, transparent 0.8deg 6deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6.5px));
+  opacity: 0.28;
+  animation-duration: 60s;
+  animation-direction: reverse;
+}
+
+/* Respiro no topo para a retícula não cruzar a linha do cabeçalho. */
+[data-theme="detroit"] .orbit-clock {
+  padding-top: 3.5rem;
+}
+
+@media (min-width: 768px) {
+  [data-theme="detroit"] .orbit-clock { padding-top: 4.5rem; }
+  [data-theme="detroit"] .orbit-clock > div:first-child::before { --size: 12.5rem; }
+  [data-theme="detroit"] .orbit-clock > div:first-child::after { --size: 14rem; }
+}
+
+[data-motion="reduced"][data-theme="detroit"] .orbit-clock > div:first-child::before,
+[data-motion="reduced"][data-theme="detroit"] .orbit-clock > div:first-child::after {
+  animation: none;
 }
 
 [data-theme="detroit"] .orbit-clock > div:last-child {
@@ -2251,6 +2640,14 @@ input:focus, button:focus, select:focus {
   color: var(--dbh-led, var(--accent));
   box-shadow: 0 0 5px currentColor;
   transition: color 200ms ease;
+  /* Respiração em espera; o atraso por card (--dbh-delay) evita que a grade
+     pulse em uníssono. O hover troca por spin. */
+  animation: dbhLedPulse 3.2s ease-in-out infinite;
+  animation-delay: var(--dbh-delay, 0s);
+}
+
+[data-motion="reduced"] .dbh-site-led {
+  animation: none;
 }
 
 .dbh-site:hover .dbh-site-led {
