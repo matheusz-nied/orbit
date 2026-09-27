@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import useStore from '../store/useStore'
 
 export default function NotesPanel() {
@@ -8,6 +8,16 @@ export default function NotesPanel() {
   const [draft, setDraft] = useState(notes)
   const [saved, setSaved] = useState(true)
   const timerRef = useRef(0)
+  const textareaRef = useRef(null)
+
+  // Cresce com o texto; o teto fica no CSS (max-h relativo à viewport),
+  // a partir dele a textarea passa a rolar.
+  useLayoutEffect(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight + 2}px`
+  }, [draft])
 
   // Grava com atraso para não bater no localStorage a cada tecla.
   const handleChange = (value) => {
@@ -38,20 +48,32 @@ export default function NotesPanel() {
     return () => window.removeEventListener('pagehide', flush)
   }, [draft, setNotes])
 
+  const chars = draft.length
+
   return (
     <div className="w-72 sm:w-80">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-medium text-text">Notas</h3>
-        <span className="text-[11px] text-muted">{saved ? 'Salvo' : 'Salvando…'}</span>
-      </div>
+      {/* pr-6 reserva o canto do botão de fechar do dock */}
+      <h3 className="text-sm font-medium text-text mb-3 pr-6">Notas</h3>
 
       <textarea
         value={draft}
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Anotações rápidas — ficam salvas neste navegador."
+        ref={textareaRef}
         rows={8}
-        className="w-full px-3 py-2 bg-bg border border-border rounded-lg text-sm text-text placeholder-muted resize-none focus:border-accent transition-colors"
+        className="block w-full min-h-[10rem] max-h-[min(55vh,32rem)] overflow-y-auto px-3 py-2.5 bg-bg border border-border rounded-lg text-sm leading-relaxed text-text placeholder-muted resize-none focus:border-accent transition-colors"
       />
+
+      <div className="flex items-center justify-between mt-2 text-[11px] text-muted">
+        <span className="flex items-center gap-1.5" aria-live="polite">
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${saved ? 'bg-accent' : 'bg-muted animate-pulse'}`}
+            aria-hidden="true"
+          />
+          {saved ? 'Salvo' : 'Salvando…'}
+        </span>
+        <span>{chars} {chars === 1 ? 'caractere' : 'caracteres'}</span>
+      </div>
     </div>
   )
 }
