@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Check, Trash2 } from 'lucide-react'
+import { Check, Trash2, BellRing } from 'lucide-react'
 import useStore from '../store/useStore'
-import { todayKey } from '../utils/agenda'
+import { todayKey, parseAgendaInput } from '../utils/agenda'
+import { requestNotificationPermission } from '../utils/audio'
 
 const formatAgendaDate = (dateKey) => {
   const [y, m, d] = dateKey.split('-').map(Number)
@@ -23,10 +24,13 @@ export default function AgendaPanel() {
 
   const pendingCount = agenda.items.filter((item) => !item.done).length
   const dateLabel = formatAgendaDate(agenda.date || todayKey())
+  const draftTime = draft.trim() ? parseAgendaInput(draft).time : null
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!draft.trim()) return
+    // Pede permissão no gesto do submit — fora dele o navegador recusa.
+    if (parseAgendaInput(draft).time) requestNotificationPermission()
     addAgendaItem(draft)
     setDraft('')
   }
@@ -66,6 +70,17 @@ export default function AgendaPanel() {
               >
                 {item.done && <Check size={12} strokeWidth={3} />}
               </button>
+              {item.time && (
+                <span
+                  className={`shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded border border-border text-[10px] tabular-nums ${
+                    item.done || item.notified ? 'text-muted' : 'text-accent'
+                  }`}
+                  title={item.notified ? 'Lembrete já disparado' : 'Lembrete agendado'}
+                >
+                  {!item.done && !item.notified && <BellRing size={10} />}
+                  {item.time}
+                </span>
+              )}
               <span
                 className={`flex-1 text-sm min-w-0 break-words ${
                   item.done ? 'line-through text-muted' : 'text-text'
@@ -91,7 +106,7 @@ export default function AgendaPanel() {
           type="text"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Adicionar tarefa…"
+          placeholder="Tarefa… (ex.: reunião 14h)"
           maxLength={120}
           className="flex-1 min-w-0 px-3 py-2 bg-bg border border-border rounded-lg text-sm text-text placeholder-muted focus:border-accent transition-colors"
         />
@@ -105,7 +120,9 @@ export default function AgendaPanel() {
       </form>
 
       <p className="text-[10px] text-muted mt-2">
-        Concluídas somem à meia-noite · pendentes vão para amanhã
+        {draftTime
+          ? `Lembrete às ${draftTime} — com a aba do Orbit aberta`
+          : 'Horário no texto vira lembrete · concluídas somem à meia-noite'}
       </p>
     </div>
   )

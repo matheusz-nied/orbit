@@ -12,6 +12,7 @@ import { normalizeHttpUrl } from '../utils/url'
 import WorkspaceManager from './WorkspaceManager'
 import WeatherLocationPicker from './WeatherLocationPicker'
 import OnboardingGuide from './OnboardingGuide'
+import AutoBackupSettings from './AutoBackupSettings'
 import CategorySubcategories from './CategorySubcategories'
 
 // Seções agrupadas por assunto — com 10 itens, uma fileira de abas exigia
@@ -54,7 +55,7 @@ const sectionGroups = [
   {
     label: 'Sistema',
     items: [
-      { id: 'data', label: 'Backup', icon: Database, desc: 'Exporte ou restaure suas configurações.' },
+      { id: 'data', label: 'Backup', icon: Database, desc: 'Backup automático, exportar e restaurar.' },
     ],
   },
 ]
@@ -86,7 +87,10 @@ const widgetOptions = [
   { id: 'frequent', label: 'Sites frequentes', desc: 'Aba com os sites que você mais abre' },
   { id: 'agenda', label: 'Agenda do dia', desc: 'Lista de tarefas no dock — tecla t para abrir' },
   { id: 'notes', label: 'Notas rápidas', desc: 'Bloco de anotações no canto inferior' },
-  { id: 'pomodoro', label: 'Pomodoro', desc: 'Timer de foco com ciclos de 25/5 min' },
+  { id: 'pomodoro', label: 'Pomodoro e timers', desc: 'Timer de foco com ciclos de 25/5 min e timers avulsos' },
+  { id: 'ambient', label: 'Som ambiente', desc: 'Chuva, ondas, lareira e ruídos para concentrar' },
+  { id: 'summary', label: 'Resumo da semana', desc: 'Foco, tarefas e sites mais abertos nos últimos 7 dias' },
+  { id: 'tabStatus', label: 'Título da aba dinâmico', desc: 'Mostra timer, próximo lembrete e pendências no título e no ícone da aba' },
 ]
 
 export default function SettingsModal() {
@@ -117,6 +121,7 @@ export default function SettingsModal() {
   const exportData = useStore((state) => state.exportData)
   const importData = useStore((state) => state.importData)
   const addSites = useStore((state) => state.addSites)
+  const markBackup = useStore((state) => state.markBackup)
 
   const [activeTab, setActiveTab] = useState('guide')
   // No celular a navegação vira lista → detalhe; no desktop as duas colunas
@@ -146,6 +151,7 @@ export default function SettingsModal() {
     a.download = 'orbit-config.json'
     a.click()
     URL.revokeObjectURL(url)
+    markBackup()
   }
 
   const handleImport = (e) => {
@@ -602,6 +608,8 @@ export default function SettingsModal() {
           {/* Data Tab */}
           {activeTab === 'data' && (
             <div className="space-y-6">
+              <AutoBackupSettings />
+
               <div>
                 <h4 className="text-sm font-medium text-muted mb-3">Exportar Configuração</h4>
                 <p className="text-sm text-muted mb-3">

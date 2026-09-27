@@ -16,15 +16,18 @@ import NewsFeed from './components/NewsFeed'
 import StarCanvas from './components/StarCanvas'
 import { useEasterEggs } from './hooks/useEasterEggs'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import { useAutoBackup } from './hooks/useAutoBackup'
 import Toast from './components/Toast'
 import DetroitBoot from './components/DetroitBoot'
 import DetroitHud from './components/DetroitHud'
+import BackupReminder from './components/BackupReminder'
 
 const SettingsModal = lazy(() => import('./components/SettingsModal'))
 const AddSiteModal = lazy(() => import('./components/AddSiteModal'))
 const ConfirmModal = lazy(() => import('./components/ConfirmModal'))
 const AIChatModal = lazy(() => import('./components/AIChatModal'))
 const WelcomeModal = lazy(() => import('./components/WelcomeModal'))
+const CommandPalette = lazy(() => import('./components/CommandPalette'))
 
 function ModalFallback() {
   return null
@@ -37,6 +40,7 @@ export default function App() {
   const motionMode = useStore((state) => state.motionMode)
   useEasterEggs()
   useKeyboardShortcuts()
+  useAutoBackup()
 
   useEffect(() => {
     applyTheme(theme)
@@ -116,8 +120,10 @@ export default function App() {
         <AddSiteModal />
         <ConfirmModal />
         <AIChatModal />
+        <CommandPalette />
       </Suspense>
       <WidgetDock />
+      <BackupReminder />
       <Toast />
       <DetroitBoot />
     </div>

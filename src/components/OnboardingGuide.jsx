@@ -1,4 +1,4 @@
-import { Plus, Search, Keyboard, ListTodo, Palette, ExternalLink } from 'lucide-react'
+import { Plus, Search, Keyboard, ListTodo, Palette, ExternalLink, Command } from 'lucide-react'
 
 // Conteúdo compartilhado entre o WelcomeModal (primeira visita) e a aba
 // "Comece por aqui" das Configurações (consulta a qualquer momento).
@@ -40,11 +40,24 @@ export default function OnboardingGuide() {
       </div>
 
       <div className="flex items-start gap-3 p-3 bg-bg rounded-xl border border-border">
+        <Command size={18} className="text-accent mt-0.5 shrink-0" />
+        <div>
+          <p className="text-sm font-medium text-text">Paleta de comandos</p>
+          <p className="text-xs text-muted mt-0.5">
+            <kbd className="px-1 py-0.5 bg-border rounded text-[10px]">Ctrl</kbd> + <kbd className="px-1 py-0.5 bg-border rounded text-[10px]">K</kbd> faz
+            quase tudo pelo teclado: abrir sites, <span className="text-text">+ tarefa</span>, <span className="text-text">n nota</span>,
+            timers (<span className="text-text">10m chá</span>), contas (<span className="text-text">2*37</span>) e câmbio (<span className="text-text">100 usd</span>).
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-3 p-3 bg-bg rounded-xl border border-border">
         <ListTodo size={18} className="text-accent mt-0.5 shrink-0" />
         <div>
           <p className="text-sm font-medium text-text">Agenda do dia</p>
           <p className="text-xs text-muted mt-0.5">
             No canto inferior, anote o que precisa fazer hoje. Pendentes passam para amanhã; concluídas somem à meia-noite.
+            Escreva um horário (&quot;reunião 14h&quot;) e o Orbit avisa na hora — com a aba aberta.
           </p>
         </div>
       </div>

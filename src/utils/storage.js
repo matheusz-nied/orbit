@@ -109,6 +109,9 @@ export const defaultWidgets = {
   pomodoro: true,
   agenda: true,
   frequent: true,
+  ambient: true,
+  summary: true,
+  tabStatus: true,
 }
 
 // Resolve workspace ativo órfão (ex.: import parcial ou espaço removido fora do app).

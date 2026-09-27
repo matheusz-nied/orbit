@@ -26,10 +26,17 @@ export default function NotesPanel() {
 
     clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
+      timerRef.current = 0
       setNotes(value)
       setSaved(true)
     }, 400)
   }
+
+  // Notas adicionadas por fora (paleta de comandos) com o painel aberto.
+  // Só sincroniza sem edição pendente, para não atropelar o que está sendo digitado.
+  useEffect(() => {
+    if (!timerRef.current) setDraft(notes)
+  }, [notes])
 
   useEffect(() => () => clearTimeout(timerRef.current), [])
 

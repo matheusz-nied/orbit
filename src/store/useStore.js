@@ -13,7 +13,25 @@ import { FREQUENT_CATEGORY } from "../utils/frequent";
 import { applyTheme, resolveTheme } from "../themes/themes";
 import { resolveCardLayout } from "../utils/cardLayout";
 import { applyMotion } from "../utils/motion";
-import { loadAgenda, rolloverAgenda } from "../utils/agenda";
+import { loadAgenda, rolloverAgenda, parseAgendaInput, minutesNow, timeToMinutes } from "../utils/agenda";
+import { loadActivity, bumpToday, weekKey } from "../utils/activity";
+import * as ambientEngine from "../utils/ambient";
+
+const loadTimers = () => {
+  const saved = storage.get("timers");
+  return Array.isArray(saved) ? saved.filter((t) => t && t.endsAt) : [];
+};
+
+const loadAmbient = () => ({ sound: "rain", volume: 50, ...(storage.get("ambient") || {}) });
+
+// Primeira visita — usado para não cobrar backup de quem acabou de chegar.
+const loadFirstSeen = () => {
+  const saved = storage.get("first_seen");
+  if (saved) return saved;
+  const now = Date.now();
+  storage.set("first_seen", now);
+  return now;
+};
 
 const loadWorkspaces = () => storage.get("workspaces") || defaultWorkspaces;
 
@@ -82,6 +100,30 @@ const useStore = create((set, get) => ({
   weatherLocation: storage.get("weather_location") || null,
   notes: storage.get("notes") || "",
   agenda: loadAgenda(),
+
+  // Histórico diário (foco, tarefas, visitas) — alimenta o resumo semanal.
+  activity: loadActivity(),
+  summarySeenWeek: storage.get("summary_seen_week") || null,
+
+  // Timers avulsos: guardam o timestamp de término, então sobrevivem a reload.
+  timers: loadTimers(),
+
+  // Som ambiente — a escolha persiste, mas tocar é sempre efêmero (autoplay
+  // sem gesto do usuário é bloqueado pelos navegadores).
+  ambient: loadAmbient(),
+  ambientPlaying: false,
+
+  // Backup
+  firstSeenAt: loadFirstSeen(),
+  lastBackupAt: storage.get("last_backup") || null,
+  // Nome do arquivo de backup automático — vem do handle no IndexedDB, que é
+  // local a este navegador (por isso não persiste em sp_*, que vai no export).
+  backupFileName: null,
+  backupNeedsPermission: false,
+  backupSnoozeUntil: storage.get("backup_snooze") || 0,
+
+  // Paleta de comandos (Ctrl+K)
+  paletteOpen: false,
 
   // Dock panel aberto (efêmero — atalho `t` abre a agenda)
   dockPanel: null,
@@ -209,6 +251,29 @@ const useStore = create((set, get) => ({
     };
     storage.set("site_stats", siteStats);
     set({ siteStats });
+
+    get().recordActivity((day) => ({
+      ...day,
+      visits: day.visits + 1,
+      sites: { ...day.sites, [id]: (day.sites[id] || 0) + 1 },
+    }));
+  },
+
+  recordActivity: (update) => {
+    const activity = bumpToday(get().activity, update);
+    storage.set("activity", activity);
+    set({ activity });
+  },
+
+  logFocus: (minutes) => {
+    get().recordActivity((day) => ({ ...day, focus: day.focus + minutes }));
+  },
+
+  markSummarySeen: () => {
+    const week = weekKey();
+    if (get().summarySeenWeek === week) return;
+    storage.set("summary_seen_week", week);
+    set({ summarySeenWeek: week });
   },
 
   resetSiteStats: () => {
@@ -386,8 +451,13 @@ const useStore = create((set, get) => ({
     storage.set("widgets", widgets);
 
     const extra = {};
-    if (key === "agenda" && !value && get().dockPanel === "agenda") {
+    // Painel aberto de um widget desligado ficaria órfão no dock.
+    if (!value && get().dockPanel === key) {
       extra.dockPanel = null;
+    }
+    if (key === "ambient" && !value && get().ambientPlaying) {
+      ambientEngine.stopAmbient();
+      extra.ambientPlaying = false;
     }
 
     // Desligar Frequentes com a aba ativa deixaria a grade numa visão sem atalho.
@@ -429,7 +499,13 @@ const useStore = create((set, get) => ({
 
     get().ensureAgendaDay();
     const agenda = get().agenda;
-    const item = { id: Date.now().toString(), text: trimmed, done: false };
+    const { text: parsedText, time } = parseAgendaInput(trimmed);
+    const item = { id: Date.now().toString(), text: parsedText || trimmed, done: false };
+    if (time) {
+      item.time = time;
+      // Horário que já passou hoje não dispara — seria um alarme atrasado.
+      item.notified = timeToMinutes(time) <= minutesNow();
+    }
     const next = {
       ...agenda,
       items: [...agenda.items, item],
@@ -441,6 +517,11 @@ const useStore = create((set, get) => ({
   toggleAgendaItem: (id) => {
     get().ensureAgendaDay();
     const agenda = get().agenda;
+    const target = agenda.items.find((item) => item.id === id);
+    if (target) {
+      const delta = target.done ? -1 : 1;
+      get().recordActivity((day) => ({ ...day, tasks: Math.max(0, day.tasks + delta) }));
+    }
     const next = {
       ...agenda,
       items: agenda.items.map((item) =>
@@ -460,6 +541,75 @@ const useStore = create((set, get) => ({
     };
     storage.set("agenda", next);
     set({ agenda: next });
+  },
+
+  markAgendaNotified: (ids) => {
+    const agenda = get().agenda;
+    const next = {
+      ...agenda,
+      items: agenda.items.map((item) =>
+        ids.includes(item.id) ? { ...item, notified: true } : item,
+      ),
+    };
+    storage.set("agenda", next);
+    set({ agenda: next });
+  },
+
+  // Actions — Timers
+  addTimer: (durationMs, label = "") => {
+    const timer = {
+      id: Date.now().toString(),
+      label: label.trim(),
+      duration: durationMs,
+      endsAt: Date.now() + durationMs,
+    };
+    const timers = [...get().timers, timer];
+    storage.set("timers", timers);
+    set({ timers });
+    return timer;
+  },
+
+  removeTimer: (id) => {
+    const timers = get().timers.filter((t) => t.id !== id);
+    storage.set("timers", timers);
+    set({ timers });
+  },
+
+  // Actions — Som ambiente
+  playAmbient: (sound) => {
+    const ambient = { ...get().ambient, sound: sound || get().ambient.sound };
+    if (!ambientEngine.playAmbient(ambient.sound, ambient.volume)) return;
+    storage.set("ambient", ambient);
+    set({ ambient, ambientPlaying: true });
+  },
+
+  stopAmbient: () => {
+    ambientEngine.stopAmbient();
+    set({ ambientPlaying: false });
+  },
+
+  setAmbientVolume: (volume) => {
+    const ambient = { ...get().ambient, volume };
+    ambientEngine.setAmbientVolume(volume);
+    storage.set("ambient", ambient);
+    set({ ambient });
+  },
+
+  // Actions — Backup
+  markBackup: () => {
+    const now = Date.now();
+    storage.set("last_backup", now);
+    set({ lastBackupAt: now, backupNeedsPermission: false });
+  },
+
+  setBackupFile: (name) => set({ backupFileName: name, backupNeedsPermission: false }),
+
+  setBackupNeedsPermission: (value) => set({ backupNeedsPermission: value }),
+
+  snoozeBackup: (days = 7) => {
+    const until = Date.now() + days * 24 * 60 * 60 * 1000;
+    storage.set("backup_snooze", until);
+    set({ backupSnoozeUntil: until });
   },
 
   editAgendaItem: (id, text) => {
@@ -573,6 +723,9 @@ const useStore = create((set, get) => ({
     set({ settingsOpen: true, settingsSection: typeof section === "string" ? section : null }),
   closeSettings: () => set({ settingsOpen: false, settingsSection: null }),
 
+  openPalette: () => set({ paletteOpen: true }),
+  closePalette: () => set({ paletteOpen: false }),
+
   openAddSite: () => set({ addSiteOpen: true }),
   closeAddSite: () => set({ addSiteOpen: false }),
 
@@ -621,6 +774,12 @@ const useStore = create((set, get) => ({
         weatherLocation: storage.get("weather_location") || null,
         notes: storage.get("notes") || "",
         agenda: loadAgenda(),
+        activity: loadActivity(),
+        summarySeenWeek: storage.get("summary_seen_week") || null,
+        timers: loadTimers(),
+        ambient: loadAmbient(),
+        lastBackupAt: storage.get("last_backup") || null,
+        backupSnoozeUntil: storage.get("backup_snooze") || 0,
         theme: (() => {
           const resolved = resolveTheme(storage.get("theme"));
           if (resolved !== storage.get("theme")) {

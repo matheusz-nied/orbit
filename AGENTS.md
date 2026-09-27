@@ -41,7 +41,7 @@ src/
 ### Estado (Zustand)
 - Store único e plano em `src/store/useStore.js`.
 - Toda mutação que precisa persistir chama `storage.set()` **sincronamente** dentro da ação.
-- Estado principal: `sites`, `categories`, `activeCategory`, `subcategories`, `activeSubcategory`, `workspaces`, `activeWorkspace`, `siteStats`, `widgets`, `weatherLocation`, `notes`, `agenda`, `theme`, `cardLayout`, `motionMode`, `searchProvider`, `searchQuery`, `newsProvider`, `newsTopics`, `newsItems`, `newsLoading`, `deepseekApiKey`, `chat*`, `openInNewTab`, `settingsOpen`, `addSiteOpen`, `editingSite`, `welcomeSeen`, `dockPanel` (efêmero).
+- Estado principal: `sites`, `categories`, `activeCategory`, `subcategories`, `activeSubcategory`, `workspaces`, `activeWorkspace`, `siteStats`, `activity`, `timers`, `ambient`, `widgets`, `weatherLocation`, `notes`, `agenda`, `theme`, `cardLayout`, `motionMode`, `searchProvider`, `searchQuery`, `newsProvider`, `newsTopics`, `newsItems`, `newsLoading`, `deepseekApiKey`, `chat*`, `openInNewTab`, `settingsOpen`, `addSiteOpen`, `editingSite`, `welcomeSeen`, `lastBackupAt`, `dockPanel` / `paletteOpen` / `ambientPlaying` (efêmeros).
 - Exporta também o array `searchProviders` (Google, DuckDuckGo, YouTube, Ecosia, AI Chat).
 
 ### Temas
@@ -80,15 +80,34 @@ src/
 
 - Cada site pode ter `shortcut` (uma tecla `a`–`z` ou `0`–`9`), configurável no modal Adicionar/Editar Site. Unicidade global entre sites.
 - `useKeyboardShortcuts` (`hooks/useKeyboardShortcuts.js`): fora de inputs/modais, a tecla abre o site do **espaço ativo** via `openSite()`.
-- Atalhos globais: `/` foca a busca (`orbit:focus-search` no `SearchBar`); `t` abre/fecha a Agenda no dock (se widget ligado).
+- Atalhos globais: `/` foca a busca (`orbit:focus-search` no `SearchBar`); `t` abre/fecha a Agenda no dock (se widget ligado); `Ctrl/Cmd+K` abre a paleta de comandos (funciona até dentro de inputs).
+
+### Paleta de comandos (`CommandPalette`, Ctrl+K)
+
+- Parsers puros em `utils/commands.js`: `parseTimer` (`10m chá`, `1h30`), `evaluateMath` (descida recursiva — **nunca `eval`**), `parseCurrency` + `fetchRate` (AwesomeAPI, sem chave, cache de 10 min em memória).
+- Prefixos: `+`/`t ` = tarefa (aceita horário), `n ` = nota. Sem comando reconhecido, lista sites + ações e termina em "Pesquisar" no provedor ativo.
+- As seções de Configurações estão espelhadas em `settingsSections` — ao criar seção nova em `SettingsModal`, adicione lá também.
+- Pomodoro é controlado via evento `orbit:pomodoro` (`POMODORO_EVENT` em `WidgetDock`), porque o estado vive no hook do dock.
 
 ### Widgets
 
-- Flags em `widgets` (`weather`, `notes`, `pomodoro`, `agenda`, `frequent`), aba "Widgets" nas Configurações.
+- Flags em `widgets` (`weather`, `notes`, `pomodoro`, `agenda`, `frequent`, `ambient`, `summary`, `tabStatus`), aba "Widgets" nas Configurações. Desligar um widget fecha o painel dele no dock.
 - **Clima**: Open-Meteo, sem API key. `utils/weather.js` faz geocoding + previsão e mapeia códigos WMO. Cache de 30 min em `sp_weather_cache`, revalidado só com a aba visível (`visibilitychange` + interval). Ao trocar cidade, o widget limpa o clima antigo até a nova resposta.
 - **Pomodoro**: `usePomodoro` deriva o restante de um **timestamp de término**, nunca de um contador decrementado — navegadores limitam timers em abas de segundo plano. O hook vive no `WidgetDock` para o timer sobreviver ao fechamento do painel.
 - **Notas**: debounce de 400ms + flush em `pagehide` para não perder texto pendente.
 - **Agenda**: `agenda: { date, items[] }` em `sp_agenda`. Rollover à meia-noite via `ensureAgendaDay()` — itens concluídos somem, pendentes carregam para o dia atual (`utils/agenda.js`).
+  - Lembretes: `parseAgendaInput` extrai horário do texto (`14:30 x`, `x às 14h`, `x 16:00`; `x 3h` sem "às" com hora < 6 é duração, não horário). Item ganha `time` + `notified`; `useAgendaReminders` dispara e grava `notified` (reload não repete). Horário já passado na criação nasce `notified`. O rollover **remove** `time`/`notified`.
+- **Timers avulsos**: `timers: [{ id, label, duration, endsAt }]` em `sp_timers` — timestamp de término, sobrevivem a reload. `useTimers` (no dock) avisa e remove; o botão Timers aparece com o widget `pomodoro` ou se houver timer rodando.
+- **Som ambiente**: `utils/ambient.js` sintetiza chuva/ondas/lareira/ruídos com Web Audio (sem arquivos). O motor é um módulo fora do React; o store guarda só `ambient: { sound, volume }` (`sp_ambient`) e `ambientPlaying` (efêmero — autoplay sem gesto é bloqueado). Eventos curtos (gotas/estalos) são agendados no relógio do áudio com ~1s de folga para aguentar timers limitados em segundo plano.
+- **Resumo semanal**: `activity: { 'YYYY-MM-DD': { focus, tasks, visits, sites: {id: n} } }` em `sp_activity`, podado a 60 dias (`utils/activity.js`). Alimentado por `registerSiteVisit`, `toggleAgendaItem` (±1) e `logFocus` (fim de ciclo do Pomodoro). Ponto no botão quando começa semana nova (`sp_summary_seen_week`).
+- **Título/favicon** (`useTabStatus`, widget `tabStatus`): prioridade pomodoro → timer → lembrete em ≤60 min → `(n) Orbit` pendentes. Com pomodoro/timer, o favicon vira um anel de progresso desenhado em canvas na cor `--accent`.
+- `utils/audio.js` tem o `AudioContext` único do app, `playChime()` e `notify()` (notificação + som) — use-os em vez de criar `Notification`/`AudioContext` direto.
+
+### Backup
+
+- `lastBackupAt` (`sp_last_backup`) é atualizado por export manual, backup automático e "Fazer backup" da paleta/aviso.
+- Automático (`utils/backup.js`, só Chrome/Edge/Opera): File System Access API; o handle do arquivo fica no **IndexedDB** (`orbit/handles`), não em `sp_*`, por ser local ao navegador. `useAutoBackup` regrava 1×/dia com a aba visível; se a permissão expirou, só sinaliza `backupNeedsPermission` (pedir exige clique). O arquivo automático **nunca** inclui API keys.
+- `BackupReminder` (canto inferior esquerdo; topo no celular) aparece com backup > 14 dias ou nunca feito após 7 dias de uso (`sp_first_seen`); "X" adia 7 dias (`sp_backup_snooze`).
 
 ### URLs e dados
 
@@ -114,7 +133,8 @@ src/
 - `SiteGrid` — grid sortable com `DndContext > SortableContext`, usa `rectSortingStrategy`.
 - `SiteCard` — facade dos 9 layouts (`classic`, `space`, `orbital-glass`, `singularity`, `wave-particle`, `quantum-spin`, `cyber`, `archive`, `android`).
 - `resolveCardLayout()` em `utils/cardLayout.js` corrige id órfão no boot e no import (cai para `classic`).
-- `WidgetDock` / `NotesPanel` / `PomodoroPanel` / `AgendaPanel` — dock inferior.
+- `WidgetDock` / `NotesPanel` / `PomodoroPanel` / `AgendaPanel` / `TimersPanel` / `AmbientPanel` / `SummaryPanel` — dock inferior.
+- `CommandPalette` — Ctrl+K (lazy). `BackupReminder` / `AutoBackupSettings` — backup.
 - `NewsFeed` — TabNews (relevantes/recentes), auto-refresh 5min com aba visível.
 - `SettingsModal` — navegação lateral agrupada (`sectionGroups`): Comece por aqui · Aparência · Página inicial · Busca e IA · Organização · Sistema. No celular vira lista → detalhe. `openSettings(secao)` abre direto numa seção (ex.: `openSettings("widgets")`).
 - `AddSiteModal` — modal para adicionar/editar site.

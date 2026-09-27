@@ -20,6 +20,7 @@ const isModalOpen = (state) =>
   state.settingsOpen ||
   state.addSiteOpen ||
   state.chatOpen ||
+  state.paletteOpen ||
   state.deleteConfirmId != null
 
 export function useKeyboardShortcuts() {
@@ -31,6 +32,15 @@ export function useKeyboardShortcuts() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Ctrl/Cmd+K funciona em qualquer lugar, inclusive dentro de inputs.
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        const { paletteOpen, openPalette, closePalette } = useStore.getState()
+        if (paletteOpen) closePalette()
+        else openPalette()
+        return
+      }
+
       if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return
       if (isTypingContext(e.target)) return
 

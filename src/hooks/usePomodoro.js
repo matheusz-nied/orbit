@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import useStore from '../store/useStore'
+import { notify as notifyUser, requestNotificationPermission } from '../utils/audio'
 
 export const PHASES = {
   focus: { label: 'Foco', minutes: 25 },
@@ -29,14 +31,7 @@ export function usePomodoro() {
     const message = finishedPhase === 'focus'
       ? 'Ciclo de foco concluído — hora da pausa.'
       : 'Pausa encerrada — de volta ao foco.'
-
-    try {
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Orbit', { body: message })
-      }
-    } catch {
-      // Notificação é um extra: se o navegador recusar, o timer segue normal.
-    }
+    notifyUser(message)
   }, [])
 
   useEffect(() => {
@@ -52,7 +47,10 @@ export function usePomodoro() {
         setPhase(next)
         setEndsAt(null)
         setRemaining(PHASES[next].minutes * 60 * 1000)
-        if (finished === 'focus') setCompleted((c) => c + 1)
+        if (finished === 'focus') {
+          setCompleted((c) => c + 1)
+          useStore.getState().logFocus(PHASES.focus.minutes)
+        }
         notify(finished)
         return
       }
@@ -66,9 +64,7 @@ export function usePomodoro() {
   }, [running, endsAt, notify])
 
   const start = useCallback(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().catch(() => {})
-    }
+    requestNotificationPermission()
     setEndsAt(Date.now() + remaining)
   }, [remaining])
 
