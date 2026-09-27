@@ -3,7 +3,7 @@ import {
   X, Palette, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
   LayoutGrid, Sparkles, Gem,
-  CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye
+  CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
@@ -11,8 +11,10 @@ import { motionModes } from '../utils/motion'
 import { normalizeHttpUrl } from '../utils/url'
 import WorkspaceManager from './WorkspaceManager'
 import WeatherLocationPicker from './WeatherLocationPicker'
+import OnboardingGuide from './OnboardingGuide'
 
 const tabs = [
+  { id: 'guide', label: 'Comece por aqui', icon: Rocket },
   { id: 'appearance', label: 'Tema', icon: Palette },
   { id: 'widgets', label: 'Widgets', icon: LayoutDashboard },
   { id: 'search', label: 'Busca', icon: Search },
@@ -184,6 +186,16 @@ export default function SettingsModal() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
+          {/* Guide Tab */}
+          {activeTab === 'guide' && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted leading-relaxed">
+                Um resumo rápido de como usar o Orbit — as mesmas dicas da tela de boas-vindas.
+              </p>
+              <OnboardingGuide />
+            </div>
+          )}
+
           {/* Appearance Tab */}
           {activeTab === 'appearance' && (
             <div className="space-y-6">

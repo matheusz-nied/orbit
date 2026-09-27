@@ -1,4 +1,4 @@
-import { Filter, Plus, Star } from 'lucide-react'
+import { Plus, Star } from 'lucide-react'
 import useStore from '../store/useStore'
 import { FREQUENT_CATEGORY, hasUsageData } from '../utils/frequent'
 
@@ -27,16 +27,14 @@ export default function CategoryFilter() {
   return (
     <div className="orbit-category-filter w-full max-w-6xl mx-auto px-4 mb-6 animate-fadeIn">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 overflow-x-auto py-2 scrollbar-hide flex-1">
-          <Filter size={18} className="text-muted flex-shrink-0" />
-
+        <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide flex-1">
           {showFrequent && (
             <button
               onClick={() => setActiveCategory(FREQUENT_CATEGORY)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                 activeCategory === FREQUENT_CATEGORY
                   ? 'bg-accent text-[#1a1a1a]'
-                  : 'bg-card border border-border text-muted hover:text-text hover:border-accent'
+                  : 'text-muted hover:text-text hover:bg-card'
               }`}
             >
               <Star size={14} />
@@ -52,10 +50,10 @@ export default function CategoryFilter() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                className={`px-3.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                   isActive
                     ? 'bg-accent text-[#1a1a1a]'
-                    : 'bg-card border border-border text-muted hover:text-text hover:border-accent'
+                    : 'text-muted hover:text-text hover:bg-card'
                 }`}
               >
                 {label}
@@ -66,9 +64,10 @@ export default function CategoryFilter() {
 
         <button
           onClick={openAddSite}
-          className="flex items-center gap-2 px-4 py-2 bg-accent rounded-lg text-[#1a1a1a] text-sm font-medium hover:opacity-90 transition-opacity flex-shrink-0"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-border text-muted text-sm font-medium hover:text-text hover:border-accent transition-colors flex-shrink-0"
+          title="Adicionar Site"
         >
-          <Plus size={18} />
+          <Plus size={16} />
           <span className="hidden sm:inline">Adicionar Site</span>
         </button>
       </div>

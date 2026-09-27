@@ -141,6 +141,7 @@ const useStore = create((set, get) => ({
   editingSite: null,
   deleteConfirmId: null,
   welcomeSeen: storage.get("welcome_seen") || false,
+  searchHintDismissed: storage.get("search_hint_dismissed") || false,
 
   // Actions — Sites
   setSites: (sites) => {
@@ -526,6 +527,11 @@ const useStore = create((set, get) => ({
     set({ welcomeSeen: true })
   },
 
+  dismissSearchHint: () => {
+    storage.set("search_hint_dismissed", true)
+    set({ searchHintDismissed: true })
+  },
+
   // Toast
   toast: null,
   setToast: (toast) => set({ toast }),
@@ -585,6 +591,7 @@ const useStore = create((set, get) => ({
         deepseekApiKey: storage.get("deepseek_apikey") || "",
         openInNewTab: storage.get("open_in_new_tab") !== false,
         welcomeSeen: storage.get("welcome_seen") || false,
+        searchHintDismissed: storage.get("search_hint_dismissed") || false,
       });
       applyTheme(get().theme);
       applyMotion(get().motionMode);

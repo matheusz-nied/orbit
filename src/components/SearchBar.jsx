@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { Search, X } from 'lucide-react'
+import { Search, X, ChevronRight } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { openUrl } from '../utils/navigation'
 import { FREQUENT_CATEGORY, FREQUENT_LIMIT, rankByUsage } from '../utils/frequent'
@@ -18,6 +18,8 @@ export default function SearchBar() {
   const activeCategory = useStore((state) => state.activeCategory)
   const activeWorkspace = useStore((state) => state.activeWorkspace)
   const siteStats = useStore((state) => state.siteStats)
+  const searchHintDismissed = useStore((state) => state.searchHintDismissed)
+  const dismissSearchHint = useStore((state) => state.dismissSearchHint)
 
   const [localQuery, setLocalQuery] = useState('')
   const inputRef = useRef(null)
@@ -133,36 +135,37 @@ export default function SearchBar() {
   }
 
   return (
-    <div className="orbit-search-section w-full max-w-2xl mx-auto px-4 mb-8 animate-fadeIn">
-      <div className="flex items-center justify-center gap-2 mb-3 mr-7">
-        <div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer hover:scale-105 transition-transform"
-          style={{ backgroundColor: provider.color + '20', color: provider.color }}
+    <div className="orbit-search-section w-full max-w-2xl mx-auto px-4 mb-10 animate-fadeIn">
+      <div className="orbit-search relative">
+        <button
+          type="button"
+          className="orbit-search-provider absolute z-10 left-3 top-1/2 -translate-y-1/2 flex items-center gap-1 cursor-pointer hover:scale-110 transition-transform"
           onClick={cycleSearchProvider}
-          title="Clique ou pressione Tab para trocar"
+          title={`Buscando com ${provider.name} — clique ou pressione Tab para trocar de provedor`}
+          aria-label={`Provedor de busca: ${provider.name}. Clique para trocar`}
         >
-          <span className="w-5 h-5 flex items-center justify-center rounded text-xs font-bold"
-            style={{ backgroundColor: provider.color, color: '#fff' }}>
+          <span
+            className="w-6 h-6 flex items-center justify-center rounded-md text-[11px] font-bold"
+            style={{ backgroundColor: provider.color, color: '#fff' }}
+          >
             {provider.icon}
           </span>
-          <span>{provider.name}</span>
-        </div>
-      </div>
+          <ChevronRight size={12} className="text-muted" />
+        </button>
 
-      <div className="orbit-search relative">
         <input
           ref={inputRef}
           type="text"
           value={localQuery}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          placeholder="Digite para filtrar sites ou pesquise na web com Enter"
-          className="w-full pl-4 pr-24 py-[0.625rem] bg-card border border-border rounded-xl text-text placeholder-muted text-lg focus:border-accent transition-colors"
+          placeholder={provider.type === 'ai' ? 'Pergunte à IA ou filtre sites' : `Pesquisar com ${provider.name} ou filtrar sites`}
+          className="w-full pl-14 pr-24 py-[0.625rem] bg-card border border-border rounded-xl text-text placeholder-muted text-lg focus:border-accent transition-colors"
         />
 
         {localQuery && (
           <button
-            className="absolute right-14 top-1/2 -translate-y-1/2 p-1.5 text-muted hover:text-text transition-colors"
+            className="absolute z-10 right-14 top-1/2 -translate-y-1/2 p-1.5 text-muted hover:text-text transition-colors"
             onClick={clearQuery}
             aria-label="Limpar pesquisa"
           >
@@ -171,7 +174,7 @@ export default function SearchBar() {
         )}
 
         <button
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-muted hover:text-accent transition-colors"
+          className="absolute z-10 right-4 top-1/2 -translate-y-1/2 p-2 text-muted hover:text-accent transition-colors"
           onClick={handleSubmit}
           aria-label={provider.type === 'ai' ? 'Abrir chat IA' : 'Pesquisar na web'}
         >
@@ -179,12 +182,25 @@ export default function SearchBar() {
         </button>
       </div>
 
-      <div className="mt-2 flex flex-col gap-1 text-center">
-        <p className="text-center text-muted text-sm">
-          <kbd className="px-1.5 py-0.5 bg-border rounded text-xs">Tab</kbd> ou clique no provedor para trocar ·
-          <kbd className="px-1.5 py-0.5 bg-border rounded text-xs ml-1">Enter</kbd> {provider.type === 'ai' ? 'para abrir o chat' : `para pesquisar com ${provider.name}`}
+      {/* Sempre visível para quem ainda não conhece os atalhos, mas discreta
+          até o usuário começar a digitar. Pode ser dispensada de vez — fica
+          salvo no navegador para não voltar a aparecer. */}
+      {!searchHintDismissed && (
+        <p className={`mt-2 flex items-center justify-center gap-1.5 text-center text-muted text-xs transition-opacity ${localQuery ? 'opacity-100' : 'opacity-60'}`}>
+          <span>
+            <kbd className="px-1.5 py-0.5 bg-border rounded text-[10px]">Tab</kbd> ou clique no provedor para trocar ·
+            <kbd className="px-1.5 py-0.5 bg-border rounded text-[10px] ml-1">Enter</kbd> {provider.type === 'ai' ? 'para abrir o chat' : `para pesquisar com ${provider.name}`}
+          </span>
+          <button
+            onClick={dismissSearchHint}
+            className="p-0.5 text-muted hover:text-text transition-colors shrink-0"
+            aria-label="Não mostrar mais esta dica"
+            title="Não mostrar mais esta dica"
+          >
+            <X size={12} />
+          </button>
         </p>
-      </div>
+      )}
     </div>
   )
 }

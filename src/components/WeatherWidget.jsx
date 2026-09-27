@@ -121,23 +121,14 @@ export default function WeatherWidget() {
   const Icon = icons[icon] || Cloud
 
   return (
-    <div className="flex items-center justify-center gap-3 text-muted animate-fadeIn mb-6">
-      <Icon size={22} className="text-accent shrink-0" />
-
-      <span className="text-2xl font-light text-text tabular-nums">
-        {weather.temperature}°
-      </span>
-
-      <div className="text-left leading-tight">
-        <p className="text-xs text-text">{label}</p>
-        <p className="text-[11px] tabular-nums">
-          {weather.max}° / {weather.min}° · sensação {weather.feelsLike}°
-        </p>
-      </div>
-
-      <span className="text-[11px] max-w-[10rem] truncate hidden sm:inline" title={location.name}>
-        {location.name}
-      </span>
+    <div
+      className="flex items-center justify-center gap-2 text-sm text-muted animate-fadeIn mb-6"
+      title={`${weather.max}° / ${weather.min}° · sensação ${weather.feelsLike}°`}
+    >
+      <Icon size={18} className="text-accent shrink-0" />
+      <span className="text-text tabular-nums">{weather.temperature}°</span>
+      <span>{label}</span>
+      <span className="hidden sm:inline max-w-[10rem] truncate opacity-70">· {location.name}</span>
     </div>
   )
 }
