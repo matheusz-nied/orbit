@@ -45,7 +45,7 @@ src/
 - Exporta também o array `searchProviders` (Google, DuckDuckGo, YouTube, Ecosia, AI Chat).
 
 ### Temas
-- 9 temas: `minimal-light`, `premium-dark`, `space`, `cyberpunk`, `macos`, `crt`, `nebula`, `nous-archive`, `detroit`.
+- 6 temas: `minimal-light`, `premium-dark`, `space`, `cyberpunk`, `nous-archive`, `detroit`.
 - Temas com variáveis próprias (`--archive-*`, `--dbh-*`) só as definem no próprio tema — o CSS que as usa sempre tem fallback.
 - `resolveTheme()` em `themes.js` corrige id órfão no boot e no import (cai para `premium-dark`).
 - Temas são **CSS custom properties** aplicadas via `document.documentElement.style.setProperty()` (não classes).
@@ -131,7 +131,7 @@ src/
 - `WorkspaceSwitcher` / `WorkspaceManager` — troca e CRUD de espaços.
 - `CategoryFilter` — abas de filtro + Frequentes + botão "Adicionar Site".
 - `SiteGrid` — grid sortable com `DndContext > SortableContext`, usa `rectSortingStrategy`.
-- `SiteCard` — facade dos 9 layouts (`classic`, `space`, `orbital-glass`, `singularity`, `wave-particle`, `quantum-spin`, `cyber`, `archive`, `android`).
+- `SiteCard` — facade dos 7 layouts (`classic`, `space`, `wave-particle`, `quantum-spin`, `cyber`, `archive`, `android`).
 - `resolveCardLayout()` em `utils/cardLayout.js` corrige id órfão no boot e no import (cai para `classic`).
 - `WidgetDock` / `NotesPanel` / `PomodoroPanel` / `AgendaPanel` / `TimersPanel` / `AmbientPanel` / `SummaryPanel` — dock inferior.
 - `CommandPalette` — Ctrl+K (lazy). `BackupReminder` / `AutoBackupSettings` — backup.

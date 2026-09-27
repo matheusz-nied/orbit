@@ -2,8 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import {
   X, Palette, ChevronLeft, ChevronRight, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
-  LayoutGrid, Sparkles, Gem,
-  CircleDot, Waves, Atom, ListPlus, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket
+  LayoutGrid, Sparkles, Waves, Atom, ListPlus, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
@@ -65,8 +64,6 @@ const sections = sectionGroups.flatMap(group => group.items)
 const cardLayouts = [
   { id: 'classic', label: 'Clássico', Icon: LayoutGrid, desc: 'Ícones em grade' },
   { id: 'space', label: 'Space', Icon: Sparkles, desc: 'Janela para o cosmos' },
-  { id: 'orbital-glass', label: 'Orbital Glass', Icon: Gem, desc: 'Planetas de vidro' },
-  { id: 'singularity', label: 'Singularidade', Icon: CircleDot, desc: 'Buraco negro' },
   { id: 'wave-particle', label: 'Dualidade', Icon: Waves, desc: 'Onda-partícula' },
   { id: 'quantum-spin', label: 'Spin', Icon: Atom, desc: 'Spin quântico' },
   { id: 'cyber', label: 'Cyber', Icon: Cpu, desc: 'Slot netrunner' },

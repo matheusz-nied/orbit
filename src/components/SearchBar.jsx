@@ -13,7 +13,6 @@ export default function SearchBar() {
   const openChat = useStore((state) => state.openChat)
   const setInitialChatMessage = useStore((state) => state.setInitialChatMessage)
   const openInNewTab = useStore((state) => state.openInNewTab)
-  const setTheme = useStore((state) => state.setTheme)
   const sites = useStore((state) => state.sites)
   const activeCategory = useStore((state) => state.activeCategory)
   const activeSubcategory = useStore((state) => state.activeSubcategory)
@@ -95,7 +94,6 @@ export default function SearchBar() {
       }
 
       if (q === 'sudo rm -rf /') {
-        setTheme('crt')
         document.body.classList.add('animate-shake')
         setTimeout(() => document.body.classList.remove('animate-shake'), 1000)
         setLocalQuery('')

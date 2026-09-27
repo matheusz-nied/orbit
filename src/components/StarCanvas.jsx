@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import useStore from '../store/useStore'
 import { resolveMotion } from '../utils/motion'
 
-const MAX_STARS = 220
 const AREA_PER_STAR = 8000
 const TARGET_FPS = 30
 const FRAME_MS = 1000 / TARGET_FPS
@@ -15,41 +14,22 @@ const BASE_FPS = 60
 // `rgba(...)` alocadas por frame.
 const OPACITY_STEPS = 10
 
-const PALETTES = {
-  // Cores de estrelas reais (tipos O/B → K): quase tudo branco, com leves
-  // desvios azulados e âmbar. Deriva lenta — o espaço visto da órbita é
-  // praticamente parado; o movimento fica por conta da cintilação.
-  space: {
-    colors: [
-      [255, 255, 255],
-      [214, 228, 255],
-      [255, 244, 228],
-      [255, 214, 170],
-    ],
-    maxStars: 160,
-    sizeMin: 0.3,
-    sizeRange: 1.05,
-    speedScale: 0.22,
-    twinkleScale: 0.8,
-    minOpacity: 0.15,
-    staticField: true,
-  },
-  nebula: {
-    colors: [
-      [233, 213, 255],
-      [255, 255, 255],
-      [165, 228, 255],
-      [255, 178, 245],
-      [255, 226, 180],
-    ],
-    maxStars: MAX_STARS,
-    sizeMin: 0.35,
-    sizeRange: 1.65,
-    speedScale: 0.55,
-    twinkleScale: 1.7,
-    minOpacity: 0.1,
-    staticField: false,
-  },
+// Cores de estrelas reais (tipos O/B → K): quase tudo branco, com leves
+// desvios azulados e âmbar. Deriva lenta — o espaço visto da órbita é
+// praticamente parado; o movimento fica por conta da cintilação.
+const PALETTE = {
+  colors: [
+    [255, 255, 255],
+    [214, 228, 255],
+    [255, 244, 228],
+    [255, 214, 170],
+  ],
+  maxStars: 160,
+  sizeMin: 0.3,
+  sizeRange: 1.05,
+  speedScale: 0.22,
+  twinkleScale: 0.8,
+  minOpacity: 0.15,
 }
 
 // Campo de fundo do Space: milhares de estrelas minúsculas + a faixa da Via
@@ -188,8 +168,7 @@ export default function StarCanvas() {
   const starsRef = useRef([])
   const bucketsRef = useRef([])
 
-  const isNebula = theme === 'nebula'
-  const active = theme === 'space' || isNebula
+  const active = theme === 'space'
   const reduced = resolveMotion(motionMode) === 'reduced'
 
   useEffect(() => {
@@ -203,7 +182,7 @@ export default function StarCanvas() {
     const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true })
     if (!ctx) return
 
-    const pal = PALETTES[isNebula ? 'nebula' : 'space']
+    const pal = PALETTE
     const fillStyles = fillStylesFor(pal.colors)
 
     // Estrelas não precisam de resolução de retina: renderizar em 1x custa
@@ -286,7 +265,7 @@ export default function StarCanvas() {
       draw()
 
       const staticCanvas = staticCanvasRef.current
-      const staticCtx = pal.staticField && staticCanvas?.getContext('2d')
+      const staticCtx = staticCanvas?.getContext('2d')
       if (staticCtx) {
         staticCanvas.width = width
         staticCanvas.height = height
@@ -342,30 +321,9 @@ export default function StarCanvas() {
       window.removeEventListener('resize', onResize)
       cancelAnimationFrame(frameRef.current)
     }
-  }, [active, reduced, isNebula])
+  }, [active, reduced])
 
   if (!active) return null
-
-  if (isNebula) {
-    return (
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-        <div className="nebula-sky absolute inset-0" />
-        <div className="nebula-galaxy absolute gpu-layer" data-decorative />
-        <div className="nebula-cloud nebula-cloud-a absolute gpu-layer" data-decorative />
-        <div className="nebula-cloud nebula-cloud-b absolute gpu-layer" data-decorative />
-        <div className="nebula-dust absolute inset-0" />
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0"
-          style={{ opacity: 0.95 }}
-        />
-        {/* Névoa à frente das estrelas cria profundidade de gás interestelar. */}
-        <div className="nebula-cloud nebula-cloud-c absolute gpu-layer" data-decorative />
-        <div className="nebula-comet nebula-comet-one absolute gpu-layer" data-decorative />
-        <div className="nebula-comet nebula-comet-two absolute gpu-layer" data-decorative />
-      </div>
-    )
-  }
 
   return (
     <div className="space-backdrop fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">

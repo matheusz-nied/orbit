@@ -80,7 +80,7 @@ Exibição em tempo real, sempre visível. Simples e elegante.
 - Atualização automática a cada 5 minutos
 - Sem API key necessária
 
-### 🎨 7 Temas de Cores
+### 🎨 6 Temas de Cores
 
 | Tema | Descrição |
 |------|-----------|
@@ -88,21 +88,20 @@ Exibição em tempo real, sempre visível. Simples e elegante.
 | ⬛ Premium Dark | Preto puro, minimalismo absoluto |
 | 🌌 Space | Estrelas animadas no fundo |
 | 💜 Cyberpunk | Neon vibrante, futurista |
-| 🍎 macOS | Inspirado no macOS — translúcido e sofisticado |
-| 📺 Retro CRT | Estética vintage de monitor CRT |
-| 🟣 Nebula | Nebulosa cósmica, pixéis de sonho |
+| 🗃️ Arquivo Noûs | Visual de arquivo analógico |
+| 🔵 Detroit | Interface androide futurista |
 
 ### 📐 7 Layouts de Cards
 
 | Layout | Descrição |
 |--------|-----------|
 | 🔲 Clássico | Ícones em grade tradicional |
-| 🪐 Orbital | Planetas flutuantes |
-| 💎 Orbital Glass | Planetas de vidro translúcido |
-| 🕳️ Singularidade | Buraco negro cósmico |
+| 🌌 Space | Janela para o cosmos |
 | 🌊 Dualidade | Onda-partícula quântica |
 | ⚛️ Spin | Spin quântico animado |
 | 🖥️ Cyber | Slot netrunner |
+| 🗃️ Arquivo | Placas editoriais |
+| 🤖 Android | Interface RK800 |
 
 ### 💾 Export/Import
 Exporte sites, espaços, widgets, tema e preferências em JSON. Importe em outro dispositivo e tenha tudo exatamente igual. Chaves de API ficam de fora por padrão (opção na exportação).

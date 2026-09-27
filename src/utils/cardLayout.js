@@ -4,8 +4,6 @@ export const FALLBACK_CARD_LAYOUT = 'classic'
 export const cardLayoutIds = [
   'classic',
   'space',
-  'orbital-glass',
-  'singularity',
   'wave-particle',
   'quantum-spin',
   'cyber',
