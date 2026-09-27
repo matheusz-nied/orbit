@@ -140,6 +140,7 @@ const useStore = create((set, get) => ({
 
   // UI State
   settingsOpen: false,
+  settingsSection: null,
   addSiteOpen: false,
   editingSite: null,
   deleteConfirmId: null,
@@ -567,8 +568,10 @@ const useStore = create((set, get) => ({
   },
 
   // Actions — UI
-  openSettings: () => set({ settingsOpen: true }),
-  closeSettings: () => set({ settingsOpen: false }),
+  // Também é usado direto como onClick — o evento não pode virar seção.
+  openSettings: (section) =>
+    set({ settingsOpen: true, settingsSection: typeof section === "string" ? section : null }),
+  closeSettings: () => set({ settingsOpen: false, settingsSection: null }),
 
   openAddSite: () => set({ addSiteOpen: true }),
   closeAddSite: () => set({ addSiteOpen: false }),

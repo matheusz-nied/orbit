@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
-  X, Palette, Search, Newspaper, FolderOpen, Database,
+  X, Palette, ChevronLeft, ChevronRight, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
   LayoutGrid, Sparkles, Gem,
-  CircleDot, Waves, Atom, ListPlus, ExternalLink, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket
+  CircleDot, Waves, Atom, ListPlus, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
@@ -14,17 +14,72 @@ import WeatherLocationPicker from './WeatherLocationPicker'
 import OnboardingGuide from './OnboardingGuide'
 import CategorySubcategories from './CategorySubcategories'
 
-const tabs = [
-  { id: 'guide', label: 'Comece por aqui', icon: Rocket },
-  { id: 'appearance', label: 'Tema', icon: Palette },
-  { id: 'widgets', label: 'Widgets', icon: LayoutDashboard },
-  { id: 'search', label: 'Busca', icon: Search },
-  { id: 'ai', label: 'Chat IA', icon: MessageSquare },
-  { id: 'news', label: 'Notícias', icon: Newspaper },
-  { id: 'workspaces', label: 'Espaços', icon: Layers },
-  { id: 'categories', label: 'Categorias', icon: FolderOpen },
-  { id: 'data', label: 'Dados', icon: Database },
+// Seções agrupadas por assunto — com 10 itens, uma fileira de abas exigia
+// rolagem horizontal e o usuário não sabia onde procurar.
+const sectionGroups = [
+  {
+    label: null,
+    items: [
+      { id: 'guide', label: 'Comece por aqui', icon: Rocket, desc: 'Dicas rápidas para aproveitar o Orbit.' },
+    ],
+  },
+  {
+    label: 'Aparência',
+    items: [
+      { id: 'appearance', label: 'Tema e visual', icon: Palette, desc: 'Tema, estilo dos cards e animações.' },
+    ],
+  },
+  {
+    label: 'Página inicial',
+    items: [
+      { id: 'widgets', label: 'Widgets', icon: LayoutDashboard, desc: 'Clima, agenda, notas, pomodoro e frequentes.' },
+      { id: 'news', label: 'Notícias', icon: Newspaper, desc: 'Como o feed do TabNews é ordenado.' },
+    ],
+  },
+  {
+    label: 'Busca e IA',
+    items: [
+      { id: 'search', label: 'Busca', icon: Search, desc: 'Provedor padrão e onde abrir links.' },
+      { id: 'ai', label: 'Chat IA', icon: MessageSquare, desc: 'Chave da DeepSeek para o chat.' },
+    ],
+  },
+  {
+    label: 'Organização',
+    items: [
+      { id: 'workspaces', label: 'Espaços', icon: Layers, desc: 'Conjuntos separados de sites, como Pessoal e Trabalho.' },
+      { id: 'categories', label: 'Categorias', icon: FolderOpen, desc: 'Categorias e subcategorias dos seus sites.' },
+      { id: 'bulk', label: 'Adicionar em lote', icon: ListPlus, desc: 'Cole várias URLs de uma vez.' },
+    ],
+  },
+  {
+    label: 'Sistema',
+    items: [
+      { id: 'data', label: 'Backup', icon: Database, desc: 'Exporte ou restaure suas configurações.' },
+    ],
+  },
 ]
+
+const sections = sectionGroups.flatMap(group => group.items)
+
+const cardLayouts = [
+  { id: 'classic', label: 'Clássico', Icon: LayoutGrid, desc: 'Ícones em grade' },
+  { id: 'space', label: 'Space', Icon: Sparkles, desc: 'Janela para o cosmos' },
+  { id: 'orbital-glass', label: 'Orbital Glass', Icon: Gem, desc: 'Planetas de vidro' },
+  { id: 'singularity', label: 'Singularidade', Icon: CircleDot, desc: 'Buraco negro' },
+  { id: 'wave-particle', label: 'Dualidade', Icon: Waves, desc: 'Onda-partícula' },
+  { id: 'quantum-spin', label: 'Spin', Icon: Atom, desc: 'Spin quântico' },
+  { id: 'cyber', label: 'Cyber', Icon: Cpu, desc: 'Slot netrunner' },
+  { id: 'archive', label: 'Arquivo', Icon: BookOpen, desc: 'Placas editoriais' },
+  { id: 'android', label: 'Android', Icon: ScanEye, desc: 'Scan RK800' },
+]
+
+// Estado selecionado dos cartões de opção — o fundo translúcido vem de
+// `.settings-option[data-selected="true"]` em index.css (Tailwind não gera
+// `bg-accent/10` porque `accent` é uma var CSS sem canal alfa).
+const optionClass = (selected, extra = '') =>
+  `settings-option rounded-xl border transition-colors ${
+    selected ? 'border-accent' : 'border-border hover:border-accent'
+  } ${extra}`
 
 const widgetOptions = [
   { id: 'weather', label: 'Clima', desc: 'Temperatura e condição abaixo do relógio' },
@@ -36,6 +91,7 @@ const widgetOptions = [
 
 export default function SettingsModal() {
   const settingsOpen = useStore((state) => state.settingsOpen)
+  const settingsSection = useStore((state) => state.settingsSection)
   const closeSettings = useStore((state) => state.closeSettings)
   const theme = useStore((state) => state.theme)
   const setTheme = useStore((state) => state.setTheme)
@@ -62,7 +118,10 @@ export default function SettingsModal() {
   const importData = useStore((state) => state.importData)
   const addSites = useStore((state) => state.addSites)
 
-  const [activeTab, setActiveTab] = useState('appearance')
+  const [activeTab, setActiveTab] = useState('guide')
+  // No celular a navegação vira lista → detalhe; no desktop as duas colunas
+  // ficam sempre visíveis e isto é ignorado.
+  const [mobileView, setMobileView] = useState('menu')
   const [newCategory, setNewCategory] = useState('')
   const [importStatus, setImportStatus] = useState(null)
   const [includeSecrets, setIncludeSecrets] = useState(false)
@@ -149,43 +208,94 @@ export default function SettingsModal() {
     setNewsTopics([topicId])
   }
 
+  // Abrir numa seção específica (ex.: "Definir cidade" → Widgets) pula o menu.
+  useEffect(() => {
+    if (!settingsOpen) return
+    if (settingsSection && sections.some(sec => sec.id === settingsSection)) {
+      setActiveTab(settingsSection)
+      setMobileView('content')
+    } else {
+      setMobileView('menu')
+    }
+  }, [settingsOpen, settingsSection])
+
+  const selectSection = (id) => {
+    setActiveTab(id)
+    setMobileView('content')
+  }
+
   if (!settingsOpen) return null
+
+  const current = sections.find(sec => sec.id === activeTab) || sections[0]
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={closeSettings}>
       <div
-        className="bg-card border border-border rounded-2xl w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col animate-slideIn"
+        className="bg-card border border-border rounded-2xl w-full max-w-4xl mx-4 h-[min(90vh,820px)] flex flex-col overflow-hidden animate-slideIn"
         onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Configurações"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
-          <h2 className="text-xl font-semibold text-text">Configurações</h2>
-          <button onClick={closeSettings} className="text-muted hover:text-text transition-colors">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+          <h2 className="text-lg font-semibold text-text">Configurações</h2>
+          <button onClick={closeSettings} className="text-muted hover:text-text transition-colors" aria-label="Fechar">
             <X size={20} />
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-border overflow-x-auto">
-          {tabs.map(tab => {
-            const Icon = tab.icon
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.id
-                    ? 'text-accent border-b-2 border-accent'
-                    : 'text-muted hover:text-text'
-                  }`}
-              >
-                <Icon size={16} />
-                {tab.label}
-              </button>
-            )
-          })}
-        </div>
+        <div className="flex flex-1 min-h-0">
+          {/* Navegação lateral */}
+          <nav
+            className={`${mobileView === 'menu' ? 'flex' : 'hidden'} sm:flex flex-col w-full sm:w-56 shrink-0 sm:border-r border-border overflow-y-auto p-3 gap-4`}
+            aria-label="Seções das configurações"
+          >
+            {sectionGroups.map((group, index) => (
+              <div key={group.label || index}>
+                {group.label && (
+                  <p className="px-3 mb-1 text-[11px] font-medium uppercase tracking-wider text-muted opacity-70">
+                    {group.label}
+                  </p>
+                )}
+                <div className="space-y-0.5">
+                  {group.items.map(({ id, label, icon: Icon }) => {
+                    const isActive = activeTab === id
+                    return (
+                      <button
+                        key={id}
+                        onClick={() => selectSection(id)}
+                        aria-current={isActive ? 'page' : undefined}
+                        data-selected={isActive}
+                        className={`settings-nav-item w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-left transition-colors ${
+                          isActive ? 'text-accent font-medium' : 'text-muted hover:text-text hover:bg-bg'
+                        }`}
+                      >
+                        <Icon size={16} className="shrink-0" />
+                        <span className="flex-1 truncate">{label}</span>
+                        <ChevronRight size={14} className="sm:hidden opacity-50" />
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
 
         {/* Content */}
+        <div className={`${mobileView === 'content' ? 'flex' : 'hidden'} sm:flex flex-col flex-1 min-w-0`}>
+          <div className="px-6 pt-5 pb-4 border-b border-border shrink-0">
+            <button
+              onClick={() => setMobileView('menu')}
+              className="sm:hidden flex items-center gap-1 -ml-1 mb-2 text-xs text-muted hover:text-text transition-colors"
+            >
+              <ChevronLeft size={14} />
+              Configurações
+            </button>
+            <h3 className="text-base font-semibold text-text">{current.label}</h3>
+            <p className="text-xs text-muted mt-0.5">{current.desc}</p>
+          </div>
+
         <div className="flex-1 overflow-y-auto p-6">
           {/* Guide Tab */}
           {activeTab === 'guide' && (
@@ -200,34 +310,18 @@ export default function SettingsModal() {
           {/* Appearance Tab */}
           {activeTab === 'appearance' && (
             <div className="space-y-6">
-              <a
-                href="https://chromewebstore.google.com/detail/new-tab-redirect/icpgjfneehieebagbmdbhnlpiopdcmna"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 p-3 bg-accent/10 rounded-xl border border-accent/30 hover:border-accent transition-colors"
-              >
-                <ExternalLink size={18} className="text-accent shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-accent">Abra o Orbit em cada nova aba</p>
-                  <p className="text-xs text-muted mt-0.5">
-                    Instale a extensão <span className="text-text font-medium">New Tab Redirect</span> (de terceiros, não é do Orbit) e configure a URL do Orbit como nova aba.
-                  </p>
-                </div>
-              </a>
-
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Tema</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <h4 className="text-sm font-medium text-muted mb-3">Tema</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {themeList.map(t => (
                     <button
                       key={t.id}
                       onClick={() => setTheme(t.id)}
-                      className={`p-3 rounded-xl border transition-all ${theme === t.id
-                          ? 'border-accent bg-accent/10'
-                          : 'border-border hover:border-accent/50'
-                        }`}
+                      data-selected={theme === t.id}
+                      className={optionClass(theme === t.id, 'flex items-center justify-between gap-2 px-3 py-2.5 text-left')}
                     >
-                      <span className="text-sm font-medium text-text">{t.name}</span>
+                      <span className="text-sm font-medium text-text truncate">{t.name}</span>
+                      {theme === t.id && <Check size={14} className="text-accent shrink-0" />}
                     </button>
                   ))}
                 </div>
@@ -235,30 +329,20 @@ export default function SettingsModal() {
 
               {/* Card Layout Picker */}
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Layout dos Cards</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {[
-                    { id: 'classic', label: 'Clássico', Icon: LayoutGrid, desc: 'Ícones em grade' },
-                    { id: 'space', label: 'Space', Icon: Sparkles, desc: 'Janela para o cosmos' },
-                    { id: 'orbital-glass', label: 'Orbital Glass', Icon: Gem, desc: 'Planetas de vidro' },
-                    { id: 'singularity', label: 'Singularidade', Icon: CircleDot, desc: 'Buraco negro' },
-                    { id: 'wave-particle', label: 'Dualidade', Icon: Waves, desc: 'Onda-partícula' },
-                    { id: 'quantum-spin', label: 'Spin', Icon: Atom, desc: 'Spin quântico' },
-                    { id: 'cyber', label: 'Cyber', Icon: Cpu, desc: 'Slot netrunner' },
-                    { id: 'archive', label: 'Arquivo', Icon: BookOpen, desc: 'Placas editoriais' },
-                    { id: 'android', label: 'Android', Icon: ScanEye, desc: 'Scan RK800' },
-                  ].map(({ id, label, Icon, desc }) => (
+                <h4 className="text-sm font-medium text-muted mb-3">Estilo dos cards</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {cardLayouts.map(({ id, label, Icon, desc }) => (
                     <button
                       key={id}
                       onClick={() => setCardLayout(id)}
-                      className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-2 ${cardLayout === id
-                          ? 'border-accent bg-accent/10'
-                          : 'border-border hover:border-accent/50'
-                        }`}
+                      data-selected={cardLayout === id}
+                      className={optionClass(cardLayout === id, 'flex items-center gap-2.5 px-3 py-2.5 text-left')}
                     >
-                      <Icon size={22} className={cardLayout === id ? 'text-accent' : 'text-muted'} />
-                      <span className="text-sm font-medium text-text">{label}</span>
-                      <span className="text-[10px] text-muted">{desc}</span>
+                      <Icon size={18} className={`shrink-0 ${cardLayout === id ? 'text-accent' : 'text-muted'}`} />
+                      <span className="min-w-0">
+                        <span className="block text-sm font-medium text-text truncate">{label}</span>
+                        <span className="block text-[11px] text-muted truncate">{desc}</span>
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -266,23 +350,21 @@ export default function SettingsModal() {
 
               {/* Desempenho / animações */}
               <div>
-                <h3 className="text-sm font-medium text-muted mb-1 flex items-center gap-2">
+                <h4 className="text-sm font-medium text-muted mb-1 flex items-center gap-2">
                   <Gauge size={16} />
                   Animações
-                </h3>
+                </h4>
                 <p className="text-xs text-muted mb-3">
                   O modo <span className="text-text font-medium">Leve</span> desliga brilhos,
                   órbitas e desfoques decorativos. Use se a página estiver pesando no seu PC.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {motionModes.map(({ id, label, desc }) => (
                     <button
                       key={id}
                       onClick={() => setMotionMode(id)}
-                      className={`p-3 rounded-xl border transition-colors text-left ${motionMode === id
-                          ? 'border-accent bg-accent/10'
-                          : 'border-border hover:border-accent/50'
-                        }`}
+                      data-selected={motionMode === id}
+                      className={optionClass(motionMode === id, 'px-3 py-2.5 text-left')}
                     >
                       <span className="block text-sm font-medium text-text">{label}</span>
                       <span className="block text-[11px] text-muted mt-0.5">{desc}</span>
@@ -297,15 +379,16 @@ export default function SettingsModal() {
           {activeTab === 'widgets' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">O que mostrar</h3>
+                <h4 className="text-sm font-medium text-muted mb-3">O que mostrar</h4>
                 <div className="space-y-2">
                   {widgetOptions.map(({ id, label, desc }) => (
                     <button
                       key={id}
                       onClick={() => setWidgetVisible(id, !widgets[id])}
-                      className={`w-full flex items-center justify-between gap-3 p-3 rounded-xl border transition-colors text-left ${
-                        widgets[id] ? 'border-accent bg-accent/10' : 'border-border hover:border-accent/50'
-                      }`}
+                      role="switch"
+                      aria-checked={Boolean(widgets[id])}
+                      data-selected={Boolean(widgets[id])}
+                      className={optionClass(widgets[id], 'w-full flex items-center justify-between gap-3 p-3 text-left')}
                     >
                       <div className="min-w-0">
                         <span className="block text-sm font-medium text-text">{label}</span>
@@ -326,7 +409,7 @@ export default function SettingsModal() {
               <WeatherLocationPicker />
 
               <div>
-                <h3 className="text-sm font-medium text-muted mb-1">Histórico de uso</h3>
+                <h4 className="text-sm font-medium text-muted mb-1">Histórico de uso</h4>
                 <p className="text-xs text-muted mb-3">
                   A aba "Frequentes" conta quantas vezes você abre cada site. Esses números ficam
                   só neste navegador e nunca saem dele.
@@ -350,7 +433,7 @@ export default function SettingsModal() {
           {activeTab === 'search' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Provedor Padrão</h3>
+                <h4 className="text-sm font-medium text-muted mb-3">Provedor Padrão</h4>
                 <div className="grid grid-cols-2 gap-3">
                   {searchProviders.filter(p => p.type === 'search').map((provider, index) => {
                     const actualIndex = searchProviders.findIndex(p => p.name === provider.name)
@@ -358,10 +441,8 @@ export default function SettingsModal() {
                       <button
                         key={provider.name}
                         onClick={() => setSearchProvider(actualIndex)}
-                        className={`p-3 rounded-xl border transition-all flex items-center gap-3 ${searchProvider === actualIndex
-                            ? 'border-accent bg-accent/10'
-                            : 'border-border hover:border-accent/50'
-                          }`}
+                        data-selected={searchProvider === actualIndex}
+                        className={optionClass(searchProvider === actualIndex, 'p-3 flex items-center gap-3')}
                       >
                         <span
                           className="w-6 h-6 flex items-center justify-center rounded text-xs font-bold"
@@ -377,14 +458,12 @@ export default function SettingsModal() {
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Abrir links e pesquisas</h3>
+                <h4 className="text-sm font-medium text-muted mb-3">Abrir links e pesquisas</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     onClick={() => setOpenInNewTab(true)}
-                    className={`p-3 rounded-xl border transition-all text-left ${openInNewTab
-                        ? 'border-accent bg-accent/10'
-                        : 'border-border hover:border-accent/50'
-                      }`}
+                    data-selected={openInNewTab}
+                    className={optionClass(openInNewTab, 'p-3 text-left')}
                   >
                     <span className="text-sm font-medium text-text">Nova aba</span>
                     <p className="text-xs text-muted mt-1">Pesquisa e clique em site abrem em outra aba.</p>
@@ -392,10 +471,8 @@ export default function SettingsModal() {
 
                   <button
                     onClick={() => setOpenInNewTab(false)}
-                    className={`p-3 rounded-xl border transition-all text-left ${!openInNewTab
-                        ? 'border-accent bg-accent/10'
-                        : 'border-border hover:border-accent/50'
-                      }`}
+                    data-selected={!openInNewTab}
+                    className={optionClass(!openInNewTab, 'p-3 text-left')}
                   >
                     <span className="text-sm font-medium text-text">Mesma aba atual</span>
                     <p className="text-xs text-muted mt-1">Pesquisa e clique em site substituem a página atual.</p>
@@ -409,7 +486,7 @@ export default function SettingsModal() {
           {activeTab === 'ai' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">DeepSeek API Key</h3>
+                <h4 className="text-sm font-medium text-muted mb-3">DeepSeek API Key</h4>
                 <input
                   type="password"
                   value={deepseekApiKey}
@@ -447,14 +524,14 @@ export default function SettingsModal() {
           {activeTab === 'news' && (
             <div className="space-y-6">
               <div className="p-4 bg-bg rounded-lg border border-border">
-                <h3 className="text-sm font-medium text-text mb-2">Provedor Atual</h3>
+                <h4 className="text-sm font-medium text-text mb-2">Provedor Atual</h4>
                 <p className="text-sm text-muted">
                   O feed de notícias usa o <span className="text-accent font-medium">TabNews</span> como fonte única.
                 </p>
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Ordenação do Feed</h3>
+                <h4 className="text-sm font-medium text-muted mb-3">Ordenação do Feed</h4>
                 <p className="text-xs text-muted mb-3">
                   Escolha como os posts do TabNews são ordenados.
                 </p>
@@ -484,7 +561,7 @@ export default function SettingsModal() {
           {activeTab === 'categories' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-medium text-muted mb-1">Categorias Existentes</h3>
+                <h4 className="text-sm font-medium text-muted mb-1">Categorias Existentes</h4>
                 <p className="text-xs text-muted mb-3">
                   Subcategorias organizam uma categoria por dentro — por exemplo, um projeto em Trabalho.
                   Remover uma subcategoria mantém os sites na categoria.
@@ -501,7 +578,7 @@ export default function SettingsModal() {
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Adicionar Categoria</h3>
+                <h4 className="text-sm font-medium text-muted mb-3">Adicionar Categoria</h4>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -526,7 +603,7 @@ export default function SettingsModal() {
           {activeTab === 'data' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Exportar Configuração</h3>
+                <h4 className="text-sm font-medium text-muted mb-3">Exportar Configuração</h4>
                 <p className="text-sm text-muted mb-3">
                   Exporte sites, espaços, widgets, tema e preferências para um arquivo JSON.
                   Chaves de API ficam de fora por padrão.
@@ -550,7 +627,7 @@ export default function SettingsModal() {
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Importar Configuração</h3>
+                <h4 className="text-sm font-medium text-muted mb-3">Importar Configuração</h4>
                 <p className="text-sm text-muted mb-3">
                   Importe um arquivo de configuração para restaurar suas preferências.
                 </p>
@@ -578,8 +655,13 @@ export default function SettingsModal() {
                 )}
               </div>
 
-              <div className="pt-6 border-t border-border">
-                <h3 className="text-sm font-medium text-muted mb-3">Adicionar Vários Sites</h3>
+            </div>
+          )}
+
+          {/* Bulk add */}
+          {activeTab === 'bulk' && (
+            <div className="space-y-6">
+              <div>
                 <p className="text-sm text-muted mb-3">
                   Cole uma lista de URLs (uma por linha) para adicionar vários sites de uma vez. O Orbit irá extrair o nome de cada site automaticamente.
                 </p>
@@ -623,6 +705,8 @@ export default function SettingsModal() {
               </div>
             </div>
           )}
+        </div>
+        </div>
         </div>
       </div>
     </div>

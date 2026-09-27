@@ -100,7 +100,7 @@ export default function WeatherWidget() {
   if (!location) {
     return (
       <button
-        onClick={openSettings}
+        onClick={() => openSettings('widgets')}
         className="mx-auto mb-6 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs text-muted border border-dashed border-border opacity-80 hover:opacity-100 hover:border-accent hover:text-text transition-[color,border-color,opacity]"
       >
         <MapPin size={13} className="text-accent" />

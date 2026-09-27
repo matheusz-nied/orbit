@@ -116,7 +116,7 @@ src/
 - `resolveCardLayout()` em `utils/cardLayout.js` corrige id órfão no boot e no import (cai para `classic`).
 - `WidgetDock` / `NotesPanel` / `PomodoroPanel` / `AgendaPanel` — dock inferior.
 - `NewsFeed` — TabNews (relevantes/recentes), auto-refresh 5min com aba visível.
-- `SettingsModal` — abas: Tema, Widgets, Busca, Chat IA, Notícias, Espaços, Categorias, Dados.
+- `SettingsModal` — navegação lateral agrupada (`sectionGroups`): Comece por aqui · Aparência · Página inicial · Busca e IA · Organização · Sistema. No celular vira lista → detalhe. `openSettings(secao)` abre direto numa seção (ex.: `openSettings("widgets")`).
 - `AddSiteModal` — modal para adicionar/editar site.
 - `AIChatModal` — chat DeepSeek (requer API key opcional).
 - `WelcomeModal` — onboarding na primeira visita.

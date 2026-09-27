@@ -2841,3 +2841,9 @@ input:focus, button:focus, select:focus {
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+
+/* Configurações — cartão de opção e item de navegação selecionados. */
+.settings-option[data-selected="true"],
+.settings-nav-item[data-selected="true"] {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}

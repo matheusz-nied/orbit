@@ -10,7 +10,7 @@ export default function OnboardingGuide() {
         <div>
           <p className="text-sm font-medium text-text">Adicionar sites</p>
           <p className="text-xs text-muted mt-0.5">
-            Use o botão &quot;Adicionar Site&quot; no topo ou importe vários de uma vez em Configurações &gt; Dados.
+            Use o botão &quot;Adicionar Site&quot; no topo ou importe vários de uma vez em Configurações &gt; Adicionar em lote.
             Ao escolher uma categoria, use o <span className="text-text">+</span> logo abaixo para criar subcategorias (ex.: um projeto em Trabalho).
           </p>
         </div>
@@ -54,7 +54,7 @@ export default function OnboardingGuide() {
         <div>
           <p className="text-sm font-medium text-text">Mudar tema e layout</p>
           <p className="text-xs text-muted mt-0.5">
-            Em Configurações &gt; Tema você escolhe o visual e o layout dos cards que combina com você.
+            Em Configurações &gt; Tema e visual você escolhe o visual e o layout dos cards que combina com você.
           </p>
         </div>
       </div>
