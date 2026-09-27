@@ -1181,42 +1181,133 @@ input:focus, button:focus, select:focus {
   animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
 }
 
-/* Premium Dark Theme Specific Styles */
+/* =========================================================
+   PREMIUM DARK — preto absoluto com detalhes em champanhe. Luxo
+   discreto: nada anima sozinho; o dourado aparece só em fios de borda,
+   no relógio e no que está ativo. Hover mexe só em transform/opacity.
+   ========================================================= */
+
 [data-theme="premium-dark"] body {
-  background: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000000 60%);
+  background-color: #000;
+  background-image:
+    radial-gradient(ellipse 42% 30% at 50% 0%, rgba(255, 226, 180, 0.16), rgba(217, 180, 120, 0.05) 45%, transparent 75%),
+    radial-gradient(ellipse 90% 60% at 50% -5%, rgba(120, 90, 50, 0.1), transparent 70%);
   background-attachment: fixed;
 }
 
-[data-theme="premium-dark"] .bg-card, [data-theme="premium-dark"] .group\/card .bg-card\/80 {
-  background: rgba(10, 10, 10, 0.4) !important;
-  backdrop-filter: blur(24px) saturate(150%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.03) !important;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+/* Fios de seda dourada — SVG estático (gradiente + um fio com brilho),
+   rasterizado uma vez; nenhuma animação no fundo. */
+[data-theme="premium-dark"] .orbit-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+  background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 900%22 preserveAspectRatio=%22xMidYMid slice%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 x2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22#d9c39c%22 stop-opacity=%220%22/%3E%3Cstop offset=%22.3%22 stop-color=%22#b89868%22/%3E%3Cstop offset=%22.55%22 stop-color=%22#f6e7c8%22/%3E%3Cstop offset=%22.8%22 stop-color=%22#c9ad7d%22/%3E%3Cstop offset=%221%22 stop-color=%22#d9c39c%22 stop-opacity=%220%22/%3E%3C/linearGradient%3E%3Cfilter id=%22b%22 x=%22-10%25%22 y=%22-50%25%22 width=%22120%25%22 height=%22200%25%22%3E%3CfeGaussianBlur stdDeviation=%227%22/%3E%3C/filter%3E%3C/defs%3E%3Cg fill=%22none%22 stroke-width=%221%22%3E%3Cpath d=%22M-120 760 C 380 560, 900 1010, 1560 420%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.1%22/%3E%3Cpath d=%22M-120 776 C 380 569, 900 1003, 1560 440%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.16%22/%3E%3Cpath d=%22M-120 792 C 380 578, 900 996, 1560 460%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.22%22/%3E%3Cpath d=%22M-120 808 C 380 587, 900 989, 1560 480%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.3%22/%3E%3Cpath d=%22M-120 824 C 380 596, 900 982, 1560 500%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.55%22/%3E%3Cpath d=%22M-120 840 C 380 605, 900 975, 1560 520%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.3%22/%3E%3Cpath d=%22M-120 856 C 380 614, 900 968, 1560 540%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.2%22/%3E%3Cpath d=%22M-120 872 C 380 623, 900 961, 1560 560%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.14%22/%3E%3Cpath d=%22M-120 888 C 380 632, 900 954, 1560 580%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.08%22/%3E%3Cpath d=%22M820 -60 C 1080 120, 1260 40, 1560 230%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.07%22/%3E%3Cpath d=%22M820 -54 C 1080 134, 1260 50, 1560 246%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.12%22/%3E%3Cpath d=%22M820 -48 C 1080 148, 1260 60, 1560 262%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.2%22/%3E%3Cpath d=%22M820 -42 C 1080 162, 1260 70, 1560 278%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.12%22/%3E%3Cpath d=%22M820 -36 C 1080 176, 1260 80, 1560 294%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.08%22/%3E%3Cpath d=%22M820 -30 C 1080 190, 1260 90, 1560 310%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.05%22/%3E%3C/g%3E%3Cpath d=%22M-120 824 C 380 596, 900 982, 1560 500%22 stroke=%22url%28#g%29%22 fill=%22none%22 stroke-width=%225%22 stroke-opacity=%22.35%22 filter=%22url%28#b%29%22/%3E%3Cpath d=%22M-120 824 C 380 596, 900 982, 1560 500%22 stroke=%22url%28#g%29%22 fill=%22none%22 stroke-width=%221.2%22 stroke-opacity=%22.9%22/%3E%3C/svg%3E") center / cover no-repeat;
+}
+
+[data-theme="premium-dark"] ::selection {
+  background: rgba(217, 195, 156, 0.3);
+  color: #fff;
+}
+
+/* Relógio: numerais finos em marfim → champanhe, data em versalete. */
+@keyframes premiumGlint {
+  0%, 70% { background-position: 150% 0, 0 0; }
+  100% { background-position: -50% 0, 0 0; }
+}
+
+[data-theme="premium-dark"] .orbit-clock > div:first-child {
+  font-weight: 200;
+  letter-spacing: -0.03em;
+  background:
+    linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.85) 50%, transparent 60%) 150% 0 / 250% 100% no-repeat,
+    linear-gradient(180deg, #fffaf0 0%, #f0dfbd 45%, #c9a96e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: premiumGlint 10s ease-in-out infinite;
+}
+
+[data-theme="premium-dark"] .orbit-clock > div:first-child span {
+  -webkit-text-fill-color: currentColor;
+}
+
+[data-theme="premium-dark"] .orbit-clock > div:first-child span:last-child {
+  color: #d9c39c;
+}
+
+[data-theme="premium-dark"] .orbit-clock > div:last-child {
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(217, 195, 156, 0.7);
+}
+
+/* Superfícies: vidro fumê com borda metálica — mais clara no topo, como
+   luz batendo no chanfro. A borda é um gradiente em border-box. */
+[data-theme="premium-dark"] .bg-card,
+[data-theme="premium-dark"] .group\/card .bg-card\/80 {
+  border: 1px solid transparent !important;
+  background:
+    linear-gradient(180deg, rgba(12, 11, 10, 0.85), rgba(4, 4, 4, 0.85)) padding-box,
+    linear-gradient(180deg, rgba(240, 215, 170, 0.26), rgba(217, 195, 156, 0.06) 40%, rgba(217, 195, 156, 0.03)) border-box !important;
+  backdrop-filter: blur(20px) saturate(140%) !important;
+  box-shadow:
+    0 18px 40px -18px rgba(0, 0, 0, 1),
+    inset 0 1px 0 rgba(255, 245, 225, 0.04) !important;
+}
+
+[data-theme="premium-dark"] .group\/card .bg-card\/80 {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 [data-theme="premium-dark"] .group\/card:hover .bg-card\/80 {
-  background: rgba(20, 20, 20, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 20px 50px -10px rgba(0,0,0,1), 0 0 20px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.1) !important;
-  transform: translateY(-4px) scale(1.02) !important;
+  background:
+    linear-gradient(180deg, rgba(16, 14, 12, 0.9), rgba(5, 5, 5, 0.9)) padding-box,
+    linear-gradient(180deg, rgba(232, 208, 165, 0.5), rgba(217, 195, 156, 0.1) 50%, rgba(217, 195, 156, 0.05)) border-box !important;
+  transform: translateY(-4px) !important;
 }
 
-[data-theme="premium-dark"] input {
-  background: rgba(15, 15, 15, 0.6) !important;
+/* Halo do card clássico (o bg-accent/20 não é gerado pelo Tailwind). */
+[data-theme="premium-dark"] .group\/card > .blur-xl {
+  background: radial-gradient(circle, rgba(217, 195, 156, 0.22), transparent 70%);
+}
+
+[data-theme="premium-dark"] input,
+[data-theme="premium-dark"] textarea {
+  background: rgba(6, 6, 6, 0.85) !important;
   backdrop-filter: blur(12px) !important;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05) !important;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 240, 215, 0.03) !important;
+}
+
+[data-theme="premium-dark"] .orbit-search input:focus {
+  border-color: rgba(217, 195, 156, 0.45) !important;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.8),
+    0 0 0 4px rgba(217, 195, 156, 0.06),
+    0 18px 50px -12px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* Aba ativa em champanhe escovado em vez de chapado. */
+[data-theme="premium-dark"] .orbit-category-filter .bg-accent {
+  background: linear-gradient(180deg, #ecdcbc 0%, #d4bb8f 55%, #bfa273 100%);
+  color: #17130d !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 4px 14px -4px rgba(217, 195, 156, 0.35);
 }
 
 [data-theme="premium-dark"] .text-muted {
-  color: #888888 !important;
+  color: #7d776e !important;
 }
 
 [data-theme="premium-dark"] .border-border {
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 240, 215, 0.07) !important;
+}
+
+[data-theme="premium-dark"] h3 {
+  letter-spacing: 0.01em;
 }
 
 /* =========================================================
