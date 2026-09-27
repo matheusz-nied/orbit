@@ -1,6 +1,7 @@
 import { Plus, Star } from 'lucide-react'
 import useStore from '../store/useStore'
 import { FREQUENT_CATEGORY, hasUsageData } from '../utils/frequent'
+import SubcategoryBar from './SubcategoryBar'
 
 const categoryLabels = {
   all: 'Todos',
@@ -24,9 +25,12 @@ export default function CategoryFilter() {
 
   const allCategories = ['all', ...categories]
 
+  // 'all' e Frequentes são visões, não têm subcategorias.
+  const showSubcategories = categories.includes(activeCategory)
+
   return (
-    <div className="orbit-category-filter w-full max-w-6xl mx-auto px-4 mb-6 animate-fadeIn">
-      <div className="flex items-center justify-between gap-4">
+    <div className="w-full max-w-6xl mx-auto px-4 mb-6 animate-fadeIn">
+      <div className="orbit-category-filter flex items-center justify-between gap-4">
         <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-hide flex-1">
           {showFrequent && (
             <button
@@ -71,6 +75,11 @@ export default function CategoryFilter() {
           <span className="hidden sm:inline">Adicionar Site</span>
         </button>
       </div>
+
+      {/* Fora de .orbit-category-filter de propósito: os temas estilizam os
+          botões de lá como abas principais, e a subcategoria precisa de um
+          peso visual menor. */}
+      {showSubcategories && <SubcategoryBar key={activeCategory} category={activeCategory} />}
     </div>
   )
 }

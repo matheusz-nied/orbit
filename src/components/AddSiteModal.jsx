@@ -6,6 +6,9 @@ import SiteIcon from './SiteIcon'
 import { isSafeHttpUrl, normalizeHttpUrl } from '../utils/url'
 import { findShortcutConflict, normalizeShortcutKey } from '../utils/shortcuts'
 
+// Valor sentinela do <select> — não colide com nomes digitados.
+const NEW_SUBCATEGORY = '__new__'
+
 export default function AddSiteModal() {
   const addSiteOpen = useStore((state) => state.addSiteOpen)
   const closeAddSite = useStore((state) => state.closeAddSite)
@@ -16,12 +19,18 @@ export default function AddSiteModal() {
   const sites = useStore((state) => state.sites)
   const categories = useStore((state) => state.categories)
   const activeCategory = useStore((state) => state.activeCategory)
+  const activeSubcategory = useStore((state) => state.activeSubcategory)
+  const subcategoriesByCategory = useStore((state) => state.subcategories)
+  const addSubcategory = useStore((state) => state.addSubcategory)
   const workspaces = useStore((state) => state.workspaces)
   const activeWorkspace = useStore((state) => state.activeWorkspace)
 
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [category, setCategory] = useState('')
+  // '' = nenhuma; NEW_SUBCATEGORY = criando uma nova com `newSubcategory`.
+  const [subcategory, setSubcategory] = useState('')
+  const [newSubcategory, setNewSubcategory] = useState('')
   const [workspace, setWorkspace] = useState(activeWorkspace)
   const [shortcut, setShortcut] = useState('')
   const [urlTouched, setUrlTouched] = useState(false)
@@ -31,6 +40,7 @@ export default function AddSiteModal() {
       setName(editingSite.name)
       setUrl(editingSite.url)
       setCategory(editingSite.category)
+      setSubcategory(editingSite.subcategory || '')
       setWorkspace(editingSite.workspace || activeWorkspace)
       setShortcut(editingSite.shortcut || '')
     } else {
@@ -41,9 +51,20 @@ export default function AddSiteModal() {
       // 'all' e 'Frequentes' são visões, não categorias atribuíveis.
       const isRealCategory = activeCategory !== 'all' && categories.includes(activeCategory)
       setCategory(isRealCategory ? activeCategory : (categories[0] || ''))
+      setSubcategory(isRealCategory && activeSubcategory ? activeSubcategory : '')
     }
+    setNewSubcategory('')
     setUrlTouched(false)
-  }, [editingSite, addSiteOpen, categories, activeCategory])
+  }, [editingSite, addSiteOpen, categories, activeCategory, activeSubcategory])
+
+  const subcategoryOptions = subcategoriesByCategory[category] || []
+
+  const handleCategoryChange = (value) => {
+    setCategory(value)
+    // Subcategorias são por categoria — a escolhida não existe na nova.
+    setSubcategory('')
+    setNewSubcategory('')
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -57,10 +78,17 @@ export default function AddSiteModal() {
       if (conflict) return
     }
 
+    const finalCategory = category || categories[0] || 'geral'
+    const finalSubcategory = subcategory === NEW_SUBCATEGORY
+      ? addSubcategory(finalCategory, newSubcategory)
+      : subcategory
+
     const payload = {
       name: name.trim(),
       url: finalUrl,
-      category: category || categories[0] || 'geral',
+      category: finalCategory,
+      // undefined some do JSON salvo — editar para "Nenhuma" limpa o campo.
+      subcategory: finalSubcategory || undefined,
       workspace: workspace || activeWorkspace,
       shortcut: normalizedShortcut || undefined,
     }
@@ -78,6 +106,8 @@ export default function AddSiteModal() {
     setName('')
     setUrl('')
     setCategory('')
+    setSubcategory('')
+    setNewSubcategory('')
     setWorkspace(activeWorkspace)
     setShortcut('')
     setUrlTouched(false)
@@ -221,7 +251,7 @@ export default function AddSiteModal() {
               <label className="block text-sm text-muted mb-1">Categoria</label>
               <select
                 value={category}
-                onChange={e => setCategory(e.target.value)}
+                onChange={e => handleCategoryChange(e.target.value)}
                 className="w-full px-4 py-3 bg-bg border border-border rounded-lg text-text focus:border-accent transition-colors"
               >
                 {categories.map(cat => (
@@ -248,6 +278,36 @@ export default function AddSiteModal() {
               </div>
             )}
           </div>
+
+          <div>
+            <label className="block text-sm text-muted mb-1">
+              Subcategoria <span className="opacity-60">(opcional)</span>
+            </label>
+            <div className="flex gap-2">
+              <select
+                value={subcategory}
+                onChange={e => setSubcategory(e.target.value)}
+                className="flex-1 min-w-0 px-4 py-3 bg-bg border border-border rounded-lg text-text focus:border-accent transition-colors"
+              >
+                <option value="">Nenhuma</option>
+                {subcategoryOptions.map(sub => (
+                  <option key={sub} value={sub}>{sub}</option>
+                ))}
+                <option value={NEW_SUBCATEGORY}>+ Nova subcategoria…</option>
+              </select>
+              {subcategory === NEW_SUBCATEGORY && (
+                <input
+                  type="text"
+                  value={newSubcategory}
+                  onChange={e => setNewSubcategory(e.target.value)}
+                  maxLength={32}
+                  placeholder="Ex.: Projeto Apollo"
+                  className="flex-1 min-w-0 px-4 py-3 bg-bg border border-border rounded-lg text-text placeholder-muted focus:border-accent transition-colors"
+                  autoFocus
+                />
+              )}
+            </div>
+          </div>
           
           <div className="flex gap-3 pt-2">
             <button
@@ -259,7 +319,12 @@ export default function AddSiteModal() {
             </button>
             <button
               type="submit"
-              disabled={!name.trim() || !isSafeHttpUrl(url.trim()) || Boolean(shortcutConflict)}
+              disabled={
+                !name.trim() ||
+                !isSafeHttpUrl(url.trim()) ||
+                Boolean(shortcutConflict) ||
+                (subcategory === NEW_SUBCATEGORY && !newSubcategory.trim())
+              }
               className="flex-1 px-4 py-3 bg-accent rounded-lg text-bg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {editingSite ? 'Salvar' : 'Adicionar'}

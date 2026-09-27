@@ -56,6 +56,9 @@ const useStore = create((set, get) => ({
   // Categories
   categories: storage.get("categories") || defaultCategories,
   activeCategory: "all",
+  // { [categoria]: ["Projeto A", ...] } — subcategoria é opcional no site.
+  subcategories: storage.get("subcategories") || {},
+  activeSubcategory: null,
 
   // Workspaces — conjuntos independentes de sites (ex.: Pessoal / Trabalho)
   workspaces: loadWorkspaces(),
@@ -258,15 +261,68 @@ const useStore = create((set, get) => ({
     storage.set("categories", nextCategories);
     set({ categories: nextCategories });
 
-    const sites = get().sites.map((s) =>
-      s.category === category ? { ...s, category: fallback } : s,
-    );
+    const { [category]: _removed, ...subcategories } = get().subcategories;
+    storage.set("subcategories", subcategories);
+    set({ subcategories });
+
+    // Subcategorias pertencem à categoria antiga — não fazem sentido na nova.
+    const sites = get().sites.map((s) => {
+      if (s.category !== category) return s;
+      const { subcategory: _sub, ...rest } = s;
+      return { ...rest, category: fallback };
+    });
     storage.set("sites", sites);
     set({ sites });
+
+    if (get().activeCategory === category) {
+      set({ activeCategory: "all", activeSubcategory: null });
+    }
   },
 
   setActiveCategory: (category) => {
-    set({ activeCategory: category });
+    set({ activeCategory: category, activeSubcategory: null });
+  },
+
+  // Actions — Subcategories
+  addSubcategory: (category, name) => {
+    const trimmed = name.trim();
+    if (!trimmed) return null;
+
+    const current = get().subcategories[category] || [];
+    const existing = current.find((c) => c.toLowerCase() === trimmed.toLowerCase());
+    if (existing) return existing;
+
+    const subcategories = { ...get().subcategories, [category]: [...current, trimmed] };
+    storage.set("subcategories", subcategories);
+    set({ subcategories });
+    return trimmed;
+  },
+
+  removeSubcategory: (category, name) => {
+    const current = get().subcategories[category] || [];
+    const subcategories = {
+      ...get().subcategories,
+      [category]: current.filter((c) => c !== name),
+    };
+    storage.set("subcategories", subcategories);
+    set({ subcategories });
+
+    // Os sites continuam na categoria, só perdem a subcategoria.
+    const sites = get().sites.map((s) => {
+      if (s.category !== category || s.subcategory !== name) return s;
+      const { subcategory: _sub, ...rest } = s;
+      return rest;
+    });
+    storage.set("sites", sites);
+    set({ sites });
+
+    if (get().activeCategory === category && get().activeSubcategory === name) {
+      set({ activeSubcategory: null });
+    }
+  },
+
+  setActiveSubcategory: (name) => {
+    set({ activeSubcategory: name });
   },
 
   // Actions — Workspaces
@@ -274,7 +330,7 @@ const useStore = create((set, get) => ({
     storage.set("active_workspace", id);
     // A categoria é resetada porque ela pode não existir no espaço destino,
     // o que deixaria a grade vazia sem explicação aparente.
-    set({ activeWorkspace: id, activeCategory: "all" });
+    set({ activeWorkspace: id, activeCategory: "all", activeSubcategory: null });
   },
 
   addWorkspace: (name) => {
@@ -335,7 +391,7 @@ const useStore = create((set, get) => ({
 
     // Desligar Frequentes com a aba ativa deixaria a grade numa visão sem atalho.
     if (key === "frequent" && !value && get().activeCategory === FREQUENT_CATEGORY) {
-      set({ widgets, activeCategory: "all", ...extra });
+      set({ widgets, activeCategory: "all", activeSubcategory: null, ...extra });
       return;
     }
 
@@ -554,6 +610,7 @@ const useStore = create((set, get) => ({
       set({
         sites: loadSites(),
         categories: storage.get("categories") || defaultCategories,
+        subcategories: storage.get("subcategories") || {},
         workspaces,
         activeWorkspace,
         siteStats: storage.get("site_stats") || {},
@@ -588,6 +645,7 @@ const useStore = create((set, get) => ({
         newsApiKey: storage.get("news_apikey") || "",
         newsTopics: storage.get("news_topics") || defaultNewsTopics,
         activeCategory: "all",
+        activeSubcategory: null,
         deepseekApiKey: storage.get("deepseek_apikey") || "",
         openInNewTab: storage.get("open_in_new_tab") !== false,
         welcomeSeen: storage.get("welcome_seen") || false,

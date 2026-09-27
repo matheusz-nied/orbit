@@ -41,7 +41,7 @@ src/
 ### Estado (Zustand)
 - Store único e plano em `src/store/useStore.js`.
 - Toda mutação que precisa persistir chama `storage.set()` **sincronamente** dentro da ação.
-- Estado principal: `sites`, `categories`, `activeCategory`, `workspaces`, `activeWorkspace`, `siteStats`, `widgets`, `weatherLocation`, `notes`, `agenda`, `theme`, `cardLayout`, `motionMode`, `searchProvider`, `searchQuery`, `newsProvider`, `newsTopics`, `newsItems`, `newsLoading`, `deepseekApiKey`, `chat*`, `openInNewTab`, `settingsOpen`, `addSiteOpen`, `editingSite`, `welcomeSeen`, `dockPanel` (efêmero).
+- Estado principal: `sites`, `categories`, `activeCategory`, `subcategories`, `activeSubcategory`, `workspaces`, `activeWorkspace`, `siteStats`, `widgets`, `weatherLocation`, `notes`, `agenda`, `theme`, `cardLayout`, `motionMode`, `searchProvider`, `searchQuery`, `newsProvider`, `newsTopics`, `newsItems`, `newsLoading`, `deepseekApiKey`, `chat*`, `openInNewTab`, `settingsOpen`, `addSiteOpen`, `editingSite`, `welcomeSeen`, `dockPanel` (efêmero).
 - Exporta também o array `searchProviders` (Google, DuckDuckGo, YouTube, Ecosia, AI Chat).
 
 ### Temas
@@ -59,6 +59,14 @@ src/
 - Remover um espaço **move** os sites para o primeiro da lista, nunca apaga. Nunca é possível ficar com zero espaços.
 - `resolveActiveWorkspace()` corrige id órfão no boot e no import (cai para o primeiro espaço).
 - `WorkspaceSwitcher` só renderiza com 2+ espaços.
+
+### Subcategorias
+
+- `subcategories: { [categoria]: string[] }` em `sp_subcategories`; `site.subcategory` é **opcional** e só vale dentro de `site.category`.
+- `activeSubcategory` (efêmero) filtra dentro da categoria ativa; `setActiveCategory`, troca de espaço e import o resetam para `null`.
+- Remover subcategoria **mantém** os sites na categoria (só limpa o campo). Remover categoria apaga suas subcategorias e limpa `subcategory` dos sites movidos.
+- `SubcategoryBar` (linha abaixo das abas) só aparece com uma categoria real ativa — fica **fora** de `.orbit-category-filter` para não herdar o estilo de aba principal dos temas. Ativo usa `.orbit-subcategory-chip[data-active="true"]` (`color-mix` do accent).
+- Tailwind não gera `bg-accent/10` etc. — `accent` é `var(--accent)` sem `<alpha-value>`. Para transparência use `color-mix` no CSS.
 
 ### Uso / Frequentes
 

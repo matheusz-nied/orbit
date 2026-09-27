@@ -16,6 +16,7 @@ export default function SearchBar() {
   const setTheme = useStore((state) => state.setTheme)
   const sites = useStore((state) => state.sites)
   const activeCategory = useStore((state) => state.activeCategory)
+  const activeSubcategory = useStore((state) => state.activeSubcategory)
   const activeWorkspace = useStore((state) => state.activeWorkspace)
   const siteStats = useStore((state) => state.siteStats)
   const searchHintDismissed = useStore((state) => state.searchHintDismissed)
@@ -54,7 +55,10 @@ export default function SearchBar() {
       ? rankByUsage(inScope, siteStats).slice(0, FREQUENT_LIMIT)
       : activeCategory === 'all'
         ? inScope
-        : inScope.filter(site => site.category === activeCategory)
+        : inScope.filter(site =>
+            site.category === activeCategory &&
+            (!activeSubcategory || site.subcategory === activeSubcategory)
+          )
 
     if (!normalizedQuery) return inCategory.length
 
@@ -62,7 +66,7 @@ export default function SearchBar() {
       site.name.toLowerCase().includes(normalizedQuery) ||
       site.url.toLowerCase().includes(normalizedQuery)
     ).length
-  }, [normalizedQuery, sites, activeCategory, activeWorkspace, siteStats])
+  }, [normalizedQuery, sites, activeCategory, activeSubcategory, activeWorkspace, siteStats])
 
   const handleChange = (e) => {
     const value = e.target.value

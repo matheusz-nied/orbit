@@ -11,6 +11,7 @@ export default function OnboardingGuide() {
           <p className="text-sm font-medium text-text">Adicionar sites</p>
           <p className="text-xs text-muted mt-0.5">
             Use o botão &quot;Adicionar Site&quot; no topo ou importe vários de uma vez em Configurações &gt; Dados.
+            Ao escolher uma categoria, use o <span className="text-text">+</span> logo abaixo para criar subcategorias (ex.: um projeto em Trabalho).
           </p>
         </div>
       </div>

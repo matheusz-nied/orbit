@@ -12,6 +12,7 @@ import { normalizeHttpUrl } from '../utils/url'
 import WorkspaceManager from './WorkspaceManager'
 import WeatherLocationPicker from './WeatherLocationPicker'
 import OnboardingGuide from './OnboardingGuide'
+import CategorySubcategories from './CategorySubcategories'
 
 const tabs = [
   { id: 'guide', label: 'Comece por aqui', icon: Rocket },
@@ -483,21 +484,18 @@ export default function SettingsModal() {
           {activeTab === 'categories' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-medium text-muted mb-3">Categorias Existentes</h3>
-                <div className="flex flex-wrap gap-2">
+                <h3 className="text-sm font-medium text-muted mb-1">Categorias Existentes</h3>
+                <p className="text-xs text-muted mb-3">
+                  Subcategorias organizam uma categoria por dentro — por exemplo, um projeto em Trabalho.
+                  Remover uma subcategoria mantém os sites na categoria.
+                </p>
+                <div className="space-y-2">
                   {categories.map(cat => (
-                    <div
+                    <CategorySubcategories
                       key={cat}
-                      className="flex items-center gap-2 px-3 py-2 bg-bg border border-border rounded-lg"
-                    >
-                      <span className="text-sm text-text">{cat}</span>
-                      <button
-                        onClick={() => removeCategory(cat)}
-                        className="text-muted hover:text-red-500 transition-colors"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
+                      category={cat}
+                      onRemoveCategory={() => removeCategory(cat)}
+                    />
                   ))}
                 </div>
               </div>

@@ -2823,3 +2823,21 @@ input:focus, button:focus, select:focus {
 [data-motion="reduced"] [data-decorative][class*="blur"] {
   filter: none !important;
 }
+
+/* Subcategorias — peso visual menor que as abas de categoria: só uma tinta
+   translúcida do accent, sem preenchimento sólido. */
+.orbit-subcategory-chip[data-active="true"] {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+/* nous-archive já zera o raio de todo botão no shell. */
+[data-theme="detroit"] .orbit-subcategory-bar button,
+[data-theme="detroit"] .orbit-subcategory-bar > div {
+  border-radius: 2px;
+}
+
+[data-theme="detroit"] .orbit-subcategory-bar button {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}

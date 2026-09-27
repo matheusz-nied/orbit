@@ -24,6 +24,8 @@ const NO_SENSORS = []
 export default function SiteGrid() {
   const sites = useStore((state) => state.sites)
   const activeCategory = useStore((state) => state.activeCategory)
+  const activeSubcategory = useStore((state) => state.activeSubcategory)
+  const setActiveSubcategory = useStore((state) => state.setActiveSubcategory)
   const searchQuery = useStore((state) => state.searchQuery)
   const setSearchQuery = useStore((state) => state.setSearchQuery)
   const setActiveCategory = useStore((state) => state.setActiveCategory)
@@ -57,6 +59,9 @@ export default function SiteGrid() {
       result = rankByUsage(result, siteStats).slice(0, FREQUENT_LIMIT)
     } else if (activeCategory !== 'all') {
       result = result.filter(s => s.category === activeCategory)
+      if (activeSubcategory) {
+        result = result.filter(s => s.subcategory === activeSubcategory)
+      }
     }
 
     if (searchQuery.trim()) {
@@ -68,7 +73,7 @@ export default function SiteGrid() {
     }
 
     return result
-  }, [sites, activeCategory, searchQuery, activeWorkspace, isFrequentView, siteStats])
+  }, [sites, activeCategory, activeSubcategory, searchQuery, activeWorkspace, isFrequentView, siteStats])
 
   const handleDragEnd = (event) => {
     const { active, over } = event
@@ -154,6 +159,16 @@ export default function SiteGrid() {
               >
                 <RotateCcw size={16} />
                 Limpar filtro
+              </button>
+            )}
+
+            {activeSubcategory && (
+              <button
+                onClick={() => setActiveSubcategory(null)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-bg border border-border rounded-lg text-text hover:border-accent transition-colors"
+              >
+                <RotateCcw size={16} />
+                Ver tudo da categoria
               </button>
             )}
 
