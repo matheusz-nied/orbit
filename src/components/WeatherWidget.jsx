@@ -101,9 +101,9 @@ export default function WeatherWidget() {
     return (
       <button
         onClick={openSettings}
-        className="mx-auto flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-muted border border-border hover:border-accent hover:text-text transition-colors"
+        className="mx-auto mb-6 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs text-muted border border-dashed border-border opacity-80 hover:opacity-100 hover:border-accent hover:text-text transition-[color,border-color,opacity]"
       >
-        <MapPin size={14} />
+        <MapPin size={13} className="text-accent" />
         Definir cidade para ver o clima
       </button>
     )
@@ -111,7 +111,7 @@ export default function WeatherWidget() {
 
   if (!weather) {
     return (
-      <div className="h-8 flex items-center justify-center text-xs text-muted">
+      <div className="h-8 mb-6 flex items-center justify-center text-xs text-muted">
         {failed ? 'Clima indisponível' : 'Carregando clima…'}
       </div>
     )
