@@ -16,15 +16,23 @@ const BASE_FPS = 60
 const OPACITY_STEPS = 10
 
 const PALETTES = {
+  // Cores de estrelas reais (tipos O/B → K): quase tudo branco, com leves
+  // desvios azulados e âmbar. Deriva lenta — o espaço visto da órbita é
+  // praticamente parado; o movimento fica por conta da cintilação.
   space: {
     colors: [
-      [205, 220, 255],
       [255, 255, 255],
-      [181, 194, 255],
+      [214, 228, 255],
+      [255, 244, 228],
+      [255, 214, 170],
     ],
-    speedScale: 1,
-    twinkleScale: 1,
-    minOpacity: 0.2,
+    maxStars: 160,
+    sizeMin: 0.3,
+    sizeRange: 1.05,
+    speedScale: 0.22,
+    twinkleScale: 0.8,
+    minOpacity: 0.15,
+    staticField: true,
   },
   nebula: {
     colors: [
@@ -34,10 +42,112 @@ const PALETTES = {
       [255, 178, 245],
       [255, 226, 180],
     ],
+    maxStars: MAX_STARS,
+    sizeMin: 0.35,
+    sizeRange: 1.65,
     speedScale: 0.55,
     twinkleScale: 1.7,
     minOpacity: 0.1,
+    staticField: false,
   },
+}
+
+// Campo de fundo do Space: milhares de estrelas minúsculas + a faixa da Via
+// Láctea, desenhados UMA vez por resize num canvas separado. Custo por frame
+// zero — só o canvas de cima (poucas estrelas) é animado.
+const STATIC_AREA_PER_STAR = 700
+const STATIC_MAX_STARS = 2600
+const BRIGHT_STARS = 7
+
+const gaussian = () => {
+  // Box–Muller: concentra as estrelas no centro da faixa galáctica.
+  const u = 1 - Math.random()
+  const v = Math.random()
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v)
+}
+
+const drawStaticField = (ctx, width, height) => {
+  ctx.clearRect(0, 0, width, height)
+
+  // A galáxia cruza a tela na diagonal, de baixo-esquerda a cima-direita.
+  const x0 = -width * 0.1
+  const y0 = height * 0.95
+  const x1 = width * 1.1
+  const y1 = -height * 0.05
+  const dx = x1 - x0
+  const dy = y1 - y0
+  const length = Math.hypot(dx, dy)
+  const nx = -dy / length
+  const ny = dx / length
+  const bandWidth = Math.min(width, height) * 0.14
+
+  // Brilho difuso da faixa: poeira quente no núcleo, borda fria.
+  ctx.globalCompositeOperation = 'lighter'
+  for (let i = 0; i < 14; i++) {
+    const t = i / 13
+    const cx = x0 + dx * t + nx * gaussian() * bandWidth * 0.25
+    const cy = y0 + dy * t + ny * gaussian() * bandWidth * 0.25
+    const core = 1 - Math.abs(t - 0.55) * 1.4
+    const radius = bandWidth * (1.1 + Math.random() * 0.9)
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius)
+    const warm = Math.random() < 0.5
+    const alpha = 0.018 + Math.max(0, core) * 0.03
+    glow.addColorStop(0, warm ? `rgba(255, 236, 214, ${alpha})` : `rgba(200, 215, 255, ${alpha})`)
+    glow.addColorStop(1, 'rgba(0, 0, 0, 0)')
+    ctx.fillStyle = glow
+    ctx.fillRect(cx - radius, cy - radius, radius * 2, radius * 2)
+  }
+  ctx.globalCompositeOperation = 'source-over'
+
+  const count = Math.min(Math.floor((width * height) / STATIC_AREA_PER_STAR), STATIC_MAX_STARS)
+  for (let i = 0; i < count; i++) {
+    let x
+    let y
+    const inBand = Math.random() < 0.55
+    if (inBand) {
+      const t = Math.random()
+      const offset = gaussian() * bandWidth * 0.55
+      x = x0 + dx * t + nx * offset
+      y = y0 + dy * t + ny * offset
+    } else {
+      x = Math.random() * width
+      y = Math.random() * height
+    }
+
+    const r = Math.random()
+    const tint = r < 0.12 ? '214, 228, 255' : r < 0.2 ? '255, 226, 196' : '255, 255, 255'
+    const alpha = inBand ? 0.12 + Math.random() * 0.4 : 0.08 + Math.random() * 0.35
+    const size = Math.random() < 0.9 ? 0.7 : 1.2
+    ctx.fillStyle = `rgba(${tint}, ${alpha.toFixed(2)})`
+    ctx.fillRect(x, y, size, size)
+  }
+
+  // Poucas estrelas de destaque com halo e raios finos de difração.
+  for (let i = 0; i < BRIGHT_STARS; i++) {
+    const x = Math.random() * width
+    const y = Math.random() * height * 0.75
+    const halo = 6 + Math.random() * 8
+    const tint = i % 3 === 0 ? '214, 228, 255' : '255, 250, 240'
+
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, halo)
+    glow.addColorStop(0, `rgba(${tint}, 0.55)`)
+    glow.addColorStop(0.25, `rgba(${tint}, 0.12)`)
+    glow.addColorStop(1, 'rgba(0, 0, 0, 0)')
+    ctx.fillStyle = glow
+    ctx.fillRect(x - halo, y - halo, halo * 2, halo * 2)
+
+    if (i < 3) {
+      const spike = halo * 2.2
+      ctx.fillStyle = `rgba(${tint}, 0.22)`
+      ctx.fillRect(x - spike, y - 0.25, spike * 2, 0.5)
+      ctx.fillRect(x - 0.25, y - spike, 0.5, spike * 2)
+    }
+
+    ctx.fillStyle = '#ffffff'
+    ctx.beginPath()
+    ctx.arc(x, y, 0.9, 0, Math.PI * 2)
+    ctx.fill()
+  }
 }
 
 const fillStylesFor = (colors) =>
@@ -49,7 +159,7 @@ const fillStylesFor = (colors) =>
   )
 
 const createStars = (width, height, pal) => {
-  const count = Math.min(Math.floor((width * height) / AREA_PER_STAR), MAX_STARS)
+  const count = Math.min(Math.floor((width * height) / AREA_PER_STAR), pal.maxStars)
   const stars = new Array(count)
 
   for (let i = 0; i < count; i++) {
@@ -57,7 +167,7 @@ const createStars = (width, height, pal) => {
     stars[i] = {
       x: Math.random() * width,
       y: Math.random() * height,
-      size: 0.35 + depth * 1.65,
+      size: pal.sizeMin + depth * pal.sizeRange,
       speed: (0.05 + depth * 0.38) * pal.speedScale,
       opacity: 0.25 + Math.random() * 0.75,
       twinkleSpeed: (Math.random() * 0.02 + 0.005) * pal.twinkleScale,
@@ -73,6 +183,7 @@ export default function StarCanvas() {
   const motionMode = useStore((state) => state.motionMode)
 
   const canvasRef = useRef(null)
+  const staticCanvasRef = useRef(null)
   const frameRef = useRef(0)
   const starsRef = useRef([])
   const bucketsRef = useRef([])
@@ -173,6 +284,16 @@ export default function StarCanvas() {
       canvas.style.height = `${height}px`
       starsRef.current = createStars(width, height, pal)
       draw()
+
+      const staticCanvas = staticCanvasRef.current
+      const staticCtx = pal.staticField && staticCanvas?.getContext('2d')
+      if (staticCtx) {
+        staticCanvas.width = width
+        staticCanvas.height = height
+        staticCanvas.style.width = `${width}px`
+        staticCanvas.style.height = `${height}px`
+        drawStaticField(staticCtx, width, height)
+      }
     }
 
     let resizeTimer = 0
@@ -248,13 +369,13 @@ export default function StarCanvas() {
 
   return (
     <div className="space-backdrop fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-      <div className="space-nebula absolute inset-0" data-decorative />
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0"
-        style={{ opacity: 0.92 }}
-      />
-      <div className="space-planet absolute" data-decorative />
+      <canvas ref={staticCanvasRef} className="absolute inset-0" />
+      <canvas ref={canvasRef} className="absolute inset-0" />
+      {/* Horizonte planetário: disco preto com a atmosfera acesa na borda,
+          como o nascer do sol visto da órbita. */}
+      <div className="space-horizon absolute" />
+      <div className="space-horizon-flare absolute gpu-layer" data-decorative />
+      <div className="space-grain absolute inset-0" />
       <div className="space-shooting-star space-shooting-star-one absolute gpu-layer" data-decorative />
       <div className="space-shooting-star space-shooting-star-two absolute gpu-layer" data-decorative />
     </div>

@@ -35,95 +35,121 @@ body {
   overflow-x: hidden;
 }
 
-/* Space — profundidade com gradientes estáticos; só as estrelas cadentes
-   usam animação e se movem exclusivamente por transform/opacity. */
+/* Space — preto absoluto, estilo SpaceX/Grok. Estrelas e Via Láctea vêm do
+   StarCanvas; aqui só o horizonte (estático), o brilho da borda (opacity) e
+   as estrelas cadentes (transform/opacity). */
 [data-theme="space"] body {
-  background-image:
-    radial-gradient(circle at 50% -20%, rgba(70, 100, 190, 0.12), transparent 46%),
-    linear-gradient(180deg, #030510 0%, var(--bg) 72%);
+  background: #000;
 }
 
-.space-nebula {
-  background:
-    radial-gradient(ellipse at 12% 20%, rgba(55, 90, 190, 0.2) 0%, rgba(33, 47, 120, 0.08) 23%, transparent 48%),
-    radial-gradient(ellipse at 88% 16%, rgba(112, 55, 180, 0.16) 0%, rgba(52, 35, 105, 0.06) 27%, transparent 51%),
-    radial-gradient(ellipse at 55% 76%, rgba(20, 95, 145, 0.1) 0%, transparent 44%),
-    linear-gradient(118deg, transparent 24%, rgba(92, 112, 205, 0.035) 43%, rgba(150, 105, 210, 0.055) 51%, transparent 70%);
-}
-
-.space-nebula::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.32;
-  background-image: radial-gradient(circle, rgba(220, 230, 255, 0.8) 0 0.6px, transparent 0.9px);
-  background-size: 37px 37px;
-  background-position: 7px 13px;
-}
-
-.space-planet {
-  right: -18rem;
-  bottom: -31rem;
-  width: 52rem;
-  height: 52rem;
+.space-horizon {
+  left: 50%;
+  top: calc(100% - 13vh);
+  width: 220vw;
+  height: 220vw;
+  margin-left: -110vw;
   border-radius: 50%;
-  opacity: 0.72;
-  background:
-    radial-gradient(circle at 35% 30%, rgba(67, 91, 145, 0.22), transparent 31%),
-    radial-gradient(circle at 48% 38%, #11192f 0%, #070b18 48%, #010207 72%);
+  background: radial-gradient(circle at 50% 0%, #07090f 0%, #000 12%);
+  /* Borda da atmosfera: linha fina quase branca, espalhamento azul logo
+     acima e um halo largo que se perde no preto. */
   box-shadow:
-    -12px -15px 0 -10px rgba(139, 168, 255, 0.28),
-    -24px -25px 80px rgba(78, 111, 215, 0.13);
+    inset 0 1px 1px rgba(235, 242, 255, 0.55),
+    inset 0 10px 30px rgba(90, 135, 230, 0.12),
+    0 -1px 2px rgba(220, 232, 255, 0.55),
+    0 -6px 24px rgba(110, 155, 255, 0.28),
+    0 -40px 120px rgba(60, 100, 210, 0.14);
+}
+
+@keyframes spaceFlare {
+  0%, 100% { opacity: 0.75; transform: translate3d(-50%, 0, 0) scaleX(1); }
+  50% { opacity: 1; transform: translate3d(-50%, 0, 0) scaleX(1.08); }
+}
+
+/* Sol nascendo atrás do planeta — só opacity/transform. */
+.space-horizon-flare {
+  left: 50%;
+  top: calc(100% - 13vh - 5rem);
+  width: 70vw;
+  height: 10rem;
+  transform: translate3d(-50%, 0, 0);
+  background:
+    radial-gradient(ellipse 18% 8% at 50% 50%, rgba(255, 255, 255, 0.85), transparent 70%),
+    radial-gradient(ellipse 50% 22% at 50% 50%, rgba(190, 212, 255, 0.28), transparent 75%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(80, 120, 230, 0.12), transparent 80%);
+  animation: spaceFlare 14s ease-in-out infinite;
+}
+
+/* Granulação de filme — tira o aspecto "digital" do preto chapado. */
+.space-grain {
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 @keyframes spaceShoot {
-  0%, 72% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-35deg) scaleX(0.35); }
-  75% { opacity: 0.75; }
-  86% { opacity: 0; transform: translate3d(-34vw, 24vw, 0) rotate(-35deg) scaleX(1); }
-  100% { opacity: 0; transform: translate3d(-34vw, 24vw, 0) rotate(-35deg) scaleX(1); }
+  0%, 82% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-32deg) scaleX(0.3); }
+  84% { opacity: 0.9; }
+  92% { opacity: 0; transform: translate3d(-30vw, 19vw, 0) rotate(-32deg) scaleX(1); }
+  100% { opacity: 0; transform: translate3d(-30vw, 19vw, 0) rotate(-32deg) scaleX(1); }
 }
 
 .space-shooting-star {
-  width: 9rem;
+  width: 7rem;
   height: 1px;
   opacity: 0;
   transform-origin: right center;
-  background: linear-gradient(90deg, transparent, rgba(214, 228, 255, 0.8));
-  animation: spaceShoot 12s ease-in infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95));
+  animation: spaceShoot 19s ease-in infinite;
 }
 
 .space-shooting-star-one {
-  top: 13%;
-  right: 9%;
+  top: 12%;
+  right: 12%;
 }
 
 .space-shooting-star-two {
-  top: 32%;
-  right: 31%;
-  animation-delay: -5.5s;
-  animation-duration: 17s;
+  top: 30%;
+  right: 38%;
+  animation-delay: -9s;
+  animation-duration: 31s;
 }
 
+/* Tipografia de telemetria: relógio fino e data em caixa alta espaçada. */
 [data-theme="space"] .orbit-clock > div:first-child {
-  color: #f2f6ff;
-  text-shadow: 0 0 28px rgba(108, 142, 255, 0.3);
+  color: #fff;
+  font-weight: 200;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="space"] .orbit-clock > div:last-child {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 [data-theme="space"] .orbit-search input,
 [data-theme="space"] .bg-card {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 12px 35px rgba(0, 0, 0, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
 [data-theme="space"] .orbit-search input:focus {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 3px rgba(139, 168, 255, 0.08), 0 14px 45px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 3px rgba(255, 255, 255, 0.05), 0 14px 45px rgba(0, 0, 0, 0.6);
 }
 
 @media (max-width: 640px) {
-  .space-planet {
-    right: -20rem;
-    bottom: -30rem;
-    width: 44rem;
-    height: 44rem;
+  .space-horizon {
+    top: calc(100% - 9vh);
+    width: 360vw;
+    height: 360vw;
+    margin-left: -180vw;
+  }
+
+  .space-horizon-flare {
+    top: calc(100% - 9vh - 5rem);
+    width: 120vw;
   }
 
   .space-shooting-star-two {
@@ -353,121 +379,342 @@ body {
   transform: translate(-2px, -2px) rotate(-32deg) scale(1.25);
 }
 
-/* Layout Space — uma pequena viewport para o cosmos. As camadas de cenário
-   são estáticas; apenas o reflexo e o sinal usam transform/opacity. */
+/* Layout Space — janela de observação monocromática: preto, poeira de
+   estrelas e a borda de um planeta acesa pelo sol. Tudo estático; o hover
+   mexe só em transform/opacity. */
 .space-card {
-  border-color: color-mix(in srgb, var(--space-card-accent) 38%, transparent);
-  background: #040717;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #000;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 10px 28px rgba(0, 0, 0, 0.28),
-    0 0 18px color-mix(in srgb, var(--space-card-accent) 12%, transparent);
-  transition: transform 0.3s ease, border-color 0.3s ease;
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 12px 30px rgba(0, 0, 0, 0.55);
+  transition: transform 0.35s ease, border-color 0.35s ease;
 }
 
 .group:hover .space-card {
   transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--space-card-accent) 72%, transparent);
-}
-
-.space-card-nebula {
-  opacity: 0.75;
-  background:
-    radial-gradient(ellipse at 15% 22%, color-mix(in srgb, var(--space-card-accent) 42%, transparent), transparent 43%),
-    radial-gradient(ellipse at 88% 72%, rgba(98, 55, 170, 0.3), transparent 52%),
-    linear-gradient(145deg, #090d25 0%, #030511 66%);
+  border-color: rgba(255, 255, 255, 0.26);
 }
 
 .space-card-stars {
-  opacity: 0.82;
+  opacity: 0.85;
   background-image:
-    radial-gradient(circle at 16% 19%, #fff 0 0.7px, transparent 1px),
-    radial-gradient(circle at 75% 15%, #dce8ff 0 0.8px, transparent 1.2px),
-    radial-gradient(circle at 89% 39%, #fff 0 0.5px, transparent 0.9px),
-    radial-gradient(circle at 25% 63%, #b9ccff 0 0.6px, transparent 1px),
-    radial-gradient(circle at 64% 72%, #fff 0 0.7px, transparent 1.1px),
-    radial-gradient(circle at 43% 35%, #d8c7ff 0 0.5px, transparent 0.9px);
+    radial-gradient(circle at 14% 18%, #fff 0 0.6px, transparent 0.9px),
+    radial-gradient(circle at 72% 12%, #fff 0 0.8px, transparent 1.2px),
+    radial-gradient(circle at 88% 34%, #dfe8ff 0 0.5px, transparent 0.8px),
+    radial-gradient(circle at 30% 42%, #fff 0 0.4px, transparent 0.7px),
+    radial-gradient(circle at 58% 26%, #ffeede 0 0.5px, transparent 0.8px),
+    radial-gradient(circle at 8% 55%, #fff 0 0.4px, transparent 0.7px),
+    radial-gradient(circle at 46% 8%, #fff 0 0.35px, transparent 0.6px),
+    radial-gradient(circle at 92% 58%, #fff 0 0.4px, transparent 0.7px),
+    radial-gradient(circle at 22% 30%, rgba(255, 255, 255, 0.7) 0 0.3px, transparent 0.6px),
+    radial-gradient(circle at 64% 48%, rgba(255, 255, 255, 0.6) 0 0.3px, transparent 0.6px);
 }
 
 .space-card-world {
-  right: -2.3rem;
-  bottom: -3.5rem;
-  width: 6.8rem;
-  height: 6.8rem;
+  left: -35%;
+  top: 70%;
+  width: 170%;
+  aspect-ratio: 1;
+  --rim: color-mix(in srgb, var(--space-card-accent) 45%, white);
+  background: radial-gradient(circle at 50% 0%, #0a0c12 0%, #000 14%);
+  box-shadow:
+    inset 0 1px 1px color-mix(in srgb, var(--rim) 85%, transparent),
+    inset 0 6px 14px color-mix(in srgb, var(--space-card-accent) 14%, transparent),
+    0 -1px 3px color-mix(in srgb, var(--rim) 60%, transparent),
+    0 -6px 18px color-mix(in srgb, var(--space-card-accent) 22%, transparent);
+}
+
+/* O sol "nasce" no hover: o brilho cresce e sobe um pouco. */
+.space-card-flare {
+  left: 50%;
+  top: 70%;
+  width: 5rem;
+  height: 1.6rem;
+  margin: -0.8rem 0 0 -2.5rem;
+  opacity: 0.55;
   background:
-    radial-gradient(circle at 31% 26%, color-mix(in srgb, var(--space-card-accent) 70%, white), transparent 5%),
-    radial-gradient(circle at 38% 31%, color-mix(in srgb, var(--space-card-accent) 48%, #17203d) 0%, #080d20 53%, #01030a 74%);
-  box-shadow: -5px -5px 0 -3px color-mix(in srgb, var(--space-card-accent) 55%, transparent);
+    radial-gradient(ellipse 22% 16% at 50% 50%, rgba(255, 255, 255, 0.95), transparent 75%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, color-mix(in srgb, var(--space-card-accent) 40%, transparent), transparent 80%);
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-.space-card-atmosphere {
-  right: -1rem;
-  bottom: 1.45rem;
-  width: 5.7rem;
+.group:hover .space-card-flare {
+  opacity: 1;
+  transform: translateY(-1px) scaleX(1.35);
+}
+
+/* Cenas — o card inteiro usa o mesmo preto/estrelas; muda só o objeto.
+   `--rim` é a luz da atmosfera: branco levemente tingido pelo accent. */
+.space-card-scene {
+  --rim: color-mix(in srgb, var(--space-card-accent) 45%, white);
+  transition: transform 0.5s ease;
+}
+
+.space-card-scene[data-flip] {
+  transform: scaleX(-1);
+}
+
+.space-card-scene[data-scene="limb"] {
+  transform: rotate(-16deg) translateY(4%) scale(1.1);
+}
+
+.space-card-scene[data-scene="limb"][data-flip] {
+  transform: scaleX(-1) rotate(-16deg) translateY(4%) scale(1.1);
+}
+
+.space-card-scene[data-scene="overhead"] {
+  transform: rotate(180deg) translateY(-8%);
+}
+
+/* Eclipse: disco negro com coroa — o ícone fica "dentro" do eclipse. */
+.sc-eclipse {
+  left: 50%;
+  top: 50%;
+  width: 66%;
+  aspect-ratio: 1;
+  margin: -33% 0 0 -33%;
+  transform: translateY(-4%);
+  background: #000;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--rim) 70%, transparent),
+    0 0 6px 1px color-mix(in srgb, var(--rim) 55%, transparent),
+    0 0 18px 3px color-mix(in srgb, var(--space-card-accent) 28%, transparent),
+    0 0 38px 8px color-mix(in srgb, var(--space-card-accent) 10%, transparent);
+}
+
+.sc-eclipse-bead {
+  left: 72%;
+  top: 22%;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.85), 0 0 14px 4px color-mix(in srgb, var(--rim) 50%, transparent);
+  opacity: 0.35;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.group:hover .sc-eclipse-bead {
+  opacity: 1;
+  transform: scale(1.4);
+}
+
+/* Planeta com anéis no canto, iluminado por baixo. */
+.sc-planet {
+  right: -14%;
+  top: -16%;
+  width: 60%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 28% 74%, color-mix(in srgb, var(--rim) 55%, #111) 0%, #0b0d12 34%, #000 62%);
+  box-shadow: -2px 3px 10px color-mix(in srgb, var(--space-card-accent) 18%, transparent);
+  transition: transform 0.5s ease;
+}
+
+.sc-ring {
+  left: -32%;
+  top: 40%;
+  width: 164%;
+  height: 22%;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--rim) 45%, transparent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--space-card-accent) 25%, transparent);
+  transform: rotate(-22deg);
+}
+
+.group:hover .sc-planet {
+  transform: translate(-3px, 3px);
+}
+
+/* Lua crescente: disco preto com a borda acesa só de um lado. */
+.sc-moon {
+  left: -12%;
+  bottom: -14%;
+  width: 56%;
+  aspect-ratio: 1;
+  background: #000;
+  box-shadow:
+    inset -5px 5px 0 -1px color-mix(in srgb, var(--rim) 85%, transparent),
+    inset -9px 9px 14px -4px color-mix(in srgb, var(--space-card-accent) 25%, transparent),
+    4px -4px 16px -4px color-mix(in srgb, var(--space-card-accent) 30%, transparent);
+  transition: transform 0.5s ease;
+}
+
+.group:hover .sc-moon {
+  transform: translate(3px, -3px) rotate(-8deg);
+}
+
+/* Galáxia distante vista de lado. */
+.sc-galaxy {
+  right: -4%;
+  bottom: 12%;
+  width: 66%;
+  height: 22%;
+  transform: rotate(-24deg);
+  background:
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 246, 232, 0.55) 0%, color-mix(in srgb, var(--space-card-accent) 30%, transparent) 30%, transparent 72%);
+  opacity: 0.8;
+  transition: opacity 0.4s ease, transform 0.5s ease;
+}
+
+.sc-galaxy-core {
+  right: calc(29% - 2px);
+  bottom: calc(23% - 2px);
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  box-shadow: 0 0 6px 2px rgba(255, 244, 228, 0.7);
+}
+
+.group:hover .sc-galaxy {
+  opacity: 1;
+  transform: rotate(-24deg) scale(1.12);
+}
+
+/* Estrela próxima com raios de difração + um planeta pequeno. */
+.sc-sun {
+  left: 20%;
+  bottom: 20%;
+  width: 5px;
+  height: 5px;
+  background: #fff;
+  box-shadow:
+    0 0 6px 2px rgba(255, 255, 255, 0.9),
+    0 0 18px 6px color-mix(in srgb, var(--rim) 35%, transparent);
+  transition: transform 0.4s ease;
+}
+
+.sc-sun::before,
+.sc-sun::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+}
+
+.sc-sun::before {
+  width: 2.6rem;
   height: 1px;
-  transform: rotate(-35deg);
-  opacity: 0.6;
-  background: linear-gradient(90deg, transparent, var(--space-card-accent), transparent);
+  margin: -0.5px 0 0 -1.3rem;
 }
 
-@keyframes spaceCardSweep {
-  0%, 68% { opacity: 0; transform: translate3d(-7rem, 0, 0) rotate(18deg); }
-  76% { opacity: 0.22; }
-  88%, 100% { opacity: 0; transform: translate3d(12rem, 0, 0) rotate(18deg); }
+.sc-sun::after {
+  width: 1px;
+  height: 2.6rem;
+  margin: -1.3rem 0 0 -0.5px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.7), transparent);
 }
 
-.space-card-sweep {
-  top: -2rem;
-  left: 0;
-  width: 1.8rem;
-  height: 10rem;
-  opacity: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), transparent);
-  animation: spaceCardSweep 8s ease-in-out infinite;
+.group:hover .sc-sun {
+  transform: scale(1.35) rotate(45deg);
 }
 
-.space-card-corner {
-  width: 0.8rem;
-  height: 0.8rem;
-  opacity: 0.46;
+.sc-sun-planet {
+  right: 16%;
+  top: 22%;
+  width: 16%;
+  aspect-ratio: 1;
+  background: #000;
+  box-shadow: inset 2px -2px 0 -1px color-mix(in srgb, var(--rim) 80%, transparent);
 }
 
-.space-card-corner-tl {
-  top: 0.55rem;
-  left: 0.55rem;
-  border-top: 1px solid var(--space-card-accent);
-  border-left: 1px solid var(--space-card-accent);
+/* Cometa cruzando o card na diagonal: cabeça brilhante e cauda longa. */
+.sc-comet {
+  left: 8%;
+  top: 72%;
+  width: 70%;
+  height: 1.5px;
+  transform: rotate(-28deg);
+  transform-origin: left center;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), color-mix(in srgb, var(--space-card-accent) 35%, transparent) 35%, transparent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--space-card-accent) 30%, transparent);
+  transition: transform 0.5s ease;
 }
 
-.space-card-corner-br {
-  right: 0.55rem;
-  bottom: 0.55rem;
-  border-right: 1px solid var(--space-card-accent);
-  border-bottom: 1px solid var(--space-card-accent);
+.sc-comet-head {
+  left: -2px;
+  top: -2px;
+  width: 5px;
+  height: 5px;
+  background: #fff;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.85), 0 0 14px 4px color-mix(in srgb, var(--rim) 40%, transparent);
+}
+
+.group:hover .sc-comet {
+  transform: rotate(-28deg) translateX(-4px) scaleX(1.12);
+}
+
+/* Duas estrelas orbitando um centro comum — a órbita gira no hover. */
+.sc-orbit {
+  left: 50%;
+  top: 50%;
+  width: 82%;
+  height: 34%;
+  margin: -17% 0 0 -41%;
+  border: 1px dashed color-mix(in srgb, var(--rim) 22%, transparent);
+  transform: rotate(-18deg);
+}
+
+.sc-binary {
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  transition: transform 0.6s ease;
+}
+
+.sc-binary-a {
+  left: 12%;
+  top: 60%;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.85), 0 0 14px 4px color-mix(in srgb, var(--rim) 45%, transparent);
+}
+
+.sc-binary-b {
+  right: 12%;
+  top: 36%;
+  width: 3px;
+  height: 3px;
+  background: color-mix(in srgb, var(--space-card-accent) 50%, white);
+  box-shadow: 0 0 5px 2px color-mix(in srgb, var(--space-card-accent) 60%, transparent);
+}
+
+.group:hover .sc-binary-a {
+  transform: translate(6px, 2px);
+}
+
+.group:hover .sc-binary-b {
+  transform: translate(-6px, -2px);
 }
 
 @keyframes spaceCardSignal {
-  0%, 100% { opacity: 0.35; transform: scale(0.75); }
+  0%, 100% { opacity: 0.3; transform: scale(0.75); }
   50% { opacity: 1; transform: scale(1); }
 }
 
 .space-card-signal {
-  top: 0.7rem;
-  right: 0.75rem;
+  top: 0.72rem;
+  right: 0.8rem;
   width: 3px;
   height: 3px;
-  background: var(--space-card-accent);
-  box-shadow: 0 0 6px var(--space-card-accent);
+  background: #fff;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
   animation: spaceCardSignal 2.4s ease-in-out infinite;
 }
 
+.space-card-label {
+  top: 0.55rem;
+  left: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.18em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
 .space-card-icon {
-  border-color: color-mix(in srgb, var(--space-card-accent) 26%, transparent);
-  background: rgba(3, 6, 18, 0.72);
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    0 8px 22px rgba(0, 0, 0, 0.35),
-    0 0 15px color-mix(in srgb, var(--space-card-accent) 14%, transparent);
+    0 8px 22px rgba(0, 0, 0, 0.6);
 }
 
 /* Card hover effects */
