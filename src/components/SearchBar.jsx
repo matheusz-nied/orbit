@@ -137,6 +137,13 @@ export default function SearchBar() {
   return (
     <div className="orbit-search-section w-full max-w-2xl mx-auto px-4 mb-10 animate-fadeIn">
       <div className="orbit-search relative">
+        {/* Brilho na cor do provedor atrás do ícone — estático, sem animação. */}
+        <div
+          className="absolute inset-y-0 left-0 w-44 rounded-l-xl pointer-events-none"
+          style={{ background: `radial-gradient(ellipse 80% 110% at 12% 50%, ${provider.color}80, ${provider.color}33 25%, ${provider.color}0a 55%, transparent 80%)` }}
+          aria-hidden
+        />
+
         <button
           type="button"
           className="orbit-search-provider absolute z-10 left-3 top-1/2 -translate-y-1/2 flex items-center gap-1 cursor-pointer hover:scale-110 transition-transform"
