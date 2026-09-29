@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Plus, Pencil } from 'lucide-react'
+import { X, Plus, Pencil, Globe, Keyboard } from 'lucide-react'
 import useStore from '../store/useStore'
 import { getDomain } from '../utils/favicon'
 import SiteIcon from './SiteIcon'
@@ -153,179 +153,242 @@ export default function AddSiteModal() {
 
   if (!addSiteOpen) return null
 
+  const labelClass = 'block text-sm font-medium text-text mb-2'
+  const fieldClass =
+    'w-full h-12 px-4 bg-bg border border-border rounded-xl text-[15px] text-text placeholder-muted focus:border-accent transition-colors'
+  const optional = <span className="font-normal text-muted">(opcional)</span>
+  const canSubmit =
+    name.trim() &&
+    isSafeHttpUrl(url.trim()) &&
+    !shortcutConflict &&
+    !(subcategory === NEW_SUBCATEGORY && !newSubcategory.trim())
+
+  // Opções visíveis de uma vez (chips) em vez de <select>: são poucas e o usuário vê tudo sem abrir nada.
+  const chipClass = (active) =>
+    `h-9 px-3.5 rounded-lg border text-sm transition-colors ${
+      active ? 'border-accent text-accent font-medium' : 'border-border text-muted hover:text-text'
+    }`
+  const chipStyle = (active) =>
+    active ? { background: 'color-mix(in srgb, var(--accent) 14%, transparent)' } : undefined
+  const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1)
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center modal-backdrop" onClick={handleClose}>
-      <div 
-        className="bg-card border border-border rounded-2xl p-6 w-full max-w-md mx-4 animate-slideIn"
+      <div
+        className="bg-card border border-border rounded-2xl w-full max-w-xl mx-4 max-h-[92vh] overflow-y-auto animate-slideIn"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-text flex items-center gap-2">
-            {editingSite ? <Pencil size={20} /> : <Plus size={20} />}
-            {editingSite ? 'Editar Site' : 'Adicionar Site'}
-          </h2>
-          <button onClick={handleClose} className="text-muted hover:text-text transition-colors">
-            <X size={20} />
+        <div className="flex items-center justify-between gap-4 px-7 pt-6 pb-5 border-b border-border">
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold text-text leading-tight">
+              {editingSite ? 'Editar site' : 'Adicionar site'}
+            </h2>
+            <p className="text-sm text-muted mt-1">
+              {editingSite ? 'Atualize os dados do atalho.' : 'Cole o endereço e o resto é preenchido para você.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleClose}
+            aria-label="Fechar"
+            className="flex items-center justify-center w-9 h-9 rounded-lg text-muted hover:text-text hover:bg-bg transition-colors shrink-0"
+          >
+            <X size={18} />
           </button>
         </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form onSubmit={handleSubmit} className="px-7 py-6 space-y-6">
+          {/* 1. Endereço primeiro: o nome é sugerido a partir dele. */}
           <div>
-            <label className="block text-sm text-muted mb-1">Nome</label>
+            <label htmlFor="site-url" className={labelClass}>Endereço (URL)</label>
             <input
-              type="text"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="GitHub"
-              className="w-full px-4 py-3 bg-bg border border-border rounded-lg text-text placeholder-muted focus:border-accent transition-colors"
-              autoFocus
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm text-muted mb-1">URL</label>
-            <input
+              id="site-url"
               type="text"
               value={url}
               onChange={e => handleUrlChange(e.target.value)}
               onBlur={() => setUrlTouched(true)}
               placeholder="https://github.com"
-              className="w-full px-4 py-3 bg-bg border border-border rounded-lg text-text placeholder-muted focus:border-accent transition-colors"
+              className={`${fieldClass} ${urlHasError ? 'border-red-400' : ''}`}
+              autoFocus={!editingSite}
             />
             {urlHasError && (
-              <p className="text-xs text-red-400 mt-2">
+              <p className="text-[13px] text-red-400 mt-2">
                 Informe uma URL válida. Você pode colar sem `https://` que o Orbit completa para você.
               </p>
             )}
           </div>
 
-          {canPreview && (
-            <div className="flex items-center gap-3 p-3 bg-bg border border-border rounded-xl">
-              <SiteIcon
-                name={name.trim() || getDomain(previewUrl)}
-                url={previewUrl}
-                alt=""
-                imgClassName="w-8 h-8 object-contain"
-                fallbackClassName="w-8 h-8 text-base font-bold bg-accent/15 text-accent rounded-lg"
+          {/* 2. Nome, com o ícone do site como prévia ao vivo. */}
+          <div>
+            <label htmlFor="site-name" className={labelClass}>Nome</label>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-12 h-12 shrink-0 bg-bg border border-border rounded-xl text-muted">
+                {canPreview ? (
+                  <SiteIcon
+                    name={name.trim() || getDomain(previewUrl)}
+                    url={previewUrl}
+                    alt=""
+                    imgClassName="w-7 h-7 object-contain"
+                    fallbackClassName="w-7 h-7 text-sm font-bold text-accent rounded-md"
+                  />
+                ) : (
+                  <Globe size={20} />
+                )}
+              </div>
+              <input
+                id="site-name"
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="GitHub"
+                className={fieldClass}
+                autoFocus={Boolean(editingSite)}
               />
-              <div className="min-w-0">
-                <p className="text-sm text-text font-medium line-clamp-1">{name.trim() || 'Prévia do site'}</p>
-                <p className="text-xs text-muted line-clamp-1">{previewUrl}</p>
+            </div>
+          </div>
+
+          <div className="border-t border-border" />
+
+          {/* 3. Onde o site fica: espaço → categoria → subcategoria. */}
+          {workspaces.length > 0 && (
+            <div>
+              <span className={labelClass}>Espaço</span>
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Espaço">
+                {workspaces.map(w => (
+                  <button
+                    key={w.id}
+                    type="button"
+                    aria-pressed={workspace === w.id}
+                    onClick={() => setWorkspace(w.id)}
+                    className={chipClass(workspace === w.id)}
+                    style={chipStyle(workspace === w.id)}
+                  >
+                    {w.name}
+                  </button>
+                ))}
               </div>
             </div>
           )}
-          
+
           <div>
-            <label className="block text-sm text-muted mb-1">Atalho de teclado</label>
-            <div className="flex items-center gap-2">
+            <span className={labelClass}>Categoria</span>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Categoria">
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  type="button"
+                  aria-pressed={category === cat}
+                  onClick={() => handleCategoryChange(cat)}
+                  className={chipClass(category === cat)}
+                  style={chipStyle(category === cat)}
+                >
+                  {capitalize(cat)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <span className={labelClass}>Subcategoria {optional}</span>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Subcategoria">
+              <button
+                type="button"
+                aria-pressed={subcategory === ''}
+                onClick={() => setSubcategory('')}
+                className={chipClass(subcategory === '')}
+                style={chipStyle(subcategory === '')}
+              >
+                Nenhuma
+              </button>
+              {subcategoryOptions.map(sub => (
+                <button
+                  key={sub}
+                  type="button"
+                  aria-pressed={subcategory === sub}
+                  onClick={() => setSubcategory(sub)}
+                  className={chipClass(subcategory === sub)}
+                  style={chipStyle(subcategory === sub)}
+                >
+                  {sub}
+                </button>
+              ))}
+              <button
+                type="button"
+                aria-pressed={subcategory === NEW_SUBCATEGORY}
+                onClick={() => setSubcategory(NEW_SUBCATEGORY)}
+                className={`${chipClass(subcategory === NEW_SUBCATEGORY)} border-dashed`}
+                style={chipStyle(subcategory === NEW_SUBCATEGORY)}
+              >
+                + Nova
+              </button>
+            </div>
+            {subcategory === NEW_SUBCATEGORY && (
               <input
                 type="text"
-                readOnly
-                value={shortcut ? shortcut.toUpperCase() : ''}
-                onKeyDown={handleShortcutKeyDown}
-                placeholder="Pressione uma tecla"
-                className="w-24 px-4 py-3 bg-bg border border-border rounded-lg text-text text-center font-mono uppercase focus:border-accent transition-colors cursor-default"
+                value={newSubcategory}
+                onChange={e => setNewSubcategory(e.target.value)}
+                maxLength={32}
+                placeholder="Nome da subcategoria, ex.: Projeto Apollo"
+                aria-label="Nome da nova subcategoria"
+                className={`${fieldClass} mt-3`}
+                autoFocus
               />
+            )}
+          </div>
+
+          <div className="border-t border-border" />
+
+          {/* 4. Extra: atalho de teclado, como linha de configuração. */}
+          <div>
+            <div className="flex items-center gap-4">
+              <Keyboard size={20} className="text-muted shrink-0" />
+              <div className="flex-1 min-w-0">
+                <label htmlFor="site-shortcut" className="block text-sm font-medium text-text">
+                  Atalho de teclado {optional}
+                </label>
+                <p className="text-[13px] leading-snug text-muted mt-0.5">
+                  Clique no quadro e aperte uma tecla (a–z ou 0–9) para abrir este site sem usar o mouse.
+                </p>
+              </div>
               {shortcut && (
                 <button
                   type="button"
                   onClick={() => setShortcut('')}
-                  className="px-3 py-3 text-sm text-muted hover:text-text border border-border rounded-lg transition-colors"
+                  className="h-9 px-3 text-sm text-muted hover:text-text border border-border rounded-lg transition-colors shrink-0"
                 >
                   Limpar
                 </button>
               )}
+              <input
+                id="site-shortcut"
+                type="text"
+                readOnly
+                value={shortcut ? shortcut.toUpperCase() : ''}
+                onKeyDown={handleShortcutKeyDown}
+                placeholder="?"
+                aria-label="Tecla de atalho"
+                className="w-12 h-12 shrink-0 bg-bg border border-border rounded-xl text-text text-center text-lg font-mono font-semibold uppercase placeholder-muted focus:border-accent transition-colors cursor-pointer caret-transparent"
+              />
             </div>
-            <p className="text-xs text-muted mt-1.5">
-              Uma tecla (a–z ou 0–9). Funciona fora de campos de texto — abre o site no espaço atual.
-            </p>
             {shortcutConflict && (
-              <p className="text-xs text-red-400 mt-1">
+              <p className="text-[13px] text-red-400 mt-2">
                 Já usado por &quot;{shortcutConflict.name}&quot;
               </p>
             )}
           </div>
 
-          <div className={workspaces.length > 1 ? 'grid grid-cols-2 gap-3' : ''}>
-            <div>
-              <label className="block text-sm text-muted mb-1">Categoria</label>
-              <select
-                value={category}
-                onChange={e => handleCategoryChange(e.target.value)}
-                className="w-full px-4 py-3 bg-bg border border-border rounded-lg text-text focus:border-accent transition-colors"
-              >
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>
-                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Só faz sentido escolher espaço quando existe mais de um. */}
-            {workspaces.length > 1 && (
-              <div>
-                <label className="block text-sm text-muted mb-1">Espaço</label>
-                <select
-                  value={workspace}
-                  onChange={e => setWorkspace(e.target.value)}
-                  className="w-full px-4 py-3 bg-bg border border-border rounded-lg text-text focus:border-accent transition-colors"
-                >
-                  {workspaces.map(w => (
-                    <option key={w.id} value={w.id}>{w.name}</option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm text-muted mb-1">
-              Subcategoria <span className="opacity-60">(opcional)</span>
-            </label>
-            <div className="flex gap-2">
-              <select
-                value={subcategory}
-                onChange={e => setSubcategory(e.target.value)}
-                className="flex-1 min-w-0 px-4 py-3 bg-bg border border-border rounded-lg text-text focus:border-accent transition-colors"
-              >
-                <option value="">Nenhuma</option>
-                {subcategoryOptions.map(sub => (
-                  <option key={sub} value={sub}>{sub}</option>
-                ))}
-                <option value={NEW_SUBCATEGORY}>+ Nova subcategoria…</option>
-              </select>
-              {subcategory === NEW_SUBCATEGORY && (
-                <input
-                  type="text"
-                  value={newSubcategory}
-                  onChange={e => setNewSubcategory(e.target.value)}
-                  maxLength={32}
-                  placeholder="Ex.: Projeto Apollo"
-                  className="flex-1 min-w-0 px-4 py-3 bg-bg border border-border rounded-lg text-text placeholder-muted focus:border-accent transition-colors"
-                  autoFocus
-                />
-              )}
-            </div>
-          </div>
-          
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-3 pt-1">
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 px-4 py-3 bg-bg border border-border rounded-lg text-muted hover:text-text transition-colors"
+              className="flex-1 h-12 px-4 bg-bg border border-border rounded-xl text-[15px] text-muted hover:text-text transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              disabled={
-                !name.trim() ||
-                !isSafeHttpUrl(url.trim()) ||
-                Boolean(shortcutConflict) ||
-                (subcategory === NEW_SUBCATEGORY && !newSubcategory.trim())
-              }
-              className="flex-1 px-4 py-3 bg-accent rounded-lg text-bg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              disabled={!canSubmit}
+              className="flex-1 h-12 px-4 bg-accent rounded-xl text-[15px] text-bg font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {editingSite ? 'Salvar' : 'Adicionar'}
             </button>
