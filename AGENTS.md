@@ -141,7 +141,8 @@ src/
 - `AIChatModal` — chat DeepSeek (requer API key opcional).
 - `WelcomeModal` — onboarding na primeira visita.
 - `DetroitBoot` — sequência de boot que toca só quando o usuário **ativa** o tema `detroit` (não a cada nova aba). A varredura `.dbh-sweep` (App.jsx) e o LED do cabeçalho compartilham o ciclo de 14s.
-- `DetroitHud` — periferia do tema `detroit` (colchetes nos cantos, fluxo de memória, bomba de Thirium, medidor de estabilidade). Só aparece em ≥1280px: os cantos da direita são do botão de Configurações e do `WidgetDock`, então lá só há colchetes.
+- `DetroitZen` — "jardim zen" do tema `detroit`: partículas de luz e triângulos (símbolo da Cyberlife) subindo devagar no fundo (`z-index: 1`, atrás do conteúdo). Só `transform`/`opacity`; some no modo leve.
+- `DetroitHud` — periferia do tema `detroit` (colchetes nos cantos e fluxo de memória). Só aparece em ≥1280px: os cantos da direita são do botão de Configurações e do `WidgetDock`, então lá só há colchetes.
 
 ### Desempenho / Animações
 

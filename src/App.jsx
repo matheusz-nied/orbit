@@ -20,6 +20,7 @@ import { useAutoBackup } from './hooks/useAutoBackup'
 import Toast from './components/Toast'
 import DetroitBoot from './components/DetroitBoot'
 import DetroitHud from './components/DetroitHud'
+import DetroitZen from './components/DetroitZen'
 import BackupReminder from './components/BackupReminder'
 
 const SettingsModal = lazy(() => import('./components/SettingsModal'))
@@ -65,6 +66,7 @@ export default function App() {
       <StarCanvas />
       {/* Varredura de análise do tema Detroit — em sincronia com o LED do cabeçalho. */}
       {theme === 'detroit' && <div className="dbh-sweep gpu-layer" data-decorative aria-hidden />}
+      {theme === 'detroit' && <DetroitZen />}
       {theme === 'detroit' && <DetroitHud />}
 
       {/* Main content */}

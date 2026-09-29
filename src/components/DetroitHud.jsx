@@ -18,12 +18,6 @@ const buildStream = () => {
   })
 }
 
-// Um batimento a cada 60 unidades; o path cobre 240 (o dobro da janela) para
-// o translateX(-50%) fechar o loop sem salto.
-const ECG_PATH = [0, 60, 120, 180]
-  .map((x) => `M${x} 15 H${x + 30} L${x + 33} 15 L${x + 36} 5 L${x + 40} 25 L${x + 43} 10 L${x + 46} 15 H${x + 60}`)
-  .join(' ')
-
 // Periferia do HUD de android: fica nas margens laterais, só em telas largas
 // (CSS esconde abaixo de 1280px). Tudo decorativo e sem clique.
 export default function DetroitHud() {
@@ -44,25 +38,6 @@ export default function DetroitHud() {
               <li key={i}>{line}</li>
             ))}
           </ul>
-        </div>
-      </div>
-
-      <div className="dbh-hud-pump">
-        <p className="dbh-hud-label">
-          Bomba de Thirium <b>72 bpm</b>
-        </p>
-        <div className="dbh-hud-pump-window">
-          <svg className="dbh-hud-pump-trace gpu-layer" data-decorative viewBox="0 0 240 30" preserveAspectRatio="none">
-            <path d={ECG_PATH} className="dbh-hud-pump-glow" />
-            <path d={ECG_PATH} className="dbh-hud-pump-line" />
-          </svg>
-        </div>
-      </div>
-
-      <div className="dbh-hud-gauge">
-        <p className="dbh-hud-label dbh-hud-label--vertical">Estabilidade</p>
-        <div className="dbh-hud-gauge-track">
-          <span className="dbh-hud-gauge-marker gpu-layer" data-decorative />
         </div>
       </div>
     </div>

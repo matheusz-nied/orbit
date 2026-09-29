@@ -1912,9 +1912,54 @@ input:focus, button:focus, select:focus {
   100% { opacity: 0; transform: translateY(100vh); }
 }
 
-/* Periferia do HUD: colchetes nos cantos + fluxo de memória, bomba de
-   Thirium e medidor de estabilidade nas margens. Só existe onde sobra
-   margem lateral (≥1280px); abaixo disso cobriria o conteúdo. */
+/* Jardim Zen: partículas e triângulos sobem devagar por trás do conteúdo.
+   Só transform/opacity; cada uma é uma camada própria no compositor. */
+.dbh-zen {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dbh-mote {
+  position: absolute;
+  bottom: -24px;
+  opacity: 0;
+  animation: dbhMote var(--dur, 50s) linear var(--delay, 0s) infinite;
+}
+
+.dbh-mote i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #d6f1ff 0 35%, rgba(56, 182, 255, 0.45) 60%, transparent 72%);
+}
+
+.dbh-mote svg {
+  display: block;
+  overflow: visible;
+  fill: none;
+  stroke: #a0e1ff;
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+}
+
+@keyframes dbhMote {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0deg); }
+  12% { opacity: var(--peak, 0.5); }
+  85% { opacity: var(--peak, 0.5); }
+  100% { opacity: 0; transform: translate3d(var(--drift, 30px), -108vh, 0) rotate(var(--spin, 0deg)); }
+}
+
+[data-motion="reduced"] .dbh-zen {
+  display: none;
+}
+
+/* Periferia do HUD: colchetes nos cantos + fluxo de memória na margem
+   esquerda. Só existe onde sobra margem lateral (≥1280px); abaixo disso
+   cobriria o conteúdo. */
 .dbh-hud {
   display: none;
 }
@@ -1941,9 +1986,7 @@ input:focus, button:focus, select:focus {
 .dbh-hud-corner--bl { bottom: 8px; left: 8px; border-bottom-width: 1px; border-left-width: 1px; }
 .dbh-hud-corner--br { right: 8px; bottom: 8px; border-right-width: 1px; border-bottom-width: 1px; }
 
-.dbh-hud-stream,
-.dbh-hud-pump,
-.dbh-hud-gauge {
+.dbh-hud-stream {
   position: fixed;
   z-index: 5;
   pointer-events: none;
@@ -1993,98 +2036,6 @@ input:focus, button:focus, select:focus {
 
 @keyframes dbhStream {
   to { transform: translateY(-50%); }
-}
-
-.dbh-hud-pump {
-  bottom: 28px;
-  left: 24px;
-  width: 120px;
-}
-
-.dbh-hud-pump-window {
-  height: 30px;
-  overflow: hidden;
-  border-bottom: 1px solid var(--border);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 90%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 90%, transparent);
-}
-
-.dbh-hud-pump-trace {
-  display: block;
-  width: 200%;
-  height: 100%;
-  overflow: visible;
-  /* 2 batimentos por ciclo → 1.67s = 72 bpm, igual ao rótulo. */
-  animation: dbhPump 1.67s linear infinite;
-}
-
-@keyframes dbhPump {
-  to { transform: translateX(-50%); }
-}
-
-/* Brilho = traço largo translúcido por baixo, em vez de filter (que seria
-   refeito a cada frame da animação). */
-.dbh-hud-pump-glow,
-.dbh-hud-pump-line {
-  fill: none;
-  stroke: var(--accent);
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.dbh-hud-pump-glow {
-  stroke-width: 5;
-  opacity: 0.25;
-}
-
-.dbh-hud-pump-line {
-  stroke: #a0e1ff;
-  stroke-width: 1.5;
-}
-
-.dbh-hud-gauge {
-  top: 50%;
-  right: 22px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transform: translateY(-50%);
-}
-
-.dbh-hud-label--vertical {
-  margin: 0;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-}
-
-/* Trilho com marcações; marcador oscila na faixa "estável" (azul),
-   de vez em quando encostando no amarelo. */
-.dbh-hud-gauge-track {
-  position: relative;
-  width: 10px;
-  height: 180px;
-  border-right: 1px solid var(--border);
-  background:
-    linear-gradient(180deg, var(--dbh-alert, #ff3b3b) 0 12%, var(--dbh-warn, #f5b62a) 12% 32%, transparent 32%) right / 2px 100% no-repeat,
-    repeating-linear-gradient(180deg, color-mix(in srgb, var(--accent) 45%, transparent) 0 1px, transparent 1px 12px) left / 6px 100% no-repeat;
-}
-
-.dbh-hud-gauge-marker {
-  position: absolute;
-  top: 0;
-  right: -1px;
-  width: 16px;
-  height: 2px;
-  background: var(--accent);
-  box-shadow: 0 0 6px var(--accent);
-  animation: dbhGauge 9s ease-in-out infinite alternate;
-}
-
-@keyframes dbhGauge {
-  0% { transform: translateY(140px); }
-  45% { transform: translateY(95px); }
-  70% { transform: translateY(118px); }
-  100% { transform: translateY(62px); }
 }
 
 /* Boot do android ao ativar o tema. O overlay some sozinho (fade no fim)
