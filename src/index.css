@@ -948,29 +948,77 @@ input:focus, button:focus, select:focus {
 }
 
 /* =========================================================
-   PREMIUM DARK — preto absoluto com detalhes em champanhe. Luxo
-   discreto: nada anima sozinho; o dourado aparece só em fios de borda,
-   no relógio e no que está ativo. Hover mexe só em transform/opacity.
+   PREMIUM DARK — obsidiana e champagne. Luxo discreto: profundidade
+   em camadas (feixe de luz, fios de seda, reflexo no piso, grão de
+   filme), superfícies com borda especular e o dourado só onde importa
+   (relógio, fios de borda, o que está ativo).
+   Nada anima sozinho, exceto o brilho do relógio; hover mexe só em
+   transform/opacity. backdrop-filter só em superfícies que flutuam
+   sobre conteúdo — em linhas de lista ele borraria preto sobre preto.
    ========================================================= */
+
+[data-theme="premium-dark"] {
+  scrollbar-color: rgba(217, 195, 156, 0.22) transparent;
+  scrollbar-width: thin;
+}
 
 [data-theme="premium-dark"] body {
   background-color: #000;
   background-image:
-    radial-gradient(ellipse 42% 30% at 50% 0%, rgba(255, 226, 180, 0.16), rgba(217, 180, 120, 0.05) 45%, transparent 75%),
-    radial-gradient(ellipse 90% 60% at 50% -5%, rgba(120, 90, 50, 0.1), transparent 70%);
+    /* Refletor: pool de luz quente no alto, atrás do relógio. */
+    radial-gradient(ellipse 46% 32% at 50% 0%, rgba(255, 226, 180, 0.18), rgba(217, 180, 120, 0.05) 48%, transparent 76%),
+    radial-gradient(ellipse 100% 55% at 50% -8%, rgba(120, 90, 50, 0.12), transparent 70%),
+    /* Reflexo no piso: um sopro quente na base. */
+    radial-gradient(ellipse 70% 26% at 50% 112%, rgba(217, 195, 156, 0.07), transparent 72%);
   background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Feixe de luz de vitrine: um cone suave caindo do alto sobre o relógio. */
+[data-theme="premium-dark"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: conic-gradient(
+    from 180deg at 50% -14%,
+    rgba(255, 232, 190, 0.06) 0 8deg,
+    transparent 21deg 339deg,
+    rgba(255, 232, 190, 0.06) 352deg 360deg
+  );
+  -webkit-mask-image: linear-gradient(180deg, #000 0, rgba(0, 0, 0, 0.55) 45%, transparent 85%);
+  mask-image: linear-gradient(180deg, #000 0, rgba(0, 0, 0, 0.55) 45%, transparent 85%);
+}
+
+/* Grão de filme: estático (rasterizado uma vez). Quebra o degradê do preto
+   e dá a textura de papel fotográfico que o preto chapado não tem. Fica
+   abaixo do conteúdo (z-10), então cards e texto continuam lisos. */
+[data-theme="premium-dark"] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
 }
 
 /* Fios de seda dourada — SVG estático (gradiente + um fio com brilho),
-   rasterizado uma vez; nenhuma animação no fundo. */
+   rasterizado uma vez; nenhuma animação no fundo.
+   Os "#" da data-URI precisam ir como %23: um "#" cru começa o fragmento
+   da URL e trunca o SVG (foi assim que o fundo nunca aparecia). */
 [data-theme="premium-dark"] .orbit-shell::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.85;
-  background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 900%22 preserveAspectRatio=%22xMidYMid slice%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 x2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22#d9c39c%22 stop-opacity=%220%22/%3E%3Cstop offset=%22.3%22 stop-color=%22#b89868%22/%3E%3Cstop offset=%22.55%22 stop-color=%22#f6e7c8%22/%3E%3Cstop offset=%22.8%22 stop-color=%22#c9ad7d%22/%3E%3Cstop offset=%221%22 stop-color=%22#d9c39c%22 stop-opacity=%220%22/%3E%3C/linearGradient%3E%3Cfilter id=%22b%22 x=%22-10%25%22 y=%22-50%25%22 width=%22120%25%22 height=%22200%25%22%3E%3CfeGaussianBlur stdDeviation=%227%22/%3E%3C/filter%3E%3C/defs%3E%3Cg fill=%22none%22 stroke-width=%221%22%3E%3Cpath d=%22M-120 760 C 380 560, 900 1010, 1560 420%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.1%22/%3E%3Cpath d=%22M-120 776 C 380 569, 900 1003, 1560 440%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.16%22/%3E%3Cpath d=%22M-120 792 C 380 578, 900 996, 1560 460%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.22%22/%3E%3Cpath d=%22M-120 808 C 380 587, 900 989, 1560 480%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.3%22/%3E%3Cpath d=%22M-120 824 C 380 596, 900 982, 1560 500%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.55%22/%3E%3Cpath d=%22M-120 840 C 380 605, 900 975, 1560 520%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.3%22/%3E%3Cpath d=%22M-120 856 C 380 614, 900 968, 1560 540%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.2%22/%3E%3Cpath d=%22M-120 872 C 380 623, 900 961, 1560 560%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.14%22/%3E%3Cpath d=%22M-120 888 C 380 632, 900 954, 1560 580%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.08%22/%3E%3Cpath d=%22M820 -60 C 1080 120, 1260 40, 1560 230%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.07%22/%3E%3Cpath d=%22M820 -54 C 1080 134, 1260 50, 1560 246%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.12%22/%3E%3Cpath d=%22M820 -48 C 1080 148, 1260 60, 1560 262%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.2%22/%3E%3Cpath d=%22M820 -42 C 1080 162, 1260 70, 1560 278%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.12%22/%3E%3Cpath d=%22M820 -36 C 1080 176, 1260 80, 1560 294%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.08%22/%3E%3Cpath d=%22M820 -30 C 1080 190, 1260 90, 1560 310%22 stroke=%22url%28#g%29%22 stroke-opacity=%220.05%22/%3E%3C/g%3E%3Cpath d=%22M-120 824 C 380 596, 900 982, 1560 500%22 stroke=%22url%28#g%29%22 fill=%22none%22 stroke-width=%225%22 stroke-opacity=%22.35%22 filter=%22url%28#b%29%22/%3E%3Cpath d=%22M-120 824 C 380 596, 900 982, 1560 500%22 stroke=%22url%28#g%29%22 fill=%22none%22 stroke-width=%221.2%22 stroke-opacity=%22.9%22/%3E%3C/svg%3E") center / cover no-repeat;
+  opacity: 0.9;
+  background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 900%22 preserveAspectRatio=%22xMidYMid slice%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 x2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%23d9c39c%22 stop-opacity=%220%22/%3E%3Cstop offset=%22.3%22 stop-color=%22%23b89868%22/%3E%3Cstop offset=%22.55%22 stop-color=%22%23f6e7c8%22/%3E%3Cstop offset=%22.8%22 stop-color=%22%23c9ad7d%22/%3E%3Cstop offset=%221%22 stop-color=%22%23d9c39c%22 stop-opacity=%220%22/%3E%3C/linearGradient%3E%3Cfilter id=%22b%22 x=%22-10%25%22 y=%22-50%25%22 width=%22120%25%22 height=%22200%25%22%3E%3CfeGaussianBlur stdDeviation=%227%22/%3E%3C/filter%3E%3C/defs%3E%3Cg fill=%22none%22 stroke-width=%221%22%3E%3Cpath d=%22M-120 760 C 380 560, 900 1010, 1560 420%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.1%22/%3E%3Cpath d=%22M-120 776 C 380 569, 900 1003, 1560 440%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.16%22/%3E%3Cpath d=%22M-120 792 C 380 578, 900 996, 1560 460%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.22%22/%3E%3Cpath d=%22M-120 808 C 380 587, 900 989, 1560 480%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.3%22/%3E%3Cpath d=%22M-120 824 C 380 596, 900 982, 1560 500%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.55%22/%3E%3Cpath d=%22M-120 840 C 380 605, 900 975, 1560 520%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.3%22/%3E%3Cpath d=%22M-120 856 C 380 614, 900 968, 1560 540%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.2%22/%3E%3Cpath d=%22M-120 872 C 380 623, 900 961, 1560 560%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.14%22/%3E%3Cpath d=%22M-120 888 C 380 632, 900 954, 1560 580%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.08%22/%3E%3Cpath d=%22M820 -60 C 1080 120, 1260 40, 1560 230%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.07%22/%3E%3Cpath d=%22M820 -54 C 1080 134, 1260 50, 1560 246%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.12%22/%3E%3Cpath d=%22M820 -48 C 1080 148, 1260 60, 1560 262%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.2%22/%3E%3Cpath d=%22M820 -42 C 1080 162, 1260 70, 1560 278%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.12%22/%3E%3Cpath d=%22M820 -36 C 1080 176, 1260 80, 1560 294%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.08%22/%3E%3Cpath d=%22M820 -30 C 1080 190, 1260 90, 1560 310%22 stroke=%22url%28%23g%29%22 stroke-opacity=%220.05%22/%3E%3C/g%3E%3Cpath d=%22M-120 824 C 380 596, 900 982, 1560 500%22 stroke=%22url%28%23g%29%22 fill=%22none%22 stroke-width=%225%22 stroke-opacity=%22.35%22 filter=%22url%28%23b%29%22/%3E%3Cpath d=%22M-120 824 C 380 596, 900 982, 1560 500%22 stroke=%22url%28%23g%29%22 fill=%22none%22 stroke-width=%221.2%22 stroke-opacity=%22.9%22/%3E%3C/svg%3E") center / cover no-repeat;
 }
 
 [data-theme="premium-dark"] ::selection {
@@ -978,7 +1026,20 @@ input:focus, button:focus, select:focus {
   color: #fff;
 }
 
-/* Relógio: numerais finos em marfim → champanhe, data em versalete. */
+/* Foco: fio champagne discreto em vez do contorno grosso global; clique
+   com mouse não desenha anel nenhum (só teclado). */
+[data-theme="premium-dark"] button:focus:not(:focus-visible),
+[data-theme="premium-dark"] select:focus:not(:focus-visible) {
+  outline: none;
+}
+
+[data-theme="premium-dark"] :focus-visible:not(.focus\:outline-none) {
+  outline: 1px solid rgba(217, 195, 156, 0.75);
+  outline-offset: 3px;
+}
+
+/* Relógio: numerais finos em marfim → champagne, data em versalete e um
+   filete de luz embaixo, como o índice de um mostrador. */
 @keyframes premiumGlint {
   0%, 70% { background-position: 150% 0, 0 0; }
   100% { background-position: -50% 0, 0 0; }
@@ -1012,64 +1073,194 @@ input:focus, button:focus, select:focus {
   color: rgba(217, 195, 156, 0.7);
 }
 
+[data-theme="premium-dark"] .orbit-clock::after {
+  content: '';
+  display: block;
+  width: 6rem;
+  height: 1px;
+  margin: 1.15rem auto 0;
+  background: linear-gradient(90deg, transparent, rgba(217, 195, 156, 0.6), transparent);
+}
+
 /* Superfícies: vidro fumê com borda metálica — mais clara no topo, como
-   luz batendo no chanfro. A borda é um gradiente em border-box. */
+   luz batendo no chanfro. A borda é um gradiente em border-box; o realce
+   interno de 1px e a sombra profunda dão elevação. */
 [data-theme="premium-dark"] .bg-card,
 [data-theme="premium-dark"] .group\/card .bg-card\/80 {
   border: 1px solid transparent !important;
   background:
-    linear-gradient(180deg, rgba(12, 11, 10, 0.85), rgba(4, 4, 4, 0.85)) padding-box,
-    linear-gradient(180deg, rgba(240, 215, 170, 0.26), rgba(217, 195, 156, 0.06) 40%, rgba(217, 195, 156, 0.03)) border-box !important;
-  backdrop-filter: blur(20px) saturate(140%) !important;
+    linear-gradient(180deg, rgba(20, 18, 16, 0.88), rgba(7, 7, 7, 0.92)) padding-box,
+    linear-gradient(180deg, rgba(240, 215, 170, 0.28), rgba(217, 195, 156, 0.07) 42%, rgba(217, 195, 156, 0.04)) border-box !important;
   box-shadow:
-    0 18px 40px -18px rgba(0, 0, 0, 1),
-    inset 0 1px 0 rgba(255, 245, 225, 0.04) !important;
+    0 22px 44px -22px #000,
+    0 2px 6px -2px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 245, 225, 0.05) !important;
 }
 
+/* Linhas de lista (notícias): sem backdrop-filter — são dezenas e o fundo
+   é preto; o vidro só custaria composição. Hover clareia a borda e o fundo. */
+[data-theme="premium-dark"] a.bg-card {
+  /* Mais opaco que as demais: os fios de seda passam por trás e, com o vidro
+     translúcido, cruzariam o texto como um risco. */
+  background:
+    linear-gradient(180deg, rgba(18, 16, 14, 0.96), rgba(7, 7, 7, 0.97)) padding-box,
+    linear-gradient(180deg, rgba(240, 215, 170, 0.28), rgba(217, 195, 156, 0.07) 42%, rgba(217, 195, 156, 0.04)) border-box !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="premium-dark"] a.bg-card:hover {
+  background:
+    linear-gradient(180deg, rgba(27, 24, 20, 0.97), rgba(10, 10, 9, 0.98)) padding-box,
+    linear-gradient(180deg, rgba(240, 215, 170, 0.5), rgba(217, 195, 156, 0.12) 50%, rgba(217, 195, 156, 0.07)) border-box !important;
+  transform: translateX(3px);
+}
+
+/* Superfícies que flutuam sobre conteúdo: aqui o vidro fosco compensa. Sem
+   !important de propósito — o modo leve precisa poder desligar. */
+[data-theme="premium-dark"] .orbit-search input,
+[data-theme="premium-dark"] .group\/card .bg-card\/80,
+[data-theme="premium-dark"] .modal-backdrop > .bg-card,
+[data-theme="premium-dark"] .fixed .bg-card {
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* Tiles do layout Clássico: peça de vitrine — corpo escuro que clareia no
+   canto superior esquerdo, aresta especular, base afundada e um brilho que
+   varre a face no hover (só transform). */
 [data-theme="premium-dark"] .group\/card .bg-card\/80 {
+  background:
+    linear-gradient(155deg, rgba(28, 25, 21, 0.92), rgba(7, 7, 7, 0.95) 70%) padding-box,
+    linear-gradient(180deg, rgba(246, 231, 200, 0.34), rgba(217, 195, 156, 0.08) 45%, rgba(217, 195, 156, 0.05)) border-box !important;
+  box-shadow:
+    0 16px 30px -14px #000,
+    0 2px 4px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 245, 225, 0.09),
+    inset 0 -10px 18px -10px rgba(0, 0, 0, 0.6) !important;
   transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="premium-dark"] .group\/card .bg-card\/80::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 240, 215, 0.13) 50%, transparent 70%);
+  transform: translateX(-130%);
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme="premium-dark"] .group\/card:hover .bg-card\/80 {
   background:
-    linear-gradient(180deg, rgba(16, 14, 12, 0.9), rgba(5, 5, 5, 0.9)) padding-box,
-    linear-gradient(180deg, rgba(232, 208, 165, 0.5), rgba(217, 195, 156, 0.1) 50%, rgba(217, 195, 156, 0.05)) border-box !important;
+    linear-gradient(155deg, rgba(34, 30, 25, 0.94), rgba(9, 9, 8, 0.96) 70%) padding-box,
+    linear-gradient(180deg, rgba(240, 215, 170, 0.55), rgba(217, 195, 156, 0.12) 50%, rgba(217, 195, 156, 0.06)) border-box !important;
   transform: translateY(-4px) !important;
+}
+
+[data-theme="premium-dark"] .group\/card:hover .bg-card\/80::after {
+  transform: translateX(130%);
 }
 
 /* Halo do card clássico (o bg-accent/20 não é gerado pelo Tailwind). */
 [data-theme="premium-dark"] .group\/card > .blur-xl {
-  background: radial-gradient(circle, rgba(217, 195, 156, 0.22), transparent 70%);
+  background: radial-gradient(circle, rgba(217, 195, 156, 0.2), transparent 70%);
 }
 
-[data-theme="premium-dark"] input,
-[data-theme="premium-dark"] textarea {
+/* Rótulo do card: cinza quente em repouso, marfim no hover. */
+[data-theme="premium-dark"] h3.text-muted {
+  font-weight: 500;
+}
+
+/* Campos de texto (menos os .bg-transparent, que se fundem ao painel — paleta
+   de comandos, notas). O da busca é .bg-card (borda em gradiente); no foco a
+   borda acende e ganha um halo — o outline global sai de cena. */
+[data-theme="premium-dark"] input:not(.bg-transparent),
+[data-theme="premium-dark"] textarea:not(.bg-transparent) {
   background: rgba(6, 6, 6, 0.85) !important;
-  backdrop-filter: blur(12px) !important;
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 240, 215, 0.03) !important;
 }
 
+[data-theme="premium-dark"] input:not(.bg-transparent):focus,
+[data-theme="premium-dark"] textarea:not(.bg-transparent):focus {
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8), 0 0 0 3px rgba(217, 195, 156, 0.08) !important;
+}
+
+[data-theme="premium-dark"] .orbit-search input {
+  border-radius: 14px;
+  transition: box-shadow 0.3s ease;
+}
+
 [data-theme="premium-dark"] .orbit-search input:focus {
-  border-color: rgba(217, 195, 156, 0.45) !important;
+  outline: none;
+  background:
+    linear-gradient(180deg, rgba(18, 16, 14, 0.92), rgba(6, 6, 6, 0.92)) padding-box,
+    linear-gradient(180deg, rgba(246, 231, 200, 0.75), rgba(217, 195, 156, 0.2) 55%, rgba(217, 195, 156, 0.38)) border-box !important;
   box-shadow:
-    inset 0 2px 6px rgba(0, 0, 0, 0.8),
-    0 0 0 4px rgba(217, 195, 156, 0.06),
-    0 18px 50px -12px rgba(0, 0, 0, 0.9) !important;
+    0 0 0 4px rgba(217, 195, 156, 0.07),
+    0 24px 60px -14px rgba(0, 0, 0, 0.95),
+    inset 0 1px 0 rgba(255, 245, 225, 0.06) !important;
 }
 
-/* Aba ativa em champanhe escovado em vez de chapado. */
-[data-theme="premium-dark"] .orbit-category-filter .bg-accent {
-  background: linear-gradient(180deg, #ecdcbc 0%, #d4bb8f 55%, #bfa273 100%);
+/* O brilho azul/vermelho do provedor destoa da paleta: fica só um sopro. */
+[data-theme="premium-dark"] .orbit-search > div[aria-hidden] {
+  opacity: 0.3;
+}
+
+/* Botões primários e aba ativa: champagne escovado (claro no alto,
+   sombra na base) com realce de 1px e um brilho suave por baixo.
+   Só <button>/<a>: barras de progresso e pontos com bg-accent seguem chapados. */
+[data-theme="premium-dark"] button.bg-accent,
+[data-theme="premium-dark"] a.bg-accent {
+  background: linear-gradient(180deg, var(--pd-gold-hi, #f6e7c8) 0%, var(--accent) 52%, var(--pd-gold-lo, #a88b5a) 100%);
   color: #17130d !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 4px 14px -4px rgba(217, 195, 156, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(90, 65, 25, 0.35),
+    0 8px 20px -10px rgba(217, 195, 156, 0.35);
 }
 
-[data-theme="premium-dark"] .text-muted {
-  color: #7d776e !important;
+[data-theme="premium-dark"] .orbit-category-filter .bg-accent {
+  font-weight: 600;
 }
 
-[data-theme="premium-dark"] .border-border {
-  border-color: rgba(255, 240, 215, 0.07) !important;
+[data-theme="premium-dark"] .orbit-category-filter button:not(.bg-accent):not(.flex-shrink-0):hover {
+  background: rgba(255, 240, 215, 0.05);
+  color: var(--text);
+}
+
+/* Modais: pedem presença — fundo que escurece com um calor no centro, painel
+   com borda metálica, sombra longa e um halo champagne quase imperceptível. */
+[data-theme="premium-dark"] .modal-backdrop {
+  background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(24, 20, 14, 0.55), rgba(0, 0, 0, 0.84));
+  backdrop-filter: blur(14px) saturate(120%);
+}
+
+[data-theme="premium-dark"] .modal-backdrop > .bg-card {
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(20, 18, 16, 0.96), rgba(9, 9, 9, 0.97)) padding-box,
+    linear-gradient(180deg, rgba(240, 215, 170, 0.34), rgba(217, 195, 156, 0.08) 40%, rgba(217, 195, 156, 0.05)) border-box !important;
+  box-shadow:
+    0 60px 140px -30px #000,
+    0 0 0 1px rgba(255, 240, 215, 0.03),
+    0 0 90px -24px rgba(217, 195, 156, 0.12),
+    inset 0 1px 0 rgba(255, 245, 225, 0.07) !important;
+}
+
+/* Seção de notícias: o filete de cima vira uma luz que some nas pontas. */
+[data-theme="premium-dark"] .orbit-news-section {
+  position: relative;
+  border-top-color: transparent;
+}
+
+[data-theme="premium-dark"] .orbit-news-section::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(217, 195, 156, 0.3) 50%, transparent);
 }
 
 [data-theme="premium-dark"] h3 {

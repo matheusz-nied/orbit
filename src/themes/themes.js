@@ -15,13 +15,16 @@ export const themes = {
   'premium-dark': {
     name: 'Premium Dark',
     '--bg': '#000000',
-    '--card': 'rgba(8, 8, 8, 0.8)',
+    '--card': 'rgba(12, 11, 10, 0.82)',
     '--text': '#f5f1ea',
     '--accent': '#d9c39c',
-    '--muted': '#7d776e',
-    '--border': 'rgba(255, 240, 215, 0.07)',
+    '--muted': '#8a8378',
+    '--border': 'rgba(255, 240, 215, 0.09)',
     '--font': "'Inter', system-ui, sans-serif",
     '--star': '0',
+    // Extremos do champagne escovado (claro → sombra): só o CSS do tema usa.
+    '--pd-gold-hi': '#f6e7c8',
+    '--pd-gold-lo': '#a88b5a',
   },
   'space': {
     name: 'Space',

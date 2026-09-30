@@ -123,7 +123,7 @@ export default function App() {
         </div>
 
         {/* News Section (peeking from bottom) */}
-        <div className="container mx-auto px-4 pb-16 pt-8 border-t border-border">
+        <div className="orbit-news-section container mx-auto px-4 pb-16 pt-8 border-t border-border">
           <NewsFeed />
         </div>
 

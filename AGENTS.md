@@ -51,6 +51,12 @@ src/
 - Temas são **CSS custom properties** aplicadas via `document.documentElement.style.setProperty()` (não classes).
 - Tailwind referencia variáveis: `bg-[var(--bg)]`, etc. (configurado em `tailwind.config.js` com tokens `bg`, `card`, `text`, `accent`, `muted`, `border`, `font-theme`).
 - `applyTheme()` em `src/themes/themes.js` reage a mudanças via `useEffect` em `App.jsx`.
+- **Premium Dark** (obsidiana + champagne): profundidade em camadas — feixe de luz (`body::before`), fios de seda (`.orbit-shell::before`), grão de filme estático (`body::after`, abaixo do conteúdo z-10) e reflexo no piso (gradiente do `body`). `--pd-gold-hi/lo` são os extremos do champagne escovado (botões `button.bg-accent` e aba ativa).
+  - **Data-URI em CSS: todo `#` vai como `%23`.** Um `#` cru começa o fragmento da URL e trunca o SVG — os fios de seda nunca renderizaram por isso.
+  - `backdrop-filter` **só** em superfícies que flutuam sobre conteúdo (busca, tiles Clássico, modais, dock), e **sem `!important`** para o modo leve conseguir desligar. Linhas de lista (`a.bg-card`, notícias) ficam sem blur e mais opacas, para os fios de seda não cruzarem o texto.
+  - O tema respeita opt-outs dos componentes: `input.bg-transparent` (paleta, notas) não ganha fundo/sombra, e `focus:outline-none` não ganha o fio de foco champagne.
+  - `SiteCardWaveParticle` troca o neon por uma paleta de metais quando `theme === 'premium-dark'` (as cores são hex inline em JS — CSS não consegue remapear). Novos tons precisam ser hex de **6 dígitos**: as camadas anexam o alfa como sufixo.
+  - `.orbit-news-section` (App.jsx) existe para o filete de luz do tema; não remova a classe.
 
 ### Workspaces (Espaços)
 

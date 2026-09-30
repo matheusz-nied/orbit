@@ -11,12 +11,21 @@ const waveColors = [
   '#3a86ff', '#8338ec', '#06ffa5', '#ff4365', '#00bbf9',
 ]
 
-const getWaveColor = (name) => {
+// O Premium Dark troca o neon por metais (champagne, platina, ouro velho, ouro
+// rosé, bronze) para não destoar da paleta contida do tema. Sempre hex de 6
+// dígitos: as camadas abaixo anexam o alfa como sufixo (`${cor}22`).
+const metalColors = [
+  '#d9c39c', '#efe2c6', '#c9a96e', '#e6e1d6',
+  '#b89868', '#d8b79a', '#cfc8ba', '#a99678',
+]
+
+const getWaveColor = (name, theme) => {
+  const palette = theme === 'premium-dark' ? metalColors : waveColors
   let hash = 0
   for (let i = 0; i < (name?.length || 0); i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
   }
-  return waveColors[Math.abs(hash) % waveColors.length]
+  return palette[Math.abs(hash) % palette.length]
 }
 
 const getWavePhase = (name) => {
@@ -35,6 +44,7 @@ function SiteCardWaveParticle({ site }) {
   const openAddSite = useStore((state) => state.openAddSite)
   const setEditingSite = useStore((state) => state.setEditingSite)
   const openInNewTab = useStore((state) => state.openInNewTab)
+  const theme = useStore((state) => state.theme)
   const [showActions, setShowActions] = useState(false)
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: site.id })
@@ -50,7 +60,7 @@ function SiteCardWaveParticle({ site }) {
   const handleDelete = (e) => { e.stopPropagation(); confirmDeleteSite(site.id) }
   const handleClick = () => openSite(site, openInNewTab)
 
-  const waveColor = useMemo(() => getWaveColor(site.name), [site.name])
+  const waveColor = useMemo(() => getWaveColor(site.name, theme), [site.name, theme])
   const phase = useMemo(() => getWavePhase(site.name), [site.name])
 
   const timings = useMemo(() => ({
