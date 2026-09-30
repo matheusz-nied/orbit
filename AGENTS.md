@@ -45,8 +45,8 @@ src/
 - Exporta também o array `searchProviders` (Google, DuckDuckGo, YouTube, Ecosia, AI Chat).
 
 ### Temas
-- 6 temas: `minimal-light`, `premium-dark`, `space`, `cyberpunk`, `nous-archive`, `detroit`.
-- Temas com variáveis próprias (`--archive-*`, `--dbh-*`) só as definem no próprio tema — o CSS que as usa sempre tem fallback.
+- 7 temas: `minimal-light`, `premium-dark`, `space`, `cyberpunk`, `nous-archive`, `detroit`, `berserk` ("Berserk · Eclipse").
+- Temas com variáveis próprias (`--archive-*`, `--dbh-*`, `--berserk-*`) só as definem no próprio tema — o CSS que as usa sempre tem fallback.
 - `resolveTheme()` em `themes.js` corrige id órfão no boot e no import (cai para `premium-dark`).
 - Temas são **CSS custom properties** aplicadas via `document.documentElement.style.setProperty()` (não classes).
 - Tailwind referencia variáveis: `bg-[var(--bg)]`, etc. (configurado em `tailwind.config.js` com tokens `bg`, `card`, `text`, `accent`, `muted`, `border`, `font-theme`).
@@ -131,7 +131,7 @@ src/
 - `WorkspaceSwitcher` / `WorkspaceManager` — troca e CRUD de espaços.
 - `CategoryFilter` — abas de filtro + Frequentes + botão "Adicionar Site".
 - `SiteGrid` — grid sortable com `DndContext > SortableContext`, usa `rectSortingStrategy`.
-- `SiteCard` — facade dos 7 layouts (`classic`, `space`, `wave-particle`, `quantum-spin`, `cyber`, `archive`, `android`).
+- `SiteCard` — facade dos 8 layouts (`classic`, `space`, `wave-particle`, `quantum-spin`, `cyber`, `archive`, `android`, `berserk`).
 - `resolveCardLayout()` em `utils/cardLayout.js` corrige id órfão no boot e no import (cai para `classic`).
 - `WidgetDock` / `NotesPanel` / `PomodoroPanel` / `AgendaPanel` / `TimersPanel` / `AmbientPanel` / `SummaryPanel` — dock inferior.
 - `CommandPalette` — Ctrl+K (lazy). `BackupReminder` / `AutoBackupSettings` — backup.
@@ -143,6 +143,8 @@ src/
 - `DetroitBoot` — sequência de boot que toca só quando o usuário **ativa** o tema `detroit` (não a cada nova aba). A varredura `.dbh-sweep` (App.jsx) e o LED do cabeçalho compartilham o ciclo de 14s.
 - `DetroitZen` — "jardim zen" do tema `detroit`: partículas de luz e triângulos (símbolo da Cyberlife) subindo devagar no fundo (`z-index: 1`, atrás do conteúdo). Só `transform`/`opacity`; some no modo leve.
 - `DetroitHud` — periferia do tema `detroit` (colchetes nos cantos e fluxo de memória). Só aparece em ≥1280px: os cantos da direita são do botão de Configurações e do `WidgetDock`, então lá só há colchetes.
+- `BerserkAsh` — cinzas caindo e brasas subindo no fundo do tema `berserk` (`z-index: 1`, atrás do conteúdo). Só `transform`/`opacity`; some no modo leve. O disco do Eclipse (`.berserk-eclipse`, no `App.jsx`) é estático e só a coroa respira em `opacity`.
+- `SiteCardBerserk` — layout "Painel" (`berserk`): quadro de mangá. A moldura **é o próprio botão** (fundo + `padding: 1.5px`) e o miolo é um filho opaco com o mesmo `clip-path` (cantos cortados) — `clip-path` não carrega borda, e por isso editar/excluir ficam **fora** do botão. Cada card tem inclinação fixa derivada do nome (`--berserk-tilt`). O tema zera o `outline` global só no input da busca — a lâmina (`.orbit-search::after`, `scaleX`) é o indicador de foco.
 
 ### Desempenho / Animações
 
@@ -188,7 +190,7 @@ npm run preview  # Preview do build
 ## Checklist ao Alterar Código
 
 1. **Persistência**: Se alterar estado que precisa sobreviver a reload, chame `storage.set()` na ação do Zustand.
-2. **Temas**: Novas cores/props devem ser adicionadas em **todos** os 9 temas em `src/themes/themes.js`.
+2. **Temas**: Novas cores/props devem ser adicionadas em **todos** os 7 temas em `src/themes/themes.js`.
 3. **Componentes novos**: Colocar em `src/components/`, um por arquivo, default export.
 4. **Estilo**: Usar classes Tailwind com tokens temáticos (`bg-card`, `text-text`, `border-border`, etc.), não cores hardcoded.
 5. **URLs**: Usar `normalizeHttpUrl` / `isSafeHttpUrl` — nunca aceitar schemes além de http(s).

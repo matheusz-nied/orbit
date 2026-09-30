@@ -8,6 +8,7 @@ import SiteCardQuantumSpin from './SiteCardQuantumSpin'
 import SiteCardCyberpunk from './SiteCardCyberpunk'
 import SiteCardArchive from './SiteCardArchive'
 import SiteCardAndroid from './SiteCardAndroid'
+import SiteCardBerserk from './SiteCardBerserk'
 
 function SiteCard({ site }) {
   const cardLayout = useStore((state) => state.cardLayout)
@@ -18,6 +19,7 @@ function SiteCard({ site }) {
   if (cardLayout === 'cyber') return <SiteCardCyberpunk site={site} />
   if (cardLayout === 'archive') return <SiteCardArchive site={site} />
   if (cardLayout === 'android') return <SiteCardAndroid site={site} />
+  if (cardLayout === 'berserk') return <SiteCardBerserk site={site} />
 
   return <SiteCardClassic site={site} />
 }

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import {
   X, Palette, ChevronLeft, ChevronRight, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
-  LayoutGrid, Sparkles, Waves, Atom, ListPlus, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket
+  LayoutGrid, Sparkles, Waves, Atom, ListPlus, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket, Swords
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList } from '../themes/themes'
@@ -69,6 +69,7 @@ const cardLayouts = [
   { id: 'cyber', label: 'Cyber', Icon: Cpu, desc: 'Slot netrunner' },
   { id: 'archive', label: 'Arquivo', Icon: BookOpen, desc: 'Placas editoriais' },
   { id: 'android', label: 'Android', Icon: ScanEye, desc: 'Scan RK800' },
+  { id: 'berserk', label: 'Painel', Icon: Swords, desc: 'Quadros de mangá' },
 ]
 
 // Estado selecionado dos cartões de opção — o fundo translúcido vem de

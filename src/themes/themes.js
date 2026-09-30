@@ -74,6 +74,21 @@ export const themes = {
     '--dbh-warn': '#f5b62a',
     '--dbh-alert': '#ff3b3b',
   },
+  'berserk': {
+    name: 'Berserk · Eclipse',
+    '--bg': '#070505',
+    '--card': 'rgba(14, 10, 10, 0.9)',
+    '--text': '#e9e0d0',
+    '--accent': '#d8262f',
+    '--muted': '#8b8074',
+    '--border': 'rgba(233, 224, 208, 0.16)',
+    '--font': "'Cormorant Garamond', 'Times New Roman', serif",
+    '--star': '0',
+    // Brasa da fogueira e aço da espada: só o CSS do tema usa (com fallback).
+    '--berserk-ember': '#e8590c',
+    '--berserk-steel': '#6f7378',
+    '--berserk-bone': '#e9e0d0',
+  },
 }
 
 export function resolveTheme(themeName) {

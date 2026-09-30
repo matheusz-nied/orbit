@@ -21,6 +21,7 @@ import Toast from './components/Toast'
 import DetroitBoot from './components/DetroitBoot'
 import DetroitHud from './components/DetroitHud'
 import DetroitZen from './components/DetroitZen'
+import BerserkAsh from './components/BerserkAsh'
 import BackupReminder from './components/BackupReminder'
 
 const SettingsModal = lazy(() => import('./components/SettingsModal'))
@@ -61,13 +62,21 @@ export default function App() {
   }, [theme, searchProvider])
 
   return (
-    <div className={`min-h-screen relative orbit-shell ${theme === 'nous-archive' ? 'archive-theme-shell' : ''} ${theme === 'detroit' ? 'dbh-theme-shell' : ''}`}>
+    <div className={`min-h-screen relative orbit-shell ${theme === 'nous-archive' ? 'archive-theme-shell' : ''} ${theme === 'detroit' ? 'dbh-theme-shell' : ''} ${theme === 'berserk' ? 'berserk-theme-shell' : ''}`}>
       {/* Star canvas for space theme */}
       <StarCanvas />
       {/* Varredura de análise do tema Detroit — em sincronia com o LED do cabeçalho. */}
       {theme === 'detroit' && <div className="dbh-sweep gpu-layer" data-decorative aria-hidden />}
       {theme === 'detroit' && <DetroitZen />}
       {theme === 'detroit' && <DetroitHud />}
+      {/* Eclipse do tema Berserk: disco negro com coroa que respira só em opacity. */}
+      {theme === 'berserk' && (
+        <div className="berserk-eclipse" aria-hidden>
+          <span className="berserk-eclipse-corona gpu-layer" data-decorative />
+          <span className="berserk-eclipse-disc" />
+        </div>
+      )}
+      {theme === 'berserk' && <BerserkAsh />}
 
       {/* Main content */}
       <div className="relative z-10">
@@ -95,6 +104,13 @@ export default function App() {
                 <span>RK800 · #313 248 317 — 51</span>
                 <strong><i className="dbh-led gpu-layer" data-decorative aria-hidden /> Android online</strong>
                 <span>Instabilidade de software <b>▲</b></span>
+              </header>
+            )}
+            {theme === 'berserk' && (
+              <header className="berserk-masthead" aria-label="Bando do Falcão">
+                <span>Bando do Falcão</span>
+                <strong>Eclipse</strong>
+                <span>Fogo e cinzas</span>
               </header>
             )}
             <Clock />
