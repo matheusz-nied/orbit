@@ -9,19 +9,29 @@ import SiteCardCyberpunk from './SiteCardCyberpunk'
 import SiteCardArchive from './SiteCardArchive'
 import SiteCardAndroid from './SiteCardAndroid'
 import SiteCardBerserk from './SiteCardBerserk'
+import SiteCardAdesivo from './SiteCardAdesivo'
+import SiteCardTanzaku from './SiteCardTanzaku'
+import SiteCardVinil from './SiteCardVinil'
+
+// id do layout (utils/cardLayout.js) -> componente. Id desconhecido cai no Clássico.
+const LAYOUT_COMPONENTS = {
+  space: SiteCardSpace,
+  'wave-particle': SiteCardWaveParticle,
+  'quantum-spin': SiteCardQuantumSpin,
+  cyber: SiteCardCyberpunk,
+  archive: SiteCardArchive,
+  android: SiteCardAndroid,
+  berserk: SiteCardBerserk,
+  adesivo: SiteCardAdesivo,
+  tanzaku: SiteCardTanzaku,
+  vinil: SiteCardVinil,
+}
 
 function SiteCard({ site }) {
   const cardLayout = useStore((state) => state.cardLayout)
+  const Layout = LAYOUT_COMPONENTS[cardLayout] || SiteCardClassic
 
-  if (cardLayout === 'space') return <SiteCardSpace site={site} />
-  if (cardLayout === 'wave-particle') return <SiteCardWaveParticle site={site} />
-  if (cardLayout === 'quantum-spin') return <SiteCardQuantumSpin site={site} />
-  if (cardLayout === 'cyber') return <SiteCardCyberpunk site={site} />
-  if (cardLayout === 'archive') return <SiteCardArchive site={site} />
-  if (cardLayout === 'android') return <SiteCardAndroid site={site} />
-  if (cardLayout === 'berserk') return <SiteCardBerserk site={site} />
-
-  return <SiteCardClassic site={site} />
+  return <Layout site={site} />
 }
 
 export default memo(SiteCard)

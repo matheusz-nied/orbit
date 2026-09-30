@@ -17,6 +17,33 @@ import useStore from '../store/useStore'
 import SiteCard from './SiteCard'
 import { FREQUENT_CATEGORY, FREQUENT_LIMIT, rankByUsage } from '../utils/frequent'
 
+// Grade de cada layout de card. Strings completas (não montadas) para o
+// Tailwind conseguir enxergar as classes.
+const DEFAULT_GRID_CLASS = 'grid grid-cols-[repeat(auto-fill,minmax(70px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-x-2 gap-y-6 sm:gap-x-4 sm:gap-y-8 justify-items-center'
+const SPACED_GRID_CLASS = 'grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 justify-items-center py-4'
+const GRID_CLASSES = {
+  archive: 'grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-2 sm:gap-2.5 py-4',
+  android: 'grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3 sm:gap-3.5 py-4',
+  berserk: 'grid grid-cols-[repeat(auto-fill,minmax(108px,1fr))] gap-3 sm:gap-4 py-4',
+  adesivo: 'grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4 sm:gap-5 py-4',
+  tanzaku: 'grid grid-cols-[repeat(auto-fill,minmax(76px,88px))] justify-start items-start gap-x-4 gap-y-8 py-4',
+  vinil: 'grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-x-4 gap-y-8 justify-items-center py-4',
+  space: SPACED_GRID_CLASS,
+  'quantum-spin': SPACED_GRID_CLASS,
+  cyber: SPACED_GRID_CLASS,
+  'wave-particle': 'grid grid-cols-[repeat(auto-fill,minmax(95px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(115px,1fr))] gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 justify-items-center py-4',
+}
+
+// Posição do atalho de teclado (<kbd>) sobre o card; o padrão cabe no Clássico.
+const DEFAULT_KBD_CLASS = 'top-0 left-1/2 -translate-x-[calc(50%+28px)] sm:-translate-x-[calc(50%+32px)]'
+const KBD_CLASSES = {
+  archive: 'top-1/2 right-1.5 -translate-y-1/2',
+  android: 'top-[42%] right-1.5 -translate-y-1/2',
+  berserk: 'top-[42%] right-1.5 -translate-y-1/2',
+  adesivo: 'top-2 left-2',
+  tanzaku: 'top-1 left-1',
+}
+
 // Constante de módulo em vez de `[]` inline: um array novo a cada render faria
 // o DndContext reconfigurar os sensores sem necessidade.
 const NO_SENSORS = []
@@ -91,24 +118,7 @@ export default function SiteGrid() {
     reorderSites(newOrder.map(s => s.id))
   }
 
-  const gridClassName = useMemo(() => {
-    if (cardLayout === 'archive') {
-      return 'grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-2 sm:gap-2.5 py-4'
-    }
-    if (cardLayout === 'android') {
-      return 'grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3 sm:gap-3.5 py-4'
-    }
-    if (cardLayout === 'berserk') {
-      return 'grid grid-cols-[repeat(auto-fill,minmax(108px,1fr))] gap-3 sm:gap-4 py-4'
-    }
-    if (cardLayout === 'space' || cardLayout === 'quantum-spin' || cardLayout === 'cyber') {
-      return 'grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 justify-items-center py-4'
-    }
-    if (cardLayout === 'wave-particle') {
-      return 'grid grid-cols-[repeat(auto-fill,minmax(95px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(115px,1fr))] gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 justify-items-center py-4'
-    }
-    return 'grid grid-cols-[repeat(auto-fill,minmax(70px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-x-2 gap-y-6 sm:gap-x-4 sm:gap-y-8 justify-items-center'
-  }, [cardLayout])
+  const gridClassName = GRID_CLASSES[cardLayout] || DEFAULT_GRID_CLASS
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 mb-12">
@@ -123,13 +133,7 @@ export default function SiteGrid() {
               <div key={site.id} className="relative w-full flex justify-center">
                 {site.shortcut && (
                   <kbd
-                    className={`absolute z-20 min-w-[1.25rem] px-1 py-0.5 text-[9px] font-mono font-bold text-center text-muted bg-card/90 border border-border rounded shadow-sm pointer-events-none uppercase ${
-                      cardLayout === 'archive'
-                        ? 'top-1/2 right-1.5 -translate-y-1/2'
-                        : cardLayout === 'android' || cardLayout === 'berserk'
-                        ? 'top-[42%] right-1.5 -translate-y-1/2'
-                        : 'top-0 left-1/2 -translate-x-[calc(50%+28px)] sm:-translate-x-[calc(50%+32px)]'
-                    }`}
+                    className={`absolute z-20 min-w-[1.25rem] px-1 py-0.5 text-[9px] font-mono font-bold text-center text-muted bg-card/90 border border-border rounded shadow-sm pointer-events-none uppercase ${KBD_CLASSES[cardLayout] || DEFAULT_KBD_CLASS}`}
                     title={`Atalho: ${site.shortcut}`}
                   >
                     {site.shortcut}

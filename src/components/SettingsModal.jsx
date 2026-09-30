@@ -2,10 +2,10 @@ import { useState, useRef, useEffect } from 'react'
 import {
   X, Palette, ChevronLeft, ChevronRight, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
-  LayoutGrid, Sparkles, Waves, Atom, ListPlus, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket, Swords
+  LayoutGrid, Sparkles, Waves, Atom, ListPlus, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket, Swords, Sticker, ScrollText, Disc3
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
-import { themeList } from '../themes/themes'
+import { themeList, themeLayouts } from '../themes/themes'
 import { motionModes } from '../utils/motion'
 import { normalizeHttpUrl } from '../utils/url'
 import WorkspaceManager from './WorkspaceManager'
@@ -70,6 +70,9 @@ const cardLayouts = [
   { id: 'archive', label: 'Arquivo', Icon: BookOpen, desc: 'Placas editoriais' },
   { id: 'android', label: 'Android', Icon: ScanEye, desc: 'Scan RK800' },
   { id: 'berserk', label: 'Painel', Icon: Swords, desc: 'Quadros de mangá' },
+  { id: 'adesivo', label: 'Adesivo', Icon: Sticker, desc: 'Adesivos coloridos' },
+  { id: 'tanzaku', label: 'Tanzaku', Icon: ScrollText, desc: 'Tiras verticais' },
+  { id: 'vinil', label: 'Vinil', Icon: Disc3, desc: 'Discos de vinil' },
 ]
 
 // Estado selecionado dos cartões de opção — o fundo translúcido vem de
@@ -99,6 +102,7 @@ export default function SettingsModal() {
   const setTheme = useStore((state) => state.setTheme)
   const cardLayout = useStore((state) => state.cardLayout)
   const setCardLayout = useStore((state) => state.setCardLayout)
+  const pairedLayout = cardLayouts.find((layout) => layout.id === themeLayouts[theme])
   const motionMode = useStore((state) => state.motionMode)
   const setMotionMode = useStore((state) => state.setMotionMode)
   const widgets = useStore((state) => state.widgets)
@@ -329,6 +333,14 @@ export default function SettingsModal() {
                     </button>
                   ))}
                 </div>
+                {pairedLayout && pairedLayout.id !== cardLayout && (
+                  <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+                    <span>Este tema combina com o layout <strong className="text-text font-medium">{pairedLayout.label}</strong>.</span>
+                    <button onClick={() => setCardLayout(pairedLayout.id)} className="text-accent hover:underline">
+                      Aplicar
+                    </button>
+                  </p>
+                )}
               </div>
 
               {/* Card Layout Picker */}

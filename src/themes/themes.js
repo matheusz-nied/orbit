@@ -92,6 +92,68 @@ export const themes = {
     '--berserk-steel': '#6f7378',
     '--berserk-bone': '#e9e0d0',
   },
+  'pop': {
+    name: 'Brutalismo Pop',
+    '--bg': '#fef6e4',
+    '--card': '#ffffff',
+    '--text': '#111111',
+    '--accent': '#ff3d71',
+    '--muted': '#5f574a',
+    '--border': '#111111',
+    '--font': "'Space Grotesk', 'Inter', system-ui, sans-serif",
+    '--star': '0',
+    // Cores dos adesivos.
+    '--pop-yellow': '#ffd23f',
+    '--pop-pink': '#ff5c8a',
+    '--pop-blue': '#4cc9f0',
+    '--pop-green': '#80ed99',
+    '--pop-orange': '#ff9f1c',
+    '--pop-lilac': '#b388ff',
+  },
+  'sumie': {
+    name: 'Sumi-e',
+    '--bg': '#efe7d6',
+    '--card': 'rgba(250, 245, 233, 0.94)',
+    '--text': '#1b1a17',
+    '--accent': '#b3202a',
+    '--muted': '#6f6656',
+    '--border': 'rgba(27, 26, 23, 0.2)',
+    '--font': "'Shippori Mincho', 'Cormorant Garamond', serif",
+    '--star': '0',
+    // Tinta sumi (mesmo preto do texto, usado em traços) e papel washi claro.
+    '--sumie-ink': '#1b1a17',
+    '--sumie-paper': '#f8f2e4',
+  },
+  'lofi': {
+    name: 'Lo-fi · Quarto',
+    '--bg': '#150f22',
+    '--card': 'rgba(34, 22, 52, 0.85)',
+    '--text': '#f3e6d4',
+    '--accent': '#ffb454',
+    '--muted': '#a898b8',
+    '--border': 'rgba(255, 180, 84, 0.2)',
+    '--font': "'Inter', system-ui, sans-serif",
+    '--star': '0',
+    // Cores dos rótulos dos discos e do bokeh da cidade.
+    '--lofi-lilac': '#b79cff',
+    '--lofi-rose': '#ff8fab',
+    '--lofi-teal': '#6fd6c8',
+  },
+}
+
+// Layout de cards que "nasceu" com cada tema — Configurações oferece aplicá-lo
+// com um clique. O usuário continua livre para combinar como quiser.
+export const themeLayouts = {
+  'minimal-light': 'classic',
+  'premium-dark': 'classic',
+  'space': 'space',
+  'cyberpunk': 'cyber',
+  'nous-archive': 'archive',
+  'detroit': 'android',
+  'berserk': 'berserk',
+  'pop': 'adesivo',
+  'sumie': 'tanzaku',
+  'lofi': 'vinil',
 }
 
 export function resolveTheme(themeName) {

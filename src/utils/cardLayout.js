@@ -10,6 +10,9 @@ export const cardLayoutIds = [
   'archive',
   'android',
   'berserk',
+  'adesivo',
+  'tanzaku',
+  'vinil',
 ]
 
 export function resolveCardLayout(layout) {
