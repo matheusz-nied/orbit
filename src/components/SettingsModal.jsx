@@ -580,6 +580,7 @@ export default function SettingsModal() {
                 <h4 className="text-sm font-medium text-muted mb-1">Categorias Existentes</h4>
                 <p className="text-xs text-muted mb-3">
                   Subcategorias organizam uma categoria por dentro — por exemplo, um projeto em Trabalho.
+                  Use o lápis para renomear — os sites acompanham o novo nome.
                   Remover uma subcategoria mantém os sites na categoria.
                 </p>
                 <div className="space-y-2">

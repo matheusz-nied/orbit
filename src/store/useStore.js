@@ -345,6 +345,35 @@ const useStore = create((set, get) => ({
     }
   },
 
+  // Renomeia mantendo a posição; sites e subcategorias acompanham o novo nome.
+  // Retorna o nome final, ou null se vazio/duplicado.
+  renameCategory: (category, name) => {
+    const trimmed = name.trim().toLowerCase();
+    if (!trimmed) return null;
+    if (trimmed === category) return category;
+
+    const current = get().categories;
+    if (current.includes(trimmed)) return null;
+
+    const categories = current.map((c) => (c === category ? trimmed : c));
+    storage.set("categories", categories);
+    set({ categories });
+
+    const { [category]: moved, ...rest } = get().subcategories;
+    const subcategories = moved ? { ...rest, [trimmed]: moved } : rest;
+    storage.set("subcategories", subcategories);
+    set({ subcategories });
+
+    const sites = get().sites.map((s) => (s.category === category ? { ...s, category: trimmed } : s));
+    storage.set("sites", sites);
+    set({ sites });
+
+    if (get().activeCategory === category) {
+      set({ activeCategory: trimmed });
+    }
+    return trimmed;
+  },
+
   setActiveCategory: (category) => {
     set({ activeCategory: category, activeSubcategory: null });
   },
@@ -361,6 +390,35 @@ const useStore = create((set, get) => ({
     const subcategories = { ...get().subcategories, [category]: [...current, trimmed] };
     storage.set("subcategories", subcategories);
     set({ subcategories });
+    return trimmed;
+  },
+
+  // Retorna o nome final, ou null se vazio/duplicado na mesma categoria.
+  renameSubcategory: (category, name, nextName) => {
+    const trimmed = nextName.trim();
+    if (!trimmed) return null;
+    if (trimmed === name) return name;
+
+    const current = get().subcategories[category] || [];
+    const clash = current.some((c) => c !== name && c.toLowerCase() === trimmed.toLowerCase());
+    if (clash) return null;
+
+    const subcategories = {
+      ...get().subcategories,
+      [category]: current.map((c) => (c === name ? trimmed : c)),
+    };
+    storage.set("subcategories", subcategories);
+    set({ subcategories });
+
+    const sites = get().sites.map((s) =>
+      s.category === category && s.subcategory === name ? { ...s, subcategory: trimmed } : s
+    );
+    storage.set("sites", sites);
+    set({ sites });
+
+    if (get().activeCategory === category && get().activeSubcategory === name) {
+      set({ activeSubcategory: trimmed });
+    }
     return trimmed;
   },
 
