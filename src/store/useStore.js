@@ -22,7 +22,7 @@ const loadTimers = () => {
   return Array.isArray(saved) ? saved.filter((t) => t && t.endsAt) : [];
 };
 
-const loadAmbient = () => ({ sound: "rain", volume: 50, ...(storage.get("ambient") || {}) });
+const loadAmbient = () => ({ sound: "fire", volume: 50, ...(storage.get("ambient") || {}) });
 
 // Primeira visita — usado para não cobrar backup de quem acabou de chegar.
 const loadFirstSeen = () => {
@@ -187,6 +187,8 @@ const useStore = create((set, get) => ({
   editingSite: null,
   deleteConfirmId: null,
   welcomeSeen: storage.get("welcome_seen") || false,
+  // Configurações abre em "Comece por aqui" só na primeira vez.
+  settingsSeen: storage.get("settings_seen") || false,
   searchHintDismissed: storage.get("search_hint_dismissed") || false,
 
   // Actions — Sites
@@ -792,6 +794,12 @@ const useStore = create((set, get) => ({
   confirmDeleteSite: (id) => set({ deleteConfirmId: id }),
   cancelDeleteSite: () => set({ deleteConfirmId: null }),
 
+  markSettingsSeen: () => {
+    if (get().settingsSeen) return
+    storage.set("settings_seen", true)
+    set({ settingsSeen: true })
+  },
+
   dismissWelcome: () => {
     storage.set("welcome_seen", true)
     set({ welcomeSeen: true })
@@ -869,6 +877,7 @@ const useStore = create((set, get) => ({
         deepseekApiKey: storage.get("deepseek_apikey") || "",
         openInNewTab: storage.get("open_in_new_tab") !== false,
         welcomeSeen: storage.get("welcome_seen") || false,
+        settingsSeen: storage.get("settings_seen") || false,
         searchHintDismissed: storage.get("search_hint_dismissed") || false,
       });
       applyTheme(get().theme);

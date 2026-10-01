@@ -97,6 +97,8 @@ const widgetOptions = [
 export default function SettingsModal() {
   const settingsOpen = useStore((state) => state.settingsOpen)
   const settingsSection = useStore((state) => state.settingsSection)
+  const settingsSeen = useStore((state) => state.settingsSeen)
+  const markSettingsSeen = useStore((state) => state.markSettingsSeen)
   const closeSettings = useStore((state) => state.closeSettings)
   const theme = useStore((state) => state.theme)
   const setTheme = useStore((state) => state.setTheme)
@@ -223,8 +225,14 @@ export default function SettingsModal() {
       setActiveTab(settingsSection)
       setMobileView('content')
     } else {
+      // Primeira abertura mostra o guia; depois, direto no tema.
+      setActiveTab(settingsSeen ? 'appearance' : 'guide')
       setMobileView('menu')
     }
+    markSettingsSeen()
+    // settingsSeen fica de fora de propósito: marcar como visto não deve
+    // trocar a aba sob os pés de quem acabou de abrir.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settingsOpen, settingsSection])
 
   const selectSection = (id) => {
