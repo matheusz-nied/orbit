@@ -157,25 +157,177 @@ const recipes = {
   },
 
   fire: (audio, output) => {
-    const src = loopSource(audio, 'brown')
-    const lp = filter(audio, 'lowpass', 500)
-    const gain = audio.createGain()
-    gain.gain.value = 0.9
-    src.connect(lp).connect(gain).connect(output)
+    // Fogo real = rugido grave + estalos. O "chiado" do fogo não é ruído
+    // contínuo: é uma chuva densa de microestalos. Ruído filtrado com corte
+    // variando ou agudo constante soa como vento/assovio, então aqui nenhum
+    // filtro tem a frequência modulada e não há camada aguda contínua.
+    const stops = []
 
-    const stopCrackles = scheduleBursts(audio, output, {
-      every: 0.35,
+    // LFOs em taxas que não se encaixam entre si, só no volume e bem sutis:
+    // a chama "respira" sem parecer tremolo.
+    const wobble = (param, rates, depth) => {
+      rates.forEach((rate) => {
+        const lfo = audio.createOscillator()
+        lfo.frequency.value = rate
+        const amount = audio.createGain()
+        amount.gain.value = depth
+        lfo.connect(amount).connect(param)
+        lfo.start()
+        stops.push(() => lfo.stop())
+      })
+    }
+
+    // Rugido: ruído marrom grave e fixo.
+    const roar = loopSource(audio, 'brown')
+    const roarLp = filter(audio, 'lowpass', 300)
+    const roarGain = audio.createGain()
+    roarGain.gain.value = 0.7
+    wobble(roarGain.gain, [0.13, 0.37], 0.06)
+    roar.connect(roarLp).connect(roarGain).connect(output)
+    stops.push(() => roar.stop())
+
+    // Corpo: ruído rosa de grave a médio-grave, sem passar de ~900Hz (acima
+    // disso começa a parecer ar soprando).
+    const body = loopSource(audio, 'pink')
+    const bodyHp = filter(audio, 'highpass', 120)
+    const bodyLp = filter(audio, 'lowpass', 900)
+    const bodyGain = audio.createGain()
+    bodyGain.gain.value = 0.1
+    wobble(bodyGain.gain, [0.5, 1.1], 0.035)
+    body.connect(bodyHp).connect(bodyLp).connect(bodyGain).connect(output)
+    stops.push(() => body.stop())
+
+    // Estalos passam por um compressor: um estalo grande não pode estourar o
+    // volume, e vários juntos ficam coesos em vez de somar.
+    const crackleBus = audio.createDynamicsCompressor()
+    crackleBus.threshold.value = -18
+    crackleBus.ratio.value = 6
+    crackleBus.attack.value = 0.001
+    crackleBus.release.value = 0.12
+    crackleBus.connect(output)
+
+    const phase = Math.random() * 100
+    const stopCrackles = scheduleBursts(audio, crackleBus, {
+      every: 0.14,
       jitter: 0.95,
-      make: (t) => burst(audio, output, t, {
-        freq: 1500 + Math.random() * 3000,
-        Q: 1.5,
-        duration: 0.015 + Math.random() * 0.05,
-        level: 0.15 + Math.random() * 0.35,
+      make: (t) => {
+        // A brasa passa por fases: ora estala muito, ora quase nada.
+        const activity = 0.55 + 0.45 * Math.sin(t * 0.09 + phase)
+        if (Math.random() > Math.max(0.25, activity)) return
+        woodEvent(audio, crackleBus, t)
+      },
+    })
+
+    // Chiado: microestalos muito densos, curtos e baixinhos.
+    const stopSizzle = scheduleBursts(audio, crackleBus, {
+      every: 0.03,
+      jitter: 0.95,
+      make: (t) => crackle(audio, crackleBus, t, {
+        freq: 3000 + Math.random() * 5000,
+        Q: 0.6 + Math.random() * 0.6,
+        decay: 0.002 + Math.random() * 0.005,
+        level: 0.03 + Math.random() * 0.07,
+        pan: Math.random() * 1.8 - 0.9,
       }),
     })
 
-    return () => { stopCrackles(); src.stop() }
+    return () => { stopCrackles(); stopSizzle(); stops.forEach((stop) => stop()) }
   },
+}
+
+// Um estalo = clique seco (ruído filtrado com ataque de ~1ms) que decai rápido.
+// Q alto faz o "corpo" da madeira ressoar; Q baixo vira só um tique.
+const crackle = (audio, output, time, { freq, Q, decay, level, pan, type = 'bandpass' }) => {
+  const source = audio.createBufferSource()
+  source.buffer = makeNoise(audio, 'white')
+  const band = filter(audio, type, freq, Q)
+  const gain = audio.createGain()
+  // Filtro estreito deixa passar menos energia; compensa para o nível percebido
+  // não depender tanto do Q.
+  const peak = level * Math.sqrt(Math.max(1, Q))
+  gain.gain.setValueAtTime(0.0001, time)
+  gain.gain.exponentialRampToValueAtTime(peak, time + 0.0008)
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.0008 + decay)
+
+  let chain = source.connect(band).connect(gain)
+  if (audio.createStereoPanner) {
+    const panner = audio.createStereoPanner()
+    panner.pan.value = pan
+    chain = chain.connect(panner)
+  }
+  chain.connect(output)
+  source.start(time, Math.random() * (BUFFER_SECONDS - 1))
+  source.stop(time + decay + 0.05)
+}
+
+// Baque grave de um tronco que cede: senoide caindo de ~150Hz para ~50Hz.
+const thump = (audio, output, time, { level, pan }) => {
+  const osc = audio.createOscillator()
+  osc.frequency.setValueAtTime(110 + Math.random() * 60, time)
+  osc.frequency.exponentialRampToValueAtTime(48, time + 0.1)
+  const gain = audio.createGain()
+  gain.gain.setValueAtTime(0.0001, time)
+  gain.gain.exponentialRampToValueAtTime(level, time + 0.004)
+  gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.16)
+  osc.connect(gain)
+  if (audio.createStereoPanner) {
+    const panner = audio.createStereoPanner()
+    panner.pan.value = pan
+    gain.connect(panner).connect(output)
+  } else {
+    gain.connect(output)
+  }
+  osc.start(time)
+  osc.stop(time + 0.2)
+}
+
+const woodEvent = (audio, output, time) => {
+  const pan = Math.random() * 1.6 - 0.8
+  const roll = Math.random()
+
+  if (roll < 0.6) {
+    // Enxame de tiques: fibras estourando em sequência rápida.
+    const count = 1 + Math.floor(Math.random() * 5)
+    let at = time
+    for (let i = 0; i < count; i++) {
+      crackle(audio, output, at, {
+        freq: 2500 + Math.random() * 4500,
+        Q: 0.8 + Math.random() * 1.5,
+        decay: 0.004 + Math.random() * 0.012,
+        level: 0.1 + Math.random() * 0.25,
+        pan: Math.max(-1, Math.min(1, pan + (Math.random() - 0.5) * 0.3)),
+      })
+      at += 0.006 + Math.random() * 0.05
+    }
+  } else if (roll < 0.93) {
+    // Estalo médio: clique + ressonância da madeira.
+    const body = 600 + Math.random() * 1800
+    crackle(audio, output, time, {
+      freq: 3500 + Math.random() * 3000, Q: 1, decay: 0.006,
+      level: 0.2 + Math.random() * 0.2, pan,
+    })
+    crackle(audio, output, time, {
+      freq: body, Q: 2 + Math.random() * 2.5, decay: 0.015 + Math.random() * 0.035,
+      level: 0.12 + Math.random() * 0.2, pan,
+    })
+  } else {
+    // Estalo grande de tronco: rachadura brilhante + corpo grave + baque, e
+    // às vezes um tique solto logo depois (a lasca caindo).
+    crackle(audio, output, time, {
+      freq: 4500, Q: 0.7, decay: 0.012, level: 0.45, pan, type: 'highpass',
+    })
+    crackle(audio, output, time, {
+      freq: 250 + Math.random() * 350, Q: 1.5 + Math.random() * 1.5,
+      decay: 0.06 + Math.random() * 0.06, level: 0.35, pan,
+    })
+    thump(audio, output, time, { level: 0.5, pan })
+    if (Math.random() < 0.6) {
+      crackle(audio, output, time + 0.05 + Math.random() * 0.15, {
+        freq: 3000 + Math.random() * 3000, Q: 1.5, decay: 0.01,
+        level: 0.25, pan,
+      })
+    }
+  }
 }
 
 let master = null
