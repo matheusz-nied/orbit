@@ -84,13 +84,17 @@ Cada um destes três temas nasceu com um layout de card. Tema e layout continuam
 
 - Cada site tem `site.workspace`; `activeWorkspace` no store filtra a grade.
 - **Migração**: `loadSites()` em `storage.js` normaliza sites antigos para `'default'` e regrava — o resto do código pode assumir que o campo sempre existe.
-- Remover um espaço **move** os sites para o primeiro da lista, nunca apaga. Nunca é possível ficar com zero espaços.
+- **Categorias e subcategorias são por espaço**: `categories: { [espaço]: string[] }` (`sp_categories`) e `subcategories: { [espaço]: { [categoria]: string[] } }` (`sp_subcategories`). Componentes leem o espaço ativo por `selectCategories` / `selectSubcategories(categoria)` (`utils/categories.js`); `AddSiteModal` indexa pelo espaço escolhido no formulário.
+- Toda ação de categoria/subcategoria só toca sites com `s.workspace` igual ao espaço da ação — categorias de mesmo nome em espaços diferentes são independentes.
+- **Migração**: `normalizeCategories()` roda no boot e no import. O formato antigo (array global) é repartido — cada espaço fica com o que seus sites usam, o que ninguém usa vai para o primeiro. Também garante que a categoria/subcategoria de todo site exista no espaço dele e que todo espaço tenha ao menos `geral` (`DEFAULT_CATEGORY`).
+- Espaço novo nasce só com `geral`.
+- `removeWorkspace(id, moveTo)`: com `moveTo`, sites e categorias são transferidos (`mergeCategories`); sem ele, o espaço é **apagado com sites, estatísticas e categorias**. `WorkspaceManager` confirma na própria linha antes de chamar. Nunca é possível ficar com zero espaços.
 - `resolveActiveWorkspace()` corrige id órfão no boot e no import (cai para o primeiro espaço).
 - `WorkspaceSwitcher` só renderiza com 2+ espaços.
 
 ### Subcategorias
 
-- `subcategories: { [categoria]: string[] }` em `sp_subcategories`; `site.subcategory` é **opcional** e só vale dentro de `site.category`.
+- `site.subcategory` é **opcional** e só vale dentro de `site.category` (no espaço do site — ver acima).
 - `activeSubcategory` (efêmero) filtra dentro da categoria ativa; `setActiveCategory`, troca de espaço e import o resetam para `null`.
 - Remover subcategoria **mantém** os sites na categoria (só limpa o campo). Remover categoria apaga suas subcategorias e limpa `subcategory` dos sites movidos.
 - `SubcategoryBar` (linha abaixo das abas) só aparece com uma categoria real ativa — fica **fora** de `.orbit-category-filter` para não herdar o estilo de aba principal dos temas. Ativo usa `.orbit-subcategory-chip[data-active="true"]` (`color-mix` do accent).

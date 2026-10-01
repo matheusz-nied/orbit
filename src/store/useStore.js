@@ -2,7 +2,6 @@ import { create } from "zustand";
 import {
   storage,
   loadSites,
-  defaultCategories,
   defaultNewsTopics,
   defaultWorkspaces,
   defaultWidgets,
@@ -10,6 +9,7 @@ import {
   resolveActiveWorkspace,
 } from "../utils/storage";
 import { FREQUENT_CATEGORY } from "../utils/frequent";
+import { DEFAULT_CATEGORY, normalizeCategories, mergeCategories } from "../utils/categories";
 import { applyTheme, resolveTheme } from "../themes/themes";
 import { resolveCardLayout } from "../utils/cardLayout";
 import { applyMotion } from "../utils/motion";
@@ -34,6 +34,22 @@ const loadFirstSeen = () => {
 };
 
 const loadWorkspaces = () => storage.get("workspaces") || defaultWorkspaces;
+
+// Categorias e subcategorias são por espaço. Dados no formato antigo (global)
+// são repartidos na leitura e regravados — ver `normalizeCategories`.
+const loadCategoryState = (workspaces, sites) => {
+  const { categories, subcategories, changed } = normalizeCategories({
+    categories: storage.get("categories"),
+    subcategories: storage.get("subcategories"),
+    workspaces,
+    sites,
+  });
+  if (changed) {
+    storage.set("categories", categories);
+    storage.set("subcategories", subcategories);
+  }
+  return { categories, subcategories };
+};
 
 const searchProviders = [
   {
@@ -71,14 +87,16 @@ const useStore = create((set, get) => ({
   // Sites
   sites: loadSites(),
 
-  // Categories
-  categories: storage.get("categories") || defaultCategories,
+  // Categories — cada espaço tem as suas:
+  //   categories:    { [espaço]: ["dev", ...] }
+  //   subcategories: { [espaço]: { [categoria]: ["Projeto A", ...] } }
+  // Subcategoria é opcional no site.
+  ...loadCategoryState(loadWorkspaces(), loadSites()),
   activeCategory: "all",
-  // { [categoria]: ["Projeto A", ...] } — subcategoria é opcional no site.
-  subcategories: storage.get("subcategories") || {},
   activeSubcategory: null,
 
-  // Workspaces — conjuntos independentes de sites (ex.: Pessoal / Trabalho)
+  // Workspaces — conjuntos independentes de sites, categorias e subcategorias
+  // (ex.: Pessoal / Trabalho)
   workspaces: loadWorkspaces(),
   activeWorkspace: (() => {
     const workspaces = loadWorkspaces();
@@ -307,37 +325,39 @@ const useStore = create((set, get) => ({
   },
 
   // Actions — Categories
-  setCategories: (categories) => {
+  // Todas operam num espaço só (o ativo, salvo indicação): categorias de mesmo
+  // nome em espaços diferentes são independentes.
+  addCategory: (category, workspace = get().activeWorkspace) => {
+    const current = get().categories[workspace] || [];
+    if (current.includes(category)) return;
+
+    const categories = { ...get().categories, [workspace]: [...current, category] };
     storage.set("categories", categories);
     set({ categories });
   },
 
-  addCategory: (category) => {
-    const categories = get().categories;
-    if (!categories.includes(category)) {
-      const updated = [...categories, category];
-      storage.set("categories", updated);
-      set({ categories: updated });
-    }
-  },
-
   removeCategory: (category) => {
-    const categories = get().categories.filter((c) => c !== category);
+    const ws = get().activeWorkspace;
+    const remaining = (get().categories[ws] || []).filter((c) => c !== category);
     // "all" não é categoria real — sites órfãos iam sumir do filtro por categoria.
-    const fallback = categories[0] || "geral";
-    const nextCategories = categories.length > 0 ? categories : [fallback];
-    storage.set("categories", nextCategories);
-    set({ categories: nextCategories });
+    const fallback = remaining[0] || DEFAULT_CATEGORY;
+    const categories = {
+      ...get().categories,
+      [ws]: remaining.length > 0 ? remaining : [fallback],
+    };
+    storage.set("categories", categories);
+    set({ categories });
 
-    const { [category]: _removed, ...subcategories } = get().subcategories;
+    const { [category]: _removed, ...rest } = get().subcategories[ws] || {};
+    const subcategories = { ...get().subcategories, [ws]: rest };
     storage.set("subcategories", subcategories);
     set({ subcategories });
 
     // Subcategorias pertencem à categoria antiga — não fazem sentido na nova.
     const sites = get().sites.map((s) => {
-      if (s.category !== category) return s;
-      const { subcategory: _sub, ...rest } = s;
-      return { ...rest, category: fallback };
+      if (s.workspace !== ws || s.category !== category) return s;
+      const { subcategory: _sub, ...site } = s;
+      return { ...site, category: fallback };
     });
     storage.set("sites", sites);
     set({ sites });
@@ -354,19 +374,28 @@ const useStore = create((set, get) => ({
     if (!trimmed) return null;
     if (trimmed === category) return category;
 
-    const current = get().categories;
+    const ws = get().activeWorkspace;
+    const current = get().categories[ws] || [];
     if (current.includes(trimmed)) return null;
 
-    const categories = current.map((c) => (c === category ? trimmed : c));
+    const categories = {
+      ...get().categories,
+      [ws]: current.map((c) => (c === category ? trimmed : c)),
+    };
     storage.set("categories", categories);
     set({ categories });
 
-    const { [category]: moved, ...rest } = get().subcategories;
-    const subcategories = moved ? { ...rest, [trimmed]: moved } : rest;
+    const { [category]: moved, ...rest } = get().subcategories[ws] || {};
+    const subcategories = {
+      ...get().subcategories,
+      [ws]: moved ? { ...rest, [trimmed]: moved } : rest,
+    };
     storage.set("subcategories", subcategories);
     set({ subcategories });
 
-    const sites = get().sites.map((s) => (s.category === category ? { ...s, category: trimmed } : s));
+    const sites = get().sites.map((s) =>
+      s.workspace === ws && s.category === category ? { ...s, category: trimmed } : s,
+    );
     storage.set("sites", sites);
     set({ sites });
 
@@ -381,15 +410,19 @@ const useStore = create((set, get) => ({
   },
 
   // Actions — Subcategories
-  addSubcategory: (category, name) => {
+  addSubcategory: (category, name, workspace = get().activeWorkspace) => {
     const trimmed = name.trim();
     if (!trimmed) return null;
 
-    const current = get().subcategories[category] || [];
+    const own = get().subcategories[workspace] || {};
+    const current = own[category] || [];
     const existing = current.find((c) => c.toLowerCase() === trimmed.toLowerCase());
     if (existing) return existing;
 
-    const subcategories = { ...get().subcategories, [category]: [...current, trimmed] };
+    const subcategories = {
+      ...get().subcategories,
+      [workspace]: { ...own, [category]: [...current, trimmed] },
+    };
     storage.set("subcategories", subcategories);
     set({ subcategories });
     return trimmed;
@@ -401,19 +434,23 @@ const useStore = create((set, get) => ({
     if (!trimmed) return null;
     if (trimmed === name) return name;
 
-    const current = get().subcategories[category] || [];
+    const ws = get().activeWorkspace;
+    const own = get().subcategories[ws] || {};
+    const current = own[category] || [];
     const clash = current.some((c) => c !== name && c.toLowerCase() === trimmed.toLowerCase());
     if (clash) return null;
 
     const subcategories = {
       ...get().subcategories,
-      [category]: current.map((c) => (c === name ? trimmed : c)),
+      [ws]: { ...own, [category]: current.map((c) => (c === name ? trimmed : c)) },
     };
     storage.set("subcategories", subcategories);
     set({ subcategories });
 
     const sites = get().sites.map((s) =>
-      s.category === category && s.subcategory === name ? { ...s, subcategory: trimmed } : s
+      s.workspace === ws && s.category === category && s.subcategory === name
+        ? { ...s, subcategory: trimmed }
+        : s
     );
     storage.set("sites", sites);
     set({ sites });
@@ -425,17 +462,18 @@ const useStore = create((set, get) => ({
   },
 
   removeSubcategory: (category, name) => {
-    const current = get().subcategories[category] || [];
+    const ws = get().activeWorkspace;
+    const own = get().subcategories[ws] || {};
     const subcategories = {
       ...get().subcategories,
-      [category]: current.filter((c) => c !== name),
+      [ws]: { ...own, [category]: (own[category] || []).filter((c) => c !== name) },
     };
     storage.set("subcategories", subcategories);
     set({ subcategories });
 
     // Os sites continuam na categoria, só perdem a subcategoria.
     const sites = get().sites.map((s) => {
-      if (s.category !== category || s.subcategory !== name) return s;
+      if (s.workspace !== ws || s.category !== category || s.subcategory !== name) return s;
       const { subcategory: _sub, ...rest } = s;
       return rest;
     });
@@ -465,8 +503,12 @@ const useStore = create((set, get) => ({
 
     const id = `ws-${Date.now()}`;
     const workspaces = [...get().workspaces, { id, name: trimmed }];
+    const categories = { ...get().categories, [id]: [DEFAULT_CATEGORY] };
+    const subcategories = { ...get().subcategories, [id]: {} };
     storage.set("workspaces", workspaces);
-    set({ workspaces });
+    storage.set("categories", categories);
+    storage.set("subcategories", subcategories);
+    set({ workspaces, categories, subcategories });
     return id;
   },
 
@@ -481,28 +523,57 @@ const useStore = create((set, get) => ({
     set({ workspaces });
   },
 
-  removeWorkspace: (id) => {
+  // Com `moveTo`, sites e categorias vão para aquele espaço; sem ele, o espaço
+  // é apagado com tudo dentro. A interface confirma antes de chamar.
+  removeWorkspace: (id, moveTo) => {
     const workspaces = get().workspaces.filter((w) => w.id !== id);
-    // Sempre resta pelo menos um espaço: sem nenhum, os sites ficariam órfãos
-    // e invisíveis.
+    // Sempre resta pelo menos um espaço: sem nenhum, não haveria onde criar sites.
     if (workspaces.length === 0) return;
+    // Destino inválido não pode virar "apagar tudo" por engano.
+    if (moveTo && !workspaces.some((w) => w.id === moveTo)) return;
 
-    const fallback = workspaces[0].id;
+    const { [id]: ownCategories = [], ...categories } = get().categories;
+    const { [id]: ownSubcategories = {}, ...subcategories } = get().subcategories;
+    let sites = get().sites;
+    let siteStats = get().siteStats;
 
-    // Os sites são movidos, nunca apagados — remover um espaço por engano não
-    // pode custar os atalhos do usuário.
-    const sites = get().sites.map((s) =>
-      s.workspace === id ? { ...s, workspace: fallback } : s,
-    );
+    if (moveTo) {
+      sites = sites.map((s) => (s.workspace === id ? { ...s, workspace: moveTo } : s));
+      // As categorias vão junto, senão os sites chegariam sem aba no destino.
+      const merged = mergeCategories(
+        { categories: categories[moveTo] || [], subcategories: subcategories[moveTo] || {} },
+        { categories: ownCategories, subcategories: ownSubcategories },
+      );
+      categories[moveTo] = merged.categories;
+      subcategories[moveTo] = merged.subcategories;
+    } else {
+      const removedIds = new Set(sites.filter((s) => s.workspace === id).map((s) => s.id));
+      sites = sites.filter((s) => s.workspace !== id);
+      siteStats = Object.fromEntries(
+        Object.entries(siteStats).filter(([siteId]) => !removedIds.has(siteId)),
+      );
+      storage.set("site_stats", siteStats);
+    }
 
     storage.set("workspaces", workspaces);
     storage.set("sites", sites);
+    storage.set("categories", categories);
+    storage.set("subcategories", subcategories);
 
-    const activeWorkspace =
-      get().activeWorkspace === id ? fallback : get().activeWorkspace;
+    const wasActive = get().activeWorkspace === id;
+    const activeWorkspace = wasActive ? moveTo || workspaces[0].id : get().activeWorkspace;
     storage.set("active_workspace", activeWorkspace);
 
-    set({ workspaces, sites, activeWorkspace });
+    set({
+      workspaces,
+      sites,
+      siteStats,
+      categories,
+      subcategories,
+      activeWorkspace,
+      // A categoria ativa era do espaço removido.
+      ...(wasActive ? { activeCategory: "all", activeSubcategory: null } : {}),
+    });
   },
 
   // Actions — Widgets
@@ -829,10 +900,11 @@ const useStore = create((set, get) => ({
       storage.set("active_workspace", activeWorkspace);
       storage.set("workspaces", workspaces);
 
+      const sites = loadSites();
+
       set({
-        sites: loadSites(),
-        categories: storage.get("categories") || defaultCategories,
-        subcategories: storage.get("subcategories") || {},
+        sites,
+        ...loadCategoryState(workspaces, sites),
         workspaces,
         activeWorkspace,
         siteStats: storage.get("site_stats") || {},

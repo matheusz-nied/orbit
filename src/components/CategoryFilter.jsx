@@ -1,6 +1,7 @@
 import { Plus, Star } from 'lucide-react'
 import useStore from '../store/useStore'
 import { FREQUENT_CATEGORY, hasUsageData } from '../utils/frequent'
+import { selectCategories } from '../utils/categories'
 import SubcategoryBar from './SubcategoryBar'
 
 const categoryLabels = {
@@ -12,7 +13,7 @@ const categoryLabels = {
 }
 
 export default function CategoryFilter() {
-  const categories = useStore((state) => state.categories)
+  const categories = useStore(selectCategories)
   const activeCategory = useStore((state) => state.activeCategory)
   const setActiveCategory = useStore((state) => state.setActiveCategory)
   const openAddSite = useStore((state) => state.openAddSite)

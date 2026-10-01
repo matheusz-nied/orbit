@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Plus, Trash2, X, CornerDownRight, Pencil, Check } from 'lucide-react'
 import useStore from '../store/useStore'
-
-const EMPTY = []
+import { selectSubcategories } from '../utils/categories'
 
 // Campo de renomear no lugar: Enter confirma, Esc cancela.
 function RenameInput({ initial, maxLength, className, onSubmit, onCancel }) {
@@ -52,7 +51,7 @@ function RenameInput({ initial, maxLength, className, onSubmit, onCancel }) {
 
 // Linha de uma categoria nas Configurações, com suas subcategorias.
 export default function CategorySubcategories({ category, onRemoveCategory }) {
-  const subcategories = useStore((state) => state.subcategories[category] || EMPTY)
+  const subcategories = useStore(selectSubcategories(category))
   const addSubcategory = useStore((state) => state.addSubcategory)
   const removeSubcategory = useStore((state) => state.removeSubcategory)
   const renameCategory = useStore((state) => state.renameCategory)

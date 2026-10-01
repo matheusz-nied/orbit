@@ -8,6 +8,7 @@ import useStore, { searchProviders } from '../store/useStore'
 import { themeList, themeLayouts } from '../themes/themes'
 import { motionModes } from '../utils/motion'
 import { normalizeHttpUrl } from '../utils/url'
+import { selectCategories } from '../utils/categories'
 import WorkspaceManager from './WorkspaceManager'
 import WeatherLocationPicker from './WeatherLocationPicker'
 import OnboardingGuide from './OnboardingGuide'
@@ -119,7 +120,9 @@ export default function SettingsModal() {
   const setDeepseekApiKey = useStore((state) => state.setDeepseekApiKey)
   const newsTopics = useStore((state) => state.newsTopics)
   const setNewsTopics = useStore((state) => state.setNewsTopics)
-  const categories = useStore((state) => state.categories)
+  const categories = useStore(selectCategories)
+  const workspaces = useStore((state) => state.workspaces)
+  const activeWorkspace = useStore((state) => state.activeWorkspace)
   const addCategory = useStore((state) => state.addCategory)
   const removeCategory = useStore((state) => state.removeCategory)
   const exportData = useStore((state) => state.exportData)
@@ -199,7 +202,8 @@ export default function SettingsModal() {
       newSites.push({
         name,
         url: finalUrl,
-        category: batchCategory || categories[0] || 'geral'
+        // A escolha pode ter ficado de outro espaço, trocado com o modal aberto.
+        category: categories.includes(batchCategory) ? batchCategory : (categories[0] || 'geral')
       })
     }
 
@@ -585,8 +589,13 @@ export default function SettingsModal() {
           {activeTab === 'categories' && (
             <div className="space-y-6">
               <div>
-                <h4 className="text-sm font-medium text-muted mb-1">Categorias Existentes</h4>
+                <h4 className="text-sm font-medium text-muted mb-1">
+                  {workspaces.length > 1
+                    ? `Categorias de ${workspaces.find(w => w.id === activeWorkspace)?.name || 'este espaço'}`
+                    : 'Categorias Existentes'}
+                </h4>
                 <p className="text-xs text-muted mb-3">
+                  {workspaces.length > 1 && 'Cada espaço tem as suas categorias — troque de espaço para editar as de outro. '}
                   Subcategorias organizam uma categoria por dentro — por exemplo, um projeto em Trabalho.
                   Use o lápis para renomear — os sites acompanham o novo nome.
                   Remover uma subcategoria mantém os sites na categoria.

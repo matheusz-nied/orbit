@@ -1,15 +1,14 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { CornerDownRight, Plus, X } from 'lucide-react'
 import useStore from '../store/useStore'
-
-const EMPTY = []
+import { selectSubcategories } from '../utils/categories'
 
 function Count({ value }) {
   return value ? <span className="tabular-nums opacity-60">{value}</span> : null
 }
 
 export default function SubcategoryBar({ category }) {
-  const subcategories = useStore((state) => state.subcategories[category] || EMPTY)
+  const subcategories = useStore(selectSubcategories(category))
   const activeSubcategory = useStore((state) => state.activeSubcategory)
   const setActiveSubcategory = useStore((state) => state.setActiveSubcategory)
   const addSubcategory = useStore((state) => state.addSubcategory)

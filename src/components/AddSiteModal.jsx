@@ -9,6 +9,8 @@ import { findShortcutConflict, normalizeShortcutKey } from '../utils/shortcuts'
 // Valor sentinela do <select> — não colide com nomes digitados.
 const NEW_SUBCATEGORY = '__new__'
 
+const EMPTY = []
+
 export default function AddSiteModal() {
   const addSiteOpen = useStore((state) => state.addSiteOpen)
   const closeAddSite = useStore((state) => state.closeAddSite)
@@ -17,10 +19,10 @@ export default function AddSiteModal() {
   const addSite = useStore((state) => state.addSite)
   const setEditingSite = useStore((state) => state.setEditingSite)
   const sites = useStore((state) => state.sites)
-  const categories = useStore((state) => state.categories)
+  const categoriesByWorkspace = useStore((state) => state.categories)
   const activeCategory = useStore((state) => state.activeCategory)
   const activeSubcategory = useStore((state) => state.activeSubcategory)
-  const subcategoriesByCategory = useStore((state) => state.subcategories)
+  const subcategoriesByWorkspace = useStore((state) => state.subcategories)
   const addSubcategory = useStore((state) => state.addSubcategory)
   const workspaces = useStore((state) => state.workspaces)
   const activeWorkspace = useStore((state) => state.activeWorkspace)
@@ -34,6 +36,10 @@ export default function AddSiteModal() {
   const [workspace, setWorkspace] = useState(activeWorkspace)
   const [shortcut, setShortcut] = useState('')
   const [urlTouched, setUrlTouched] = useState(false)
+
+  // Categorias são por espaço: as opções seguem o espaço escolhido no
+  // formulário, que pode não ser o ativo.
+  const categories = categoriesByWorkspace[workspace] || EMPTY
 
   useEffect(() => {
     if (editingSite) {
@@ -49,15 +55,34 @@ export default function AddSiteModal() {
       setUrl('')
       setShortcut('')
       // 'all' e 'Frequentes' são visões, não categorias atribuíveis.
-      const isRealCategory = activeCategory !== 'all' && categories.includes(activeCategory)
-      setCategory(isRealCategory ? activeCategory : (categories[0] || ''))
+      const activeCategories = categoriesByWorkspace[activeWorkspace] || EMPTY
+      const isRealCategory = activeCategory !== 'all' && activeCategories.includes(activeCategory)
+      setCategory(isRealCategory ? activeCategory : (activeCategories[0] || ''))
       setSubcategory(isRealCategory && activeSubcategory ? activeSubcategory : '')
     }
     setNewSubcategory('')
     setUrlTouched(false)
-  }, [editingSite, addSiteOpen, categories, activeCategory, activeSubcategory])
+  }, [editingSite, addSiteOpen, categoriesByWorkspace, activeWorkspace, activeCategory, activeSubcategory])
 
-  const subcategoryOptions = subcategoriesByCategory[category] || []
+  const subcategoryOptions = subcategoriesByWorkspace[workspace]?.[category] || EMPTY
+
+  const handleWorkspaceChange = (id) => {
+    if (id === workspace) return
+    setWorkspace(id)
+    // O destino tem categorias próprias: mantém o que existir lá com o mesmo
+    // nome e descarta o resto.
+    const nextCategories = categoriesByWorkspace[id] || EMPTY
+    const keepsCategory = nextCategories.includes(category)
+    const nextSubcategories = keepsCategory ? subcategoriesByWorkspace[id]?.[category] || EMPTY : EMPTY
+    setCategory(keepsCategory ? category : (nextCategories[0] || ''))
+    if (subcategory !== NEW_SUBCATEGORY && !nextSubcategories.includes(subcategory)) {
+      setSubcategory('')
+    }
+    if (!keepsCategory) {
+      setSubcategory('')
+      setNewSubcategory('')
+    }
+  }
 
   const handleCategoryChange = (value) => {
     setCategory(value)
@@ -80,7 +105,7 @@ export default function AddSiteModal() {
 
     const finalCategory = category || categories[0] || 'geral'
     const finalSubcategory = subcategory === NEW_SUBCATEGORY
-      ? addSubcategory(finalCategory, newSubcategory)
+      ? addSubcategory(finalCategory, newSubcategory, workspace || activeWorkspace)
       : subcategory
 
     const payload = {
@@ -259,7 +284,7 @@ export default function AddSiteModal() {
                     key={w.id}
                     type="button"
                     aria-pressed={workspace === w.id}
-                    onClick={() => setWorkspace(w.id)}
+                    onClick={() => handleWorkspaceChange(w.id)}
                     className={chipClass(workspace === w.id)}
                     style={chipStyle(workspace === w.id)}
                   >
