@@ -4476,6 +4476,364 @@ input:focus, button:focus, select:focus {
 }
 /* @@lofi END */
 
+/* @@herbario START */
+/* =========================================================
+   HERBÁRIO · NATURALISTA — caderno de campo e gabinete botânico do
+   século XIX. Papel algodão envelhecido, moldura dupla de álbum,
+   tinta ferrogálica sépia, verde-salva seco e detalhes em latão.
+   Layout de card: Exsicata (espécime prensado com fita gomada e alfinete).
+   ========================================================= */
+
+[data-theme="herbario"] body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(184, 146, 70, 0.12), transparent 70%),
+    radial-gradient(ellipse 85% 80% at 50% 50%, transparent 55%, rgba(35, 28, 22, 0.1) 100%),
+    linear-gradient(180deg, #f6f0e4 0%, var(--bg) 100%);
+  background-attachment: fixed;
+}
+
+/* Moldura interna dupla de prancha botânica (em telas amplas). */
+[data-theme="herbario"] body::before {
+  content: '';
+  position: fixed;
+  inset: 14px;
+  z-index: 0;
+  display: none;
+  border: 1px solid rgba(35, 28, 22, 0.22);
+  box-shadow: inset 0 0 0 3px var(--bg), inset 0 0 0 4px rgba(184, 146, 70, 0.35);
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  [data-theme="herbario"] body::before {
+    display: block;
+  }
+}
+
+/* Fibras finas de papel algodão prensado. */
+[data-theme="herbario"] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23h)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+[data-theme="herbario"] #root {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="herbario"] ::selection {
+  background: var(--accent);
+  color: #faf6ed;
+}
+
+[data-theme="herbario"] {
+  scrollbar-color: rgba(35, 28, 22, 0.3) transparent;
+  scrollbar-width: thin;
+}
+
+[data-theme="herbario"] .theme-masthead {
+  border-bottom: 2px double rgba(35, 28, 22, 0.28);
+  color: var(--muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.24em;
+}
+
+[data-theme="herbario"] .theme-masthead strong {
+  color: var(--text);
+  font-size: 1.15rem;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+}
+
+[data-theme="herbario"] .theme-masthead span:last-child {
+  justify-self: end;
+  padding: 0.15rem 0.65rem;
+  border: 1px solid var(--herbario-wax, #9e332e);
+  border-radius: 2px;
+  color: var(--herbario-wax, #9e332e);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+/* Relógio: serifa clássica de enciclopédia com florão botânico na data. */
+[data-theme="herbario"] .orbit-clock > div:first-child {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="herbario"] .orbit-clock > div:first-child > span:first-child {
+  color: var(--accent);
+  opacity: 1;
+}
+
+[data-theme="herbario"] .orbit-clock > div:last-child {
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-style: italic;
+  letter-spacing: 0.18em;
+}
+
+[data-theme="herbario"] .orbit-clock > div:last-child::before,
+[data-theme="herbario"] .orbit-clock > div:last-child::after {
+  content: '❦';
+  margin: 0 0.65em;
+  color: var(--herbario-brass, #b89246);
+  font-style: normal;
+}
+
+[data-theme="herbario"] .bg-card {
+  border-color: rgba(35, 28, 22, 0.22);
+  box-shadow: 0 4px 14px -6px rgba(35, 28, 22, 0.14);
+}
+
+[data-theme="herbario"] .orbit-search input {
+  border-radius: 6px;
+  border-color: rgba(35, 28, 22, 0.28);
+  background: rgba(250, 246, 237, 0.9);
+  box-shadow: inset 0 1px 3px rgba(35, 28, 22, 0.06);
+}
+
+[data-theme="herbario"] .orbit-search input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 110, 82, 0.15);
+}
+
+[data-theme="herbario"] .orbit-search > div[aria-hidden] {
+  display: none;
+}
+
+[data-theme="herbario"] button.bg-accent,
+[data-theme="herbario"] a.bg-accent,
+[data-theme="herbario"] .orbit-category-filter .bg-accent {
+  color: #faf6ed !important;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+[data-theme="herbario"] a.bg-card:hover {
+  border-color: var(--accent);
+}
+
+[data-theme="herbario"] .modal-backdrop {
+  background: rgba(35, 28, 22, 0.48);
+}
+
+/* Layout Exsicata — lâmina de catalogação presa por tirinhas de papel gomado
+   e alfinete de cabeça de latão. No hover a lente de aumento (anel de latão)
+   alinha sobre o espécime. */
+.exsicata-sheet {
+  --sheet-paper: var(--herbario-paper, var(--card));
+  --sheet-brass: var(--herbario-brass, #b89246);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  aspect-ratio: 1 / 1.16;
+  padding: 0.75rem 0.55rem 0.5rem;
+  border: 1px solid rgba(35, 28, 22, 0.24);
+  border-radius: 3px;
+  background:
+    linear-gradient(180deg, rgba(184, 146, 70, 0.06), transparent 45%),
+    var(--sheet-paper);
+  box-shadow:
+    inset 0 0 0 2px var(--sheet-paper),
+    inset 0 0 0 3px rgba(184, 146, 70, 0.28),
+    0 6px 14px -8px rgba(0, 0, 0, 0.32);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 200ms ease, border-color 200ms ease;
+}
+
+.exsicata-site:hover .exsicata-sheet,
+.exsicata-sheet:focus-visible {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.exsicata-sheet:focus-visible {
+  outline: none;
+}
+
+/* Alfinete entomológico de cabeça de latão no topo da prancha. */
+.exsicata-pin {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  z-index: 3;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border: 1px solid rgba(35, 28, 22, 0.55);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f7e4b2, var(--sheet-brass) 62%, #6d521e 100%);
+  box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.35);
+  transform: rotate(var(--exsicata-pin-tilt, 0deg));
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.exsicata-site:active .exsicata-pin {
+  transform: translateY(2px) scale(0.92);
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Janela central com o espécime e tirinhas de papel gomado nos cantos. */
+.exsicata-mount {
+  position: relative;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  margin: 0.1rem 0.15rem 0.4rem;
+  border: 1px dashed rgba(110, 98, 83, 0.35);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+}
+
+/* Tirinhas de fita de papel gomado que prendem o espécime nos cantos. */
+.exsicata-mount::before,
+.exsicata-mount::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  width: 18px;
+  height: 6px;
+  border: 1px solid rgba(110, 98, 83, 0.32);
+  background: rgba(232, 216, 184, 0.82);
+  pointer-events: none;
+}
+
+.exsicata-mount::before {
+  top: -3px;
+  left: -4px;
+  transform: rotate(-38deg);
+}
+
+.exsicata-mount::after {
+  right: -4px;
+  bottom: -3px;
+  transform: rotate(-38deg);
+}
+
+.exsicata-sheet[data-tape="1"] .exsicata-mount::before {
+  left: auto;
+  right: -4px;
+  transform: rotate(38deg);
+}
+
+.exsicata-sheet[data-tape="1"] .exsicata-mount::after {
+  right: auto;
+  left: -4px;
+  transform: rotate(38deg);
+}
+
+.exsicata-sheet[data-tape="2"] .exsicata-mount::before {
+  top: 4px;
+  left: -6px;
+  transform: rotate(-12deg);
+}
+
+.exsicata-icon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  background: #faf6ed;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: transform 260ms ease;
+}
+
+.exsicata-site:hover .exsicata-icon {
+  transform: scale(1.12);
+}
+
+.exsicata-icon img {
+  width: 1.35rem;
+  height: 1.35rem;
+  object-fit: contain;
+  filter: sepia(0.28) contrast(0.95);
+  transition: filter 240ms ease;
+}
+
+.exsicata-site:hover .exsicata-icon img {
+  filter: sepia(0);
+}
+
+.exsicata-icon > span {
+  color: #231c16;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Lupa de latão que se alinha sobre o espécime no hover. */
+.exsicata-loupe {
+  position: absolute;
+  z-index: 2;
+  width: 2.85rem;
+  height: 2.85rem;
+  border: 2px solid var(--sheet-brass);
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, transparent 55%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: scale(1.22);
+  pointer-events: none;
+  transition: transform 240ms ease, opacity 240ms ease;
+}
+
+.exsicata-site:hover .exsicata-loupe {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Etiqueta científica pautada no rodapé da ficha. */
+.exsicata-label {
+  display: block;
+  padding-top: 0.3rem;
+  border-top: 1px solid rgba(110, 98, 83, 0.35);
+  text-align: left;
+}
+
+.exsicata-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.25rem;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.45rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.exsicata-meta span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.exsicata-name {
+  display: block;
+  margin-top: 0.1rem;
+  overflow: hidden;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* @@herbario END */
+
 /* =========================================================
    DESEMPENHO
    ========================================================= */

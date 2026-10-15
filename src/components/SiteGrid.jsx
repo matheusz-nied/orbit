@@ -28,6 +28,7 @@ const GRID_CLASSES = {
   adesivo: 'grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4 sm:gap-5 py-4',
   tanzaku: 'grid grid-cols-[repeat(auto-fill,minmax(76px,88px))] justify-start items-start gap-x-4 gap-y-8 py-4',
   vinil: 'grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-x-4 gap-y-8 justify-items-center py-4',
+  exsicata: 'grid grid-cols-[repeat(auto-fill,minmax(106px,1fr))] gap-4 sm:gap-5 py-4',
   space: SPACED_GRID_CLASS,
   'quantum-spin': SPACED_GRID_CLASS,
   cyber: SPACED_GRID_CLASS,
@@ -42,6 +43,7 @@ const KBD_CLASSES = {
   berserk: 'top-[42%] right-1.5 -translate-y-1/2',
   adesivo: 'top-2 left-2',
   tanzaku: 'top-1 left-1',
+  exsicata: 'top-2 left-2',
 }
 
 // Constante de módulo em vez de `[]` inline: um array novo a cada render faria

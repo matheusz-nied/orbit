@@ -7,6 +7,7 @@ const MASTHEADS = {
   sumie: { label: 'Sumi-e', left: '墨絵', center: 'Sumi-e', right: '静' },
   // `action: 'rain'` troca o texto da direita por um botão que liga o som de chuva.
   lofi: { label: 'Lo-fi', left: 'Quarto · 02:14', center: 'Lo-fi', action: 'rain' },
+  herbario: { label: 'Herbário Orbit', left: 'Flora & Rede · Séc. XIX', center: 'Herbarium', right: 'Catálogo Geral' },
 }
 
 export default function ThemeMasthead() {

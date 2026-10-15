@@ -13,6 +13,7 @@ export const cardLayoutIds = [
   'adesivo',
   'tanzaku',
   'vinil',
+  'exsicata',
 ]
 
 export function resolveCardLayout(layout) {

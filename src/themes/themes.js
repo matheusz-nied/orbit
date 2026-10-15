@@ -139,6 +139,21 @@ export const themes = {
     '--lofi-rose': '#ff8fab',
     '--lofi-teal': '#6fd6c8',
   },
+  'herbario': {
+    name: 'Herbário · Naturalista',
+    '--bg': '#f2ece0',
+    '--card': 'rgba(250, 246, 237, 0.94)',
+    '--text': '#231c16',
+    '--accent': '#3b6e52',
+    '--muted': '#6e6253',
+    '--border': 'rgba(35, 28, 22, 0.2)',
+    '--font': "'Cormorant Garamond', 'Shippori Mincho', serif",
+    '--star': '0',
+    // Latão do alfinete/lupa, lacre de museu e papel da lâmina.
+    '--herbario-brass': '#b89246',
+    '--herbario-wax': '#9e332e',
+    '--herbario-paper': '#faf6ed',
+  },
 }
 
 // Layout de cards que "nasceu" com cada tema — Configurações oferece aplicá-lo
@@ -154,6 +169,7 @@ export const themeLayouts = {
   'pop': 'adesivo',
   'sumie': 'tanzaku',
   'lofi': 'vinil',
+  'herbario': 'exsicata',
 }
 
 export function resolveTheme(themeName) {

@@ -12,6 +12,7 @@ import SiteCardBerserk from './SiteCardBerserk'
 import SiteCardAdesivo from './SiteCardAdesivo'
 import SiteCardTanzaku from './SiteCardTanzaku'
 import SiteCardVinil from './SiteCardVinil'
+import SiteCardExsicata from './SiteCardExsicata'
 
 // id do layout (utils/cardLayout.js) -> componente. Id desconhecido cai no Clássico.
 const LAYOUT_COMPONENTS = {
@@ -25,6 +26,7 @@ const LAYOUT_COMPONENTS = {
   adesivo: SiteCardAdesivo,
   tanzaku: SiteCardTanzaku,
   vinil: SiteCardVinil,
+  exsicata: SiteCardExsicata,
 }
 
 function SiteCard({ site }) {

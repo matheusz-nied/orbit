@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import {
   X, Palette, ChevronLeft, ChevronRight, Search, Newspaper, FolderOpen, Database,
   Plus, Trash2, Download, Upload, Check, AlertCircle, MessageSquare,
-  LayoutGrid, Sparkles, Waves, Atom, ListPlus, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket, Swords, Sticker, ScrollText, Disc3
+  LayoutGrid, Sparkles, Waves, Atom, ListPlus, Gauge, Layers, LayoutDashboard, Cpu, BookOpen, ScanEye, Rocket, Swords, Sticker, ScrollText, Disc3, Leaf
 } from 'lucide-react'
 import useStore, { searchProviders } from '../store/useStore'
 import { themeList, themeLayouts } from '../themes/themes'
@@ -74,6 +74,7 @@ const cardLayouts = [
   { id: 'adesivo', label: 'Adesivo', Icon: Sticker, desc: 'Adesivos coloridos' },
   { id: 'tanzaku', label: 'Tanzaku', Icon: ScrollText, desc: 'Tiras verticais' },
   { id: 'vinil', label: 'Vinil', Icon: Disc3, desc: 'Discos de vinil' },
+  { id: 'exsicata', label: 'Exsicata', Icon: Leaf, desc: 'Espécimes prensados' },
 ]
 
 // Estado selecionado dos cartões de opção — o fundo translúcido vem de
