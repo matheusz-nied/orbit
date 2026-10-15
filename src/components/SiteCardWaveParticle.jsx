@@ -11,12 +11,13 @@ const waveColors = [
   '#3a86ff', '#8338ec', '#06ffa5', '#ff4365', '#00bbf9',
 ]
 
-// O Premium Dark troca o neon por metais (champagne, platina, ouro velho, ouro
-// rosé, bronze) para não destoar da paleta contida do tema. Sempre hex de 6
-// dígitos: as camadas abaixo anexam o alfa como sufixo (`${cor}22`).
+// O Premium Dark troca o neon por tons de aço (branco, platina, prata, titânio,
+// com um fio de gelo e de lilás) para não destoar da paleta monocromática do
+// tema. Sempre hex de 6 dígitos: as camadas abaixo anexam o alfa como sufixo
+// (`${cor}22`).
 const metalColors = [
-  '#d9c39c', '#efe2c6', '#c9a96e', '#e6e1d6',
-  '#b89868', '#d8b79a', '#cfc8ba', '#a99678',
+  '#ffffff', '#e6e8ec', '#c9ccd3', '#aeb3bd',
+  '#d3dbe8', '#9aa0ab', '#dcd8e6', '#bfc4cd',
 ]
 
 const getWaveColor = (name, theme) => {

@@ -14,6 +14,7 @@ import SiteGrid from './components/SiteGrid'
 import WidgetDock from './components/WidgetDock'
 import NewsFeed from './components/NewsFeed'
 import StarCanvas from './components/StarCanvas'
+import CursorStardust from './components/CursorStardust'
 import { useEasterEggs } from './hooks/useEasterEggs'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { useAutoBackup } from './hooks/useAutoBackup'
@@ -67,6 +68,8 @@ export default function App() {
     <div className={`min-h-screen relative orbit-shell ${theme === 'nous-archive' ? 'archive-theme-shell' : ''} ${theme === 'detroit' ? 'dbh-theme-shell' : ''} ${theme === 'berserk' ? 'berserk-theme-shell' : ''}`}>
       {/* Star canvas for space theme */}
       <StarCanvas />
+      {/* Cometa do cursor — só no Premium Dark e fora do modo leve. */}
+      <CursorStardust />
       {/* Varredura de análise do tema Detroit — em sincronia com o LED do cabeçalho. */}
       {theme === 'detroit' && <div className="dbh-sweep gpu-layer" data-decorative aria-hidden />}
       {theme === 'detroit' && <DetroitZen />}

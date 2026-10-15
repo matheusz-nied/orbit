@@ -15,16 +15,16 @@ export const themes = {
   'premium-dark': {
     name: 'Premium Dark',
     '--bg': '#000000',
-    '--card': 'rgba(12, 11, 10, 0.82)',
-    '--text': '#f5f1ea',
-    '--accent': '#d9c39c',
-    '--muted': '#8a8378',
-    '--border': 'rgba(255, 240, 215, 0.09)',
+    '--card': 'rgba(10, 10, 12, 0.82)',
+    '--text': '#f2f3f5',
+    '--accent': '#eceef2',
+    '--muted': '#8b8f99',
+    '--border': 'rgba(255, 255, 255, 0.1)',
     '--font': "'Inter', system-ui, sans-serif",
     '--star': '0',
-    // Extremos do champagne escovado (claro → sombra): só o CSS do tema usa.
-    '--pd-gold-hi': '#f6e7c8',
-    '--pd-gold-lo': '#a88b5a',
+    // Extremos do branco escovado (claro → sombra): só o CSS do tema usa.
+    '--pd-hi': '#ffffff',
+    '--pd-lo': '#a9adb6',
   },
   'space': {
     name: 'Space',
